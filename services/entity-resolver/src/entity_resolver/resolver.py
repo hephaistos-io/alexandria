@@ -132,7 +132,7 @@ class WikidataResolver:
     """Resolves entity mentions to Wikidata entries via the Wikibase REST API.
 
     Uses the newer REST endpoints instead of the legacy Action API (api.php):
-      - Search: GET /w/rest.php/wikibase/v0/search/items?q=...&language=en
+      - Search: GET /w/rest.php/wikibase/v1/search/items?q=...&language=en
       - Statements: GET /w/rest.php/wikibase/v1/entities/items/{QID}/statements
 
     Results are cached in Redis to avoid hammering Wikidata on repeated mentions.
@@ -156,8 +156,8 @@ class WikidataResolver:
     3. Neither — falls back to unauthenticated access (~500 req/hr).
     """
 
-    # Wikibase REST API base — search is v0, entity/statement endpoints are v1.
-    _SEARCH_URL = "https://www.wikidata.org/w/rest.php/wikibase/v0/search/items"
+    # Wikibase REST API base — both search and entity endpoints are v1.
+    _SEARCH_URL = "https://www.wikidata.org/w/rest.php/wikibase/v1/search/items"
     _STATEMENTS_URL = "https://www.wikidata.org/w/rest.php/wikibase/v1/entities/items"
 
     def __init__(
@@ -319,7 +319,7 @@ class WikidataResolver:
     def _search(self, mention: str, label: str | None = None) -> dict | None:
         """Query Wikibase REST API search endpoint, return the top result or None.
 
-        Uses: GET /wikibase/v0/search/items?q=...&language=en&limit=1
+        Uses: GET /wikibase/v1/search/items?q=...&language=en&limit=1
 
         The response format differs from the old Action API:
             {"results": [{"id": "Q794", "display-label": {"value": "Iran"},

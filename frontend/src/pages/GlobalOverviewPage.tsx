@@ -111,8 +111,11 @@ function deriveAnchors(articles: DashboardArticle[]): GeoAnchor[] {
     .filter((a): a is GeoAnchor => a !== null);
 }
 
+const FEED_LIMITS = [10, 20, 30] as const;
+
 export function GlobalOverviewPage() {
-  const { articles, loading } = useDashboardArticles();
+  const [feedLimit, setFeedLimit] = useState<number>(10);
+  const { articles, loading } = useDashboardArticles(feedLimit);
   const { roleTypes } = useEntityRoleTypes();
   const { data: infraStatus } = useInfraStatus();
   const anchors = useMemo(() => deriveAnchors(articles), [articles]);
@@ -165,6 +168,9 @@ export function GlobalOverviewPage() {
           selectedAnchor={selectedAnchor}
           onArticleClick={handleArticleClick}
           onDismissSelection={() => setSelectedAnchorId(null)}
+          feedLimit={feedLimit}
+          feedLimits={FEED_LIMITS}
+          onFeedLimitChange={setFeedLimit}
         />
       </div>
       <SystemStatusFloat status={infraStatus} />

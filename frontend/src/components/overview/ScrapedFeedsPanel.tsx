@@ -9,9 +9,12 @@ interface ScrapedFeedsPanelProps {
   selectedAnchor?: GeoAnchor | null;
   onArticleClick?: (articleId: number) => void;
   onDismissSelection?: () => void;
+  feedLimit?: number;
+  feedLimits?: readonly number[];
+  onFeedLimitChange?: (limit: number) => void;
 }
 
-export function ScrapedFeedsPanel({ articles, loading, selectedAnchor, onArticleClick, onDismissSelection }: ScrapedFeedsPanelProps) {
+export function ScrapedFeedsPanel({ articles, loading, selectedAnchor, onArticleClick, onDismissSelection, feedLimit, feedLimits, onFeedLimitChange }: ScrapedFeedsPanelProps) {
   return (
     <div className="w-96 shrink-0 bg-surface-container-low flex flex-col border-l border-outline-variant/10">
       {/* Panel header */}
@@ -30,14 +33,27 @@ export function ScrapedFeedsPanel({ articles, loading, selectedAnchor, onArticle
           </div>
         </div>
 
-        {/* Filter tag pills */}
-        <div className="flex gap-2">
+        {/* Filter tag pills + feed limit selector */}
+        <div className="flex items-center gap-2">
           <span className="bg-surface-container-high px-2 py-1 font-mono text-[9px] text-outline">
             GLOBAL_NET
           </span>
           <span className="bg-surface-container-high px-2 py-1 font-mono text-[9px] text-outline">
             ENCRYPTED
           </span>
+          {feedLimits && onFeedLimitChange && (
+            <select
+              value={feedLimit}
+              onChange={(e) => onFeedLimitChange(Number(e.target.value))}
+              className="ml-auto bg-surface-container-high px-2 py-1 font-mono text-[9px] text-outline border border-outline-variant/30 focus:outline-none focus:border-primary"
+            >
+              {feedLimits.map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
       </div>
 

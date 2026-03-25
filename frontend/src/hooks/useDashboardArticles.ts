@@ -4,12 +4,12 @@ import { usePolling } from "./usePolling";
 
 const POLL_INTERVAL_MS = 60_000;
 
-export function useDashboardArticles(): {
+export function useDashboardArticles(limit: number = 20): {
   articles: DashboardArticle[];
   loading: boolean;
 } {
   const { data, loading, error } = usePolling<DashboardArticle[]>(
-    "/api/dashboard/articles?limit=20",
+    `/api/dashboard/articles?limit=${limit}`,
     POLL_INTERVAL_MS,
   );
 

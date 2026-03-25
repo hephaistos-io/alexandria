@@ -18,6 +18,7 @@ Active development — pipeline is functional end-to-end.
 
 - **Data Ingestion**: Generic RSS scraper can be used for various sources that provide one
 - **Processing Pipeline**: Fetching of articles, finding entities and categorizing them based on different goals
+  <img width="1501" height="823" alt="image" src="https://github.com/user-attachments/assets/d422428a-1622-41ad-9962-af3a383c922a" />
 - **On-Demand Model Training**: Not implemented yet
 - **Search & Analysis**: Basic graph database & viewer show current events, persons and their relations
 

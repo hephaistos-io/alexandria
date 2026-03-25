@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+*.egg
+
+# Ruff / pytest caches
+.ruff_cache/
+.pytest_cache/
+
+# Node / Frontend
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Environment secrets
+.env
+
+# Exported labelling data (generated from DB, not source code)
+training/labelling/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.sw?
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Docker volumes (if mounted locally)
+pgdata/
+neo4jdata/
+redisdata/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Claude Code
+.claude/

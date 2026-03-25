@@ -1,0 +1,599 @@
+# Local development stack for Alexandria.
+#
+# Start:   docker compose -f docker/local/docker-compose.yml up --build
+# Stop:    docker compose -f docker/local/docker-compose.yml down
+# UI:      http://localhost:15672  (guest / guest)
+# DB:      postgresql://alexandria:alexandria@localhost:5432/alexandria
+#
+# Run from the repo root (/Users/risi/Documents/alexandria).
+#
+# WARNING: Credentials are hardcoded for local dev. Do NOT use in production.
+
+services:
+  # -------------------------------------------------------------------
+  # Base image — build-only, not a running service.
+  # Other services depend on this so the alexandria-base image exists.
+  # -------------------------------------------------------------------
+  base:
+    image: alexandria-base
+    build:
+      context: ../..
+      dockerfile: docker/base.Dockerfile
+    # Not a running service — just builds the image and exits.
+    # Other services depend on this so the image exists before they build.
+    command: ["true"]
+
+  # -------------------------------------------------------------------
+  # RabbitMQ — message broker with management UI
+  # -------------------------------------------------------------------
+  rabbitmq:
+    image: rabbitmq:4-management
+    ports:
+      - "5672:5672"     # AMQP protocol
+      - "15672:15672"   # Management UI
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  # -------------------------------------------------------------------
+  # Article fetcher — pulls RSS feeds, publishes to articles.rss queue.
+  # BBC polls every 60s (primary feed); others use the 900s default.
+  # -------------------------------------------------------------------
+  article-fetcher-bbc:
+    build:
+      context: ../..
+      dockerfile: services/article-fetcher/Dockerfile
+    restart: on-failure
+    labels:
+      alexandria.pipeline.label: "BBC"
+    depends_on:
+      base:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672"
+      REDIS_URL: "redis://redis:6379/0"
+      FEED_URL: "https://feeds.bbci.co.uk/news/world/rss.xml"
+      FETCH_INTERVAL: "60"
+      ORIGIN: "bbc_world"
+
+  # -------------------------------------------------------------------
+  # Article fetcher (swissinfo.ch) — same image, different feed
+  # -------------------------------------------------------------------
+  article-fetcher-swissinfo:
+    build:
+      context: ../..
+      dockerfile: services/article-fetcher/Dockerfile
+    restart: on-failure
+    labels:
+      alexandria.pipeline.label: "SWISSINFO"
+    depends_on:
+      base:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672"
+      REDIS_URL: "redis://redis:6379/0"
+      FEED_URL: "https://www.swissinfo.ch/service/eng/rssxml/top-news/rss"
+      FETCH_INTERVAL: "900"
+      ORIGIN: "swissinfo"
+
+  # -------------------------------------------------------------------
+  # Article fetcher (UN News) — same image, multilateral/humanitarian perspective
+  # -------------------------------------------------------------------
+  article-fetcher-unnews:
+    build:
+      context: ../..
+      dockerfile: services/article-fetcher/Dockerfile
+    restart: on-failure
+    labels:
+      alexandria.pipeline.label: "UN_NEWS"
+    depends_on:
+      base:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672"
+      REDIS_URL: "redis://redis:6379/0"
+      FEED_URL: "https://news.un.org/feed/subscribe/en/news/all/rss.xml"
+      FETCH_INTERVAL: "900"
+      ORIGIN: "un_news"
+
+  # -------------------------------------------------------------------
+  # Article fetcher (Al Jazeera) — same image, Middle Eastern perspective
+  # -------------------------------------------------------------------
+  article-fetcher-aljazeera:
+    profiles: ["all-feeds"]
+    build:
+      context: ../..
+      dockerfile: services/article-fetcher/Dockerfile
+    restart: on-failure
+    labels:
+      alexandria.pipeline.label: "ALJAZEERA"
+    depends_on:
+      base:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672"
+      REDIS_URL: "redis://redis:6379/0"
+      FEED_URL: "https://www.aljazeera.com/xml/rss/all.xml"
+      FETCH_INTERVAL: "900"
+      ORIGIN: "aljazeera"
+
+  # -------------------------------------------------------------------
+  # Article fetcher (The Diplomat) — Asia-Pacific geopolitics
+  # -------------------------------------------------------------------
+  article-fetcher-diplomat:
+    profiles: ["all-feeds"]
+    build:
+      context: ../..
+      dockerfile: services/article-fetcher/Dockerfile
+    restart: on-failure
+    labels:
+      alexandria.pipeline.label: "DIPLOMAT"
+    depends_on:
+      base:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672"
+      REDIS_URL: "redis://redis:6379/0"
+      FEED_URL: "https://thediplomat.com/feed/"
+      FETCH_INTERVAL: "900"
+      ORIGIN: "the_diplomat"
+
+  # -------------------------------------------------------------------
+  # Article fetcher (Global Voices) — citizen journalism, underrepresented regions
+  # -------------------------------------------------------------------
+  article-fetcher-globalvoices:
+    profiles: ["all-feeds"]
+    build:
+      context: ../..
+      dockerfile: services/article-fetcher/Dockerfile
+    restart: on-failure
+    labels:
+      alexandria.pipeline.label: "GLOBALVOICES"
+    depends_on:
+      base:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672"
+      REDIS_URL: "redis://redis:6379/0"
+      FEED_URL: "https://globalvoices.org/feed/"
+      FETCH_INTERVAL: "900"
+      ORIGIN: "global_voices"
+
+  # -------------------------------------------------------------------
+  # Article fetcher (France24) — French/Francophone Africa perspective
+  # -------------------------------------------------------------------
+  article-fetcher-france24:
+    profiles: ["all-feeds"]
+    build:
+      context: ../..
+      dockerfile: services/article-fetcher/Dockerfile
+    restart: on-failure
+    labels:
+      alexandria.pipeline.label: "FRANCE24"
+    depends_on:
+      base:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672"
+      REDIS_URL: "redis://redis:6379/0"
+      FEED_URL: "https://www.france24.com/en/rss"
+      FETCH_INTERVAL: "900"
+      ORIGIN: "france24"
+
+  # -------------------------------------------------------------------
+  # Article fetcher (Deutsche Welle) — German intl. broadcaster, Africa/EU focus
+  # -------------------------------------------------------------------
+  article-fetcher-dw:
+    profiles: ["all-feeds"]
+    build:
+      context: ../..
+      dockerfile: services/article-fetcher/Dockerfile
+    restart: on-failure
+    labels:
+      alexandria.pipeline.label: "DW"
+    depends_on:
+      base:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672"
+      REDIS_URL: "redis://redis:6379/0"
+      FEED_URL: "https://rss.dw.com/rdf/rss-en-world"
+      FETCH_INTERVAL: "900"
+      ORIGIN: "dw_world"
+
+  # -------------------------------------------------------------------
+  # Article fetcher (Moscow Times) — independent Russia coverage
+  # -------------------------------------------------------------------
+  article-fetcher-moscowtimes:
+    profiles: ["all-feeds"]
+    build:
+      context: ../..
+      dockerfile: services/article-fetcher/Dockerfile
+    restart: on-failure
+    labels:
+      alexandria.pipeline.label: "MOSCOWTIMES"
+    depends_on:
+      base:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672"
+      REDIS_URL: "redis://redis:6379/0"
+      FEED_URL: "https://www.themoscowtimes.com/rss/news"
+      FETCH_INTERVAL: "900"
+      ORIGIN: "moscow_times"
+
+  # -------------------------------------------------------------------
+  # Article scraper — fetches full text, publishes to articles.scraped exchange
+  # -------------------------------------------------------------------
+  article-scraper:
+    build:
+      context: ../..
+      dockerfile: services/article-scraper/Dockerfile
+    restart: on-failure
+    labels:
+      alexandria.pipeline.inputs: "queue:articles.rss"
+      alexandria.pipeline.outputs: "exchange:articles.scraped"
+      alexandria.pipeline.icon: "language"
+      alexandria.pipeline.sublabel: "HTML → content"
+    depends_on:
+      base:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672"
+
+  # -------------------------------------------------------------------
+  # Frontend — React dev server with hot reload
+  # -------------------------------------------------------------------
+  frontend:
+    build:
+      context: ../..
+      dockerfile: frontend/Dockerfile
+    labels:
+      alexandria.pipeline.role: "frontend"
+      alexandria.pipeline.icon: "monitor"
+      alexandria.pipeline.sublabel: "React dev server"
+      alexandria.pipeline.stores: "monitoring-api"
+    depends_on:
+      monitoring-api:
+        condition: service_started
+    ports:
+      - "5173:5173"
+    volumes:
+      - ../../frontend/src:/app/src
+      - ../../frontend/index.html:/app/index.html
+      - ../../frontend/public:/app/public
+      - ../../frontend/vite.config.ts:/app/vite.config.ts
+    environment:
+      CHOKIDAR_USEPOLLING: "true"
+
+  # -------------------------------------------------------------------
+  # PostgreSQL — article storage for labelling and training
+  # -------------------------------------------------------------------
+  postgres:
+    image: postgres:17
+    labels:
+      alexandria.pipeline.role: "store"
+      alexandria.pipeline.icon: "database"
+      alexandria.pipeline.sublabel: "persistent store"
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: alexandria
+      POSTGRES_USER: alexandria
+      POSTGRES_PASSWORD: alexandria
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U alexandria"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # -------------------------------------------------------------------
+  # Article store — persists scraped articles to PostgreSQL.
+  # Consumes from articles.training queue (bound to articles.scraped exchange).
+  # -------------------------------------------------------------------
+  article-store:
+    build:
+      context: ../..
+      dockerfile: services/article-store/Dockerfile
+    restart: on-failure
+    labels:
+      alexandria.pipeline.inputs: "exchange:articles.scraped"
+      alexandria.pipeline.stores: "postgres"
+      alexandria.pipeline.icon: "storage"
+      alexandria.pipeline.sublabel: "→ PostgreSQL"
+      alexandria.pipeline.accent: "error"
+    depends_on:
+      base:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    environment:
+      RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672"
+      DATABASE_URL: "postgresql://alexandria:alexandria@postgres:5432/alexandria"
+
+  # -------------------------------------------------------------------
+  # Monitoring API — aggregates Docker, RabbitMQ & PostgreSQL status
+  # -------------------------------------------------------------------
+  monitoring-api:
+    build:
+      context: ../..
+      dockerfile: services/monitoring-api/Dockerfile
+    restart: on-failure
+    labels:
+      alexandria.pipeline.role: "monitoring"
+      alexandria.pipeline.icon: "monitoring"
+      alexandria.pipeline.sublabel: "status API"
+      alexandria.pipeline.stores: "postgres,neo4j"
+    depends_on:
+      base:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      neo4j:
+        condition: service_healthy
+    environment:
+      RABBITMQ_MANAGEMENT_URL: "http://rabbitmq:15672"
+      RABBITMQ_USER: "guest"
+      RABBITMQ_PASSWORD: "guest"
+      DATABASE_URL: "postgresql://alexandria:alexandria@postgres:5432/alexandria"
+      NEO4J_URL: "bolt://neo4j:7687"
+      NEO4J_AUTH: "neo4j/alexandria"
+      COMPOSE_PROJECT_NAME: "local"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - "8000:8000"
+
+  # -------------------------------------------------------------------
+  # NER tagger — extracts entities via spaCy, publishes to articles.tagged.
+  # Consumes from articles.raw queue (bound to articles.scraped exchange).
+  # -------------------------------------------------------------------
+  ner-tagger:
+    build:
+      context: ../..
+      dockerfile: services/ner-tagger/Dockerfile
+    restart: on-failure
+    labels:
+      alexandria.pipeline.inputs: "exchange:articles.scraped"
+      alexandria.pipeline.outputs: "queue:articles.tagged"
+      alexandria.pipeline.icon: "label"
+      alexandria.pipeline.sublabel: "entity extraction"
+    depends_on:
+      base:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672"
+
+  # -------------------------------------------------------------------
+  # Redis — shared cache for entity resolution
+  # -------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    labels:
+      alexandria.pipeline.role: "store"
+      alexandria.pipeline.icon: "cached"
+      alexandria.pipeline.sublabel: "entity cache"
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  # -------------------------------------------------------------------
+  # Entity resolver — links entity mentions to Wikidata
+  # -------------------------------------------------------------------
+  entity-resolver:
+    build:
+      context: ../..
+      dockerfile: services/entity-resolver/Dockerfile
+    restart: on-failure
+    labels:
+      alexandria.pipeline.inputs: "queue:articles.tagged"
+      alexandria.pipeline.outputs: "queue:articles.resolved"
+      alexandria.pipeline.stores: "redis"
+      alexandria.pipeline.icon: "hub"
+      alexandria.pipeline.sublabel: "Wikidata linking"
+    depends_on:
+      base:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672"
+      REDIS_URL: "redis://redis:6379/0"
+      WIKIDATA_API_TOKEN: "${WIKIDATA_API_TOKEN:-}"
+      WIKIDATA_CLIENT_ID: "${WIKIDATA_CLIENT_ID:-}"
+      WIKIDATA_CLIENT_SECRET: "${WIKIDATA_CLIENT_SECRET:-}"
+
+  # -------------------------------------------------------------------
+  # Label updater — consumes classification results, writes automatic_labels
+  # to PostgreSQL. Runs as a second process from the same article-store image.
+  # -------------------------------------------------------------------
+  label-updater:
+    build:
+      context: ../..
+      dockerfile: services/article-store/Dockerfile
+    command: ["uv", "run", "--no-sync", "python", "-m", "article_store.label_updater"]
+    restart: on-failure
+    labels:
+      alexandria.pipeline.inputs: "queue:articles.classified.store"
+      alexandria.pipeline.stores: "postgres"
+      alexandria.pipeline.icon: "edit_note"
+      alexandria.pipeline.sublabel: "auto-labels → DB"
+    depends_on:
+      base:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    environment:
+      RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672"
+      DATABASE_URL: "postgresql://alexandria:alexandria@postgres:5432/alexandria"
+
+  # -------------------------------------------------------------------
+  # Role classifier — zero-shot entity role classification via transformers
+  # -------------------------------------------------------------------
+  role-classifier:
+    build:
+      context: ../..
+      dockerfile: services/role-classifier/Dockerfile
+    restart: on-failure
+    labels:
+      alexandria.pipeline.inputs: "queue:articles.resolved"
+      alexandria.pipeline.outputs: "queue:articles.role-classified"
+      alexandria.pipeline.icon: "person_pin_circle"
+      alexandria.pipeline.sublabel: "entity role NLI"
+    depends_on:
+      base:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    environment:
+      RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672"
+      DATABASE_URL: "postgresql://alexandria:alexandria@postgres:5432/alexandria"
+      HF_HUB_OFFLINE: "1"
+
+  # -------------------------------------------------------------------
+  # Neo4j — graph database for entity relations
+  # -------------------------------------------------------------------
+  neo4j:
+    image: neo4j:5-community
+    labels:
+      alexandria.pipeline.role: "store"
+      alexandria.pipeline.icon: "share"
+      alexandria.pipeline.sublabel: "graph store"
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      NEO4J_AUTH: "neo4j/alexandria"
+    volumes:
+      - neo4jdata:/data
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:7474 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  # -------------------------------------------------------------------
+  # Topic tagger — zero-shot topic classification via transformers pipeline
+  # -------------------------------------------------------------------
+  topic-tagger:
+    build:
+      context: ../..
+      dockerfile: services/topic-tagger/Dockerfile
+    deploy:
+      replicas: 2
+    restart: on-failure
+    labels:
+      alexandria.pipeline.inputs: "queue:articles.role-classified"
+      alexandria.pipeline.outputs: "exchange:articles.classified"
+      alexandria.pipeline.icon: "auto_awesome"
+      alexandria.pipeline.sublabel: "zero-shot classify"
+    depends_on:
+      base:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    environment:
+      RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672"
+      DATABASE_URL: "postgresql://alexandria:alexandria@postgres:5432/alexandria"
+      HF_HUB_OFFLINE: "1"
+
+  # -------------------------------------------------------------------
+  # Relation extractor — DeBERTa NLI relation extraction → Neo4j
+  # -------------------------------------------------------------------
+  relation-extractor:
+    build:
+      context: ../..
+      dockerfile: services/relation-extractor/Dockerfile
+    restart: on-failure
+    labels:
+      alexandria.pipeline.inputs: "queue:articles.classified.relation"
+      alexandria.pipeline.stores: "neo4j"
+      alexandria.pipeline.icon: "account_tree"
+      alexandria.pipeline.sublabel: "relation NLI → Neo4j"
+    depends_on:
+      base:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      neo4j:
+        condition: service_healthy
+    environment:
+      RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672"
+      DATABASE_URL: "postgresql://alexandria:alexandria@postgres:5432/alexandria"
+      NEO4J_URL: "bolt://neo4j:7687"
+      NEO4J_AUTH: "neo4j/alexandria"
+      HF_HUB_OFFLINE: "1"
+      RELATION_THRESHOLD: "0.65"
+
+volumes:
+  pgdata:
+  neo4jdata:
+  redisdata:

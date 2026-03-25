@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TERMINAL_LOG | STRATCOM_OS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "secondary-container": "#3a4859",
+              "outline-variant": "#424751",
+              "surface-container-lowest": "#0a0e16",
+              "surface-container-low": "#181c24",
+              "on-tertiary-fixed-variant": "#00504a",
+              "on-secondary-container": "#a8b6ca",
+              "inverse-primary": "#225eaa",
+              "on-surface-variant": "#c2c6d3",
+              "tertiary-container": "#31bbaf",
+              "on-secondary": "#243141",
+              "on-error-container": "#ffdad6",
+              "on-error": "#690005",
+              "surface-container-high": "#262a33",
+              "surface-container": "#1c2028",
+              "primary-fixed": "#d6e3ff",
+              "on-background": "#dfe2ee",
+              "primary-container": "#76a9fa",
+              "on-primary-fixed-variant": "#00468b",
+              "inverse-on-surface": "#2c3039",
+              "on-tertiary-container": "#004641",
+              "inverse-surface": "#dfe2ee",
+              "on-tertiary": "#003733",
+              "error-container": "#93000a",
+              "secondary-fixed-dim": "#bac8dc",
+              "surface-container-highest": "#31353e",
+              "secondary-fixed": "#d6e4f9",
+              "outline": "#8c919c",
+              "surface-bright": "#353942",
+              "tertiary": "#5adace",
+              "on-tertiary-fixed": "#00201d",
+              "background": "#0f131c",
+              "on-primary-fixed": "#001b3d",
+              "surface-dim": "#0f131c",
+              "on-primary-container": "#003c79",
+              "tertiary-fixed-dim": "#5adace",
+              "surface-tint": "#a9c7ff",
+              "primary": "#a9c7ff",
+              "on-secondary-fixed-variant": "#3a4859",
+              "surface-variant": "#31353e",
+              "surface": "#0f131c",
+              "on-surface": "#dfe2ee",
+              "tertiary-fixed": "#79f7ea",
+              "secondary": "#bac8dc",
+              "primary-fixed-dim": "#a9c7ff",
+              "on-primary": "#003062",
+              "on-secondary-fixed": "#0f1c2c",
+              "error": "#ffb4ab"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"],
+              "label": ["Space Grotesk"],
+              "mono": ["JetBrains Mono"]
+            },
+            borderRadius: {"DEFAULT": "0", "lg": "0", "xl": "0", "full": "0"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+            font-size: 20px;
+        }
+        .scanline {
+            background: linear-gradient(to bottom, transparent 50%, rgba(223, 226, 238, 0.02) 50%);
+            background-size: 100% 4px;
+        }
+        .primary-glow {
+            box-shadow: 0 0 12px rgba(169, 199, 255, 0.2);
+        }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #0f131c; }
+        ::-webkit-scrollbar-thumb { background: #424751; }
+        ::-webkit-scrollbar-thumb:hover { background: #76a9fa; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body overflow-hidden">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 right-0 h-16 bg-[#0f131c] flex justify-between items-center px-6 z-50">
+<div class="flex items-center gap-4">
+<span class="font-['Space_Grotesk'] font-bold text-[#76A9FA] tracking-widest uppercase">TACTICAL_MONOLITH_v1.0.4</span>
+<span class="text-xs font-mono text-outline opacity-50 px-3 py-1 bg-surface-container-low">[STATUS: NOMINAL]</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2 bg-surface-container px-4 py-2 border-b-2 border-primary-container">
+<span class="material-symbols-outlined text-primary text-sm">search</span>
+<input class="bg-transparent border-none outline-none text-xs font-mono text-primary placeholder-primary/40 w-48 focus:ring-0" placeholder="FILTER_LOGS..." type="text"/>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-[#424751] hover:bg-[#262a33] hover:text-[#76A9FA] transition-colors p-2">notifications</button>
+<button class="material-symbols-outlined text-[#424751] hover:bg-[#262a33] hover:text-[#76A9FA] transition-colors p-2">settings</button>
+<button class="material-symbols-outlined text-[#76A9FA] bg-[#1c2028] p-2">terminal</button>
+<div class="w-8 h-8 bg-surface-container-highest flex items-center justify-center border border-outline-variant">
+<img alt="USER_OPERATOR_01" class="w-full h-full object-cover" data-alt="User operator avatar icon small" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4RKr9HoVbutOpXxelmltSNNx8JfXHfQ5iITXS4kyFmtZmgmSkxBwrberRCEX555avGJjT6StPHkYn5PFwerD8wMjPZAwGytVA_6hKf0EsMQotin8kKMojLYD1oW5nPQs7K5CU52JNG6I_vx4jin5jW3szrcYfBheUcmVt1c9YvmamnAVzoikwKadx1AWmwGqatl8WN0W4Y5KxKmwma1BpZd5vZz1Ya6iGZVe33BLqwA3MDQnkJV27cMcub64-MYQmdACyr-F5go0"/>
+</div>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="flex flex-col h-screen fixed left-0 top-0 pt-20 w-64 bg-[#181c24] z-40 transition-all duration-150 ease-in-out">
+<div class="px-6 mb-8">
+<div class="flex items-center gap-2 mb-1">
+<span class="w-2 h-2 bg-tertiary"></span>
+<h2 class="text-[#76A9FA] font-bold font-['Space_Grotesk'] uppercase tracking-widest text-sm">STRATCOM_OS</h2>
+</div>
+<p class="font-mono text-[10px] text-outline">[40.7128° N]</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-6 py-3 text-[#dfe2ee] opacity-60 hover:bg-[#262a33] hover:opacity-100 font-['Space_Grotesk'] font-medium uppercase tracking-widest text-sm transition-all" href="#">
+<span class="material-symbols-outlined">rss_feed</span>
+<span>INTERCEPT_FEED</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-[#dfe2ee] opacity-60 hover:bg-[#262a33] hover:opacity-100 font-['Space_Grotesk'] font-medium uppercase tracking-widest text-sm transition-all" href="#">
+<span class="material-symbols-outlined">public</span>
+<span>GEOSPATIAL_MAP</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-[#dfe2ee] opacity-60 hover:bg-[#262a33] hover:opacity-100 font-['Space_Grotesk'] font-medium uppercase tracking-widest text-sm transition-all" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span>DATA_CLASSIFY</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-[#dfe2ee] opacity-60 hover:bg-[#262a33] hover:opacity-100 font-['Space_Grotesk'] font-medium uppercase tracking-widest text-sm transition-all" href="#">
+<span class="material-symbols-outlined">lan</span>
+<span>INFRASTRUCTURE</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-[#dfe2ee] opacity-60 hover:bg-[#262a33] hover:opacity-100 font-['Space_Grotesk'] font-medium uppercase tracking-widest text-sm transition-all" href="#">
+<span class="material-symbols-outlined">label_important</span>
+<span>LABELLING</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-[#dfe2ee] opacity-60 hover:bg-[#262a33] hover:opacity-100 font-['Space_Grotesk'] font-medium uppercase tracking-widest text-sm transition-all" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span>SIGNAL_ARCHIVE</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 bg-[#1c2028] text-[#76A9FA] border-l-4 border-[#76A9FA] shadow-[0_0_12px_rgba(118,169,250,0.3)] font-['Space_Grotesk'] font-medium uppercase tracking-widest text-sm transition-all" href="#">
+<span class="material-symbols-outlined">terminal</span>
+<span>TERMINAL_LOG</span>
+</a>
+</nav>
+<div class="mt-auto pb-6 space-y-1">
+<a class="flex items-center gap-3 px-6 py-3 text-[#dfe2ee] opacity-60 hover:bg-[#262a33] font-['Space_Grotesk'] font-medium uppercase tracking-widest text-sm transition-all" href="#">
+<span class="material-symbols-outlined">memory</span>
+<span>SYSTEM_LOGS</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-[#dfe2ee] opacity-60 hover:bg-[#262a33] font-['Space_Grotesk'] font-medium uppercase tracking-widest text-sm transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span>LOGOUT</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 pt-16 h-screen flex flex-col scanline">
+<!-- Service Filter Header -->
+<div class="h-14 bg-surface-container-low flex items-center px-8 gap-4 border-b border-outline-variant/10">
+<span class="text-[10px] font-mono text-outline uppercase tracking-tighter mr-4">Active_Nodes:</span>
+<button class="px-3 py-1 bg-primary text-on-primary text-[10px] font-mono flex items-center gap-2 primary-glow">
+                ALL_TRAFFIC <span class="text-[8px] opacity-70">(100%)</span>
+</button>
+<button class="px-3 py-1 bg-surface-container-high text-on-surface text-[10px] font-mono border border-outline-variant/30 hover:bg-surface-container-highest transition-colors">
+                SCRAPER_01 <span class="text-[8px] text-tertiary">UP</span>
+</button>
+<button class="px-3 py-1 bg-surface-container-high text-on-surface text-[10px] font-mono border border-outline-variant/30 hover:bg-surface-container-highest transition-colors">
+                CLASSIFIER_NODE <span class="text-[8px] text-tertiary">UP</span>
+</button>
+<button class="px-3 py-1 bg-surface-container-high text-on-surface text-[10px] font-mono border border-outline-variant/30 hover:bg-surface-container-highest transition-colors">
+                DB_MANAGER <span class="text-[8px] text-error">ERR</span>
+</button>
+<button class="px-3 py-1 bg-surface-container-high text-on-surface text-[10px] font-mono border border-outline-variant/30 hover:bg-surface-container-highest transition-colors">
+                SIGNAL_RELAY <span class="text-[8px] text-tertiary">UP</span>
+</button>
+</div>
+<div class="flex-1 flex overflow-hidden">
+<!-- Terminal Live Feed -->
+<section class="flex-1 bg-surface p-6 font-mono text-xs overflow-y-auto space-y-2 relative">
+<div class="absolute top-4 right-8 opacity-20 pointer-events-none select-none">
+<p class="text-[40px] font-bold leading-none tracking-tighter">LIVE_FEED</p>
+<p class="text-right">40.7128° N, 74.0060° W</p>
+</div>
+<!-- Log Entries -->
+<div class="flex gap-4 group">
+<span class="text-outline/40 select-none">14:02:11.001</span>
+<span class="text-primary font-bold">[SCRAPER_01]</span>
+<span class="text-on-surface/80">Connecting to global_intercept_v4...</span>
+</div>
+<div class="flex gap-4 group">
+<span class="text-outline/40 select-none">14:02:11.452</span>
+<span class="text-primary font-bold">[SCRAPER_01]</span>
+<span class="text-tertiary">SUCCESS: Protocol handshake finalized.</span>
+</div>
+<div class="flex gap-4 group">
+<span class="text-outline/40 select-none">14:02:12.110</span>
+<span class="text-on-surface-variant font-bold">[CLASSIFIER_NODE]</span>
+<span class="text-on-surface/80">Receiving packet block #7721 [4096kb]</span>
+</div>
+<div class="flex gap-4 group">
+<span class="text-outline/40 select-none">14:02:12.891</span>
+<span class="text-error font-bold">[DB_MANAGER]</span>
+<span class="text-error">CRITICAL: SQL_CONNECTION_TIMED_OUT on pool_alpha.</span>
+</div>
+<div class="flex gap-4 group">
+<span class="text-outline/40 select-none">14:02:13.004</span>
+<span class="text-on-surface-variant font-bold">[CLASSIFIER_NODE]</span>
+<span class="text-on-surface/80">Processing object: "ENCRYPTED_SIGNAL_04"</span>
+</div>
+<div class="flex gap-4 group bg-surface-container-low px-2 py-1 -mx-2 border-l-2 border-primary">
+<span class="text-primary select-none">14:02:13.455</span>
+<span class="text-primary font-bold">[SIGNAL_RELAY]</span>
+<span class="text-on-surface">BROADCAST: Sector 7 quiet. Awaiting further instruction.</span>
+</div>
+<div class="flex gap-4 group">
+<span class="text-outline/40 select-none">14:02:14.221</span>
+<span class="text-primary font-bold">[SCRAPER_01]</span>
+<span class="text-on-surface/80">Streaming raw data at 45.2MB/s...</span>
+</div>
+<div class="flex gap-4 group">
+<span class="text-outline/40 select-none">14:02:14.567</span>
+<span class="text-error font-bold">[DB_MANAGER]</span>
+<span class="text-error">RETRY: Attempting reconnection (2/5)...</span>
+</div>
+<div class="flex gap-4 group">
+<span class="text-outline/40 select-none">14:02:15.000</span>
+<span class="text-on-surface-variant font-bold">[CLASSIFIER_NODE]</span>
+<span class="text-on-surface/80">Analysis complete. Confidence interval: 0.992</span>
+</div>
+<div class="flex gap-4 group">
+<span class="text-outline/40 select-none">14:02:15.812</span>
+<span class="text-primary font-bold">[SCRAPER_01]</span>
+<span class="text-on-surface/80">Heartbeat signal sent to master_control.</span>
+</div>
+<!-- Continuous data flow simulation -->
+<div class="flex gap-4 group animate-pulse">
+<span class="text-outline/40 select-none">14:02:16.104</span>
+<span class="text-on-surface-variant font-bold">[SYSTEM]</span>
+<span class="text-tertiary">_</span>
+</div>
+</section>
+<!-- System Errors Panel -->
+<aside class="w-80 bg-surface-container-low flex flex-col border-l border-outline-variant/10">
+<div class="p-4 bg-surface-container flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 bg-error"></span>
+<h3 class="font-headline font-bold text-xs uppercase tracking-widest text-on-surface">SYSTEM_ERRORS</h3>
+</div>
+<span class="text-[10px] font-mono text-error bg-error/10 px-2">3_ACTIVE</span>
+</div>
+<div class="flex-1 overflow-y-auto p-4 space-y-4">
+<!-- Error Item -->
+<div class="p-4 bg-surface-container-highest border-l-4 border-error">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] font-mono text-error font-bold uppercase">Critical</span>
+<span class="text-[10px] font-mono text-outline opacity-50">14:02:12</span>
+</div>
+<p class="text-xs font-headline font-medium text-on-surface mb-1">SQL_POOL_EXHAUSTED</p>
+<p class="text-[10px] font-mono text-outline mb-3">Service: DB_MANAGER</p>
+<div class="flex gap-2">
+<button class="flex-1 py-1 text-[9px] font-mono bg-error text-on-error uppercase hover:opacity-90 transition-opacity">Reset_Service</button>
+<button class="px-2 py-1 text-[9px] font-mono border border-outline-variant/30 text-on-surface uppercase hover:bg-surface transition-colors">Logs</button>
+</div>
+</div>
+<!-- Error Item -->
+<div class="p-4 bg-surface-container border-l-4 border-primary">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] font-mono text-primary font-bold uppercase">Warning</span>
+<span class="text-[10px] font-mono text-outline opacity-50">13:58:04</span>
+</div>
+<p class="text-xs font-headline font-medium text-on-surface mb-1">LATENCY_THRESHOLD_MET</p>
+<p class="text-[10px] font-mono text-outline mb-3">Service: SCRAPER_01</p>
+<div class="flex gap-2">
+<button class="flex-1 py-1 text-[9px] font-mono border border-outline-variant/30 text-on-surface uppercase hover:bg-surface-container-highest transition-colors">Acknowledge</button>
+</div>
+</div>
+<!-- Error Item -->
+<div class="p-4 bg-surface-container-highest border-l-4 border-error">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] font-mono text-error font-bold uppercase">High</span>
+<span class="text-[10px] font-mono text-outline opacity-50">13:45:11</span>
+</div>
+<p class="text-xs font-headline font-medium text-on-surface mb-1">AUTH_FAILURE_EXTERNAL</p>
+<p class="text-[10px] font-mono text-outline mb-3">Service: SIGNAL_RELAY</p>
+<div class="flex gap-2">
+<button class="flex-1 py-1 text-[9px] font-mono bg-error text-on-error uppercase hover:opacity-90 transition-opacity">Lockout_IP</button>
+</div>
+</div>
+</div>
+<!-- Summary Footer -->
+<div class="p-6 bg-surface-container-lowest border-t border-outline-variant/20">
+<div class="grid grid-cols-2 gap-4">
+<div>
+<p class="text-[9px] font-mono text-outline uppercase mb-1">Uptime</p>
+<p class="text-sm font-mono text-tertiary">99.82%</p>
+</div>
+<div>
+<p class="text-[9px] font-mono text-outline uppercase mb-1">Load</p>
+<p class="text-sm font-mono text-primary">0.44</p>
+</div>
+</div>
+<div class="mt-6">
+<div class="h-1 bg-surface-container-high w-full relative overflow-hidden">
+<div class="absolute inset-y-0 left-0 bg-primary w-[44%]"></div>
+</div>
+<div class="flex justify-between mt-2">
+<span class="text-[8px] font-mono text-outline">CPU_UTILIZATION</span>
+<span class="text-[8px] font-mono text-primary">44%</span>
+</div>
+</div>
+</div>
+</aside>
+</div>
+<!-- CLI / Bottom Bar -->
+<div class="h-12 bg-[#0f131c] border-t border-outline-variant/30 flex items-center px-6">
+<span class="text-primary font-mono text-sm mr-2">&gt;</span>
+<input class="bg-transparent border-none outline-none flex-1 font-mono text-sm text-on-surface focus:ring-0 placeholder-outline/20" placeholder="EXECUTE_COMMAND_OR_QUERY..." type="text"/>
+<div class="flex items-center gap-4 text-[10px] font-mono text-outline select-none">
+<span>UTF-8</span>
+<span>LN 1042, COL 12</span>
+<div class="flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse"></span>
+<span class="text-tertiary">ONLINE</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Crosshair Accents -->
+<div class="fixed top-16 left-64 w-4 h-4 border-t border-l border-outline-variant pointer-events-none z-50"></div>
+<div class="fixed top-16 right-0 w-4 h-4 border-t border-r border-outline-variant pointer-events-none z-50"></div>
+<div class="fixed bottom-12 left-64 w-4 h-4 border-b border-l border-outline-variant pointer-events-none z-50"></div>
+<div class="fixed bottom-12 right-0 w-4 h-4 border-b border-r border-outline-variant pointer-events-none z-50"></div>
+</body></html>

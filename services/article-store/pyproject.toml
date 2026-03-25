@@ -1,0 +1,27 @@
+[project]
+name = "article-store"
+version = "0.1.0"
+description = "Article storage service for Alexandria — consumes scraped articles from RabbitMQ and writes them to PostgreSQL"
+requires-python = ">=3.13"
+dependencies = ["pika>=1.3", "psycopg[binary]>=3.1"]
+
+[dependency-groups]
+dev = ["pytest>=8.0", "ruff>=0.11"]
+
+[build-system]
+requires = ["uv_build>=0.10.11,<0.11.0"]
+build-backend = "uv_build"
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+
+[tool.ruff.lint.per-file-ignores]
+# SQL seed data uses tabular alignment that exceeds line-length.
+"src/article_store/schema.py" = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

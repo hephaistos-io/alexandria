@@ -1,0 +1,40 @@
+[project]
+name = "relation-extractor"
+version = "0.1.0"
+description = "Zero-shot relation extraction service for Alexandria — extracts entity-pair relations using DeBERTa NLI and writes them to Neo4j"
+requires-python = ">=3.13"
+dependencies = [
+    "pika>=1.3",
+    "psycopg[binary]>=3.1",
+    "transformers>=4.40",
+    # torch CPU-only build — much smaller than the GPU variant (no CUDA drivers needed)
+    "torch>=2.2",
+    "neo4j>=5.0",
+]
+
+[dependency-groups]
+dev = ["pytest>=8.0", "ruff>=0.11"]
+
+[build-system]
+requires = ["uv_build>=0.10.11,<0.11.0"]
+build-backend = "uv_build"
+
+[tool.uv.sources]
+# Install the CPU-only PyTorch wheel from the official index.
+# Without this, uv would install the CUDA-enabled wheel, which is ~2GB.
+torch = { index = "pytorch-cpu" }
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

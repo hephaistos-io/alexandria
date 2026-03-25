@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>INTELLIGENCE_OS - INFRASTRUCTURE</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-primary": "#003062",
+              "inverse-on-surface": "#2c3039",
+              "secondary-fixed": "#d6e4f9",
+              "primary-fixed-dim": "#a9c7ff",
+              "surface-bright": "#353942",
+              "background": "#0f131c",
+              "primary-container": "#76a9fa",
+              "on-error": "#690005",
+              "error-container": "#93000a",
+              "on-surface-variant": "#c2c6d3",
+              "outline": "#8c919c",
+              "on-secondary-container": "#a8b6ca",
+              "surface-container": "#1c2028",
+              "surface": "#0f131c",
+              "tertiary": "#5adace",
+              "surface-container-highest": "#31353e",
+              "on-secondary": "#243141",
+              "tertiary-container": "#31bbaf",
+              "surface-variant": "#31353e",
+              "on-background": "#dfe2ee",
+              "inverse-surface": "#dfe2ee",
+              "primary-fixed": "#d6e3ff",
+              "on-tertiary-container": "#004641",
+              "on-error-container": "#ffdad6",
+              "surface-tint": "#a9c7ff",
+              "tertiary-fixed-dim": "#5adace",
+              "surface-dim": "#0f131c",
+              "surface-container-lowest": "#0a0e16",
+              "error": "#ffb4ab",
+              "secondary-container": "#3a4859",
+              "on-secondary-fixed-variant": "#3a4859",
+              "surface-container-low": "#181c24",
+              "on-tertiary-fixed-variant": "#00504a",
+              "on-tertiary": "#003733",
+              "on-primary-fixed-variant": "#00468b",
+              "on-primary-fixed": "#001b3d",
+              "secondary-fixed-dim": "#bac8dc",
+              "on-surface": "#dfe2ee",
+              "tertiary-fixed": "#79f7ea",
+              "inverse-primary": "#225eaa",
+              "on-tertiary-fixed": "#00201d",
+              "surface-container-high": "#262a33",
+              "on-secondary-fixed": "#0f1c2c",
+              "secondary": "#bac8dc",
+              "outline-variant": "#424751",
+              "primary": "#a9c7ff",
+              "on-primary-container": "#003c79"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"],
+              "label": ["Space Grotesk"],
+              "mono": ["JetBrains Mono"]
+            },
+            borderRadius: {"DEFAULT": "0px", "lg": "0px", "xl": "0px", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .scanline {
+            background: linear-gradient(to bottom, transparent 50%, rgba(223, 226, 238, 0.02) 50%);
+            background-size: 100% 4px;
+        }
+        .grid-bg {
+            background-image: radial-gradient(circle, #424751 1px, transparent 1px);
+            background-size: 24px 24px;
+            opacity: 0.1;
+        }
+        .glow-primary {
+            box-shadow: 0 0 12px 2px rgba(169, 199, 255, 0.3);
+        }
+        .terminal-scroll::-webkit-scrollbar { width: 4px; }
+        .terminal-scroll::-webkit-scrollbar-track { background: transparent; }
+        .terminal-scroll::-webkit-scrollbar-thumb { background: #424751; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary selection:text-on-primary">
+<div class="flex h-screen overflow-hidden">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col h-full py-8 bg-[#0f131c] dark:bg-[#181c24] border-r border-[#424751]/15 w-64 shrink-0">
+<div class="px-6 mb-8">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 bg-tertiary glow-primary"></div>
+<div class="flex flex-col">
+<span class="font-mono text-xs uppercase text-primary font-bold">NODE_01_DASHBOARD</span>
+<span class="font-mono text-[10px] text-outline">[40.7128° N, 74.0060° W]</span>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-6 py-3 text-xs font-mono uppercase text-[#dfe2ee]/40 hover:text-[#76A9FA]/80 hover:bg-[#1c2028] hover:translate-x-1 transition-all" href="#">
+<span class="material-symbols-outlined text-sm">sensors</span>
+                    INTERCEPT_FEED
+                </a>
+<a class="flex items-center gap-3 px-6 py-3 text-xs font-mono uppercase text-[#dfe2ee]/40 hover:text-[#76A9FA]/80 hover:bg-[#1c2028] hover:translate-x-1 transition-all" href="#">
+<span class="material-symbols-outlined text-sm">public</span>
+                    GEOSPATIAL_MAP
+                </a>
+<a class="flex items-center gap-3 px-6 py-3 text-xs font-mono uppercase text-[#dfe2ee]/40 hover:text-[#76A9FA]/80 hover:bg-[#1c2028] hover:translate-x-1 transition-all" href="#">
+<span class="material-symbols-outlined text-sm">category</span>
+                    DATA_CLASSIFY
+                </a>
+<!-- Active Tab: INFRASTRUCTURE -->
+<a class="flex items-center gap-3 px-6 py-3 text-xs font-mono uppercase bg-[#262a33] text-[#76A9FA] border-l-4 border-[#76A9FA]" href="#">
+<span class="material-symbols-outlined text-sm">router</span>
+                    INFRASTRUCTURE
+                </a>
+<a class="flex items-center gap-3 px-6 py-3 text-xs font-mono uppercase text-[#dfe2ee]/40 hover:text-[#76A9FA]/80 hover:bg-[#1c2028] hover:translate-x-1 transition-all" href="#">
+<span class="material-symbols-outlined text-sm">inventory_2</span>
+                    SIGNAL_ARCHIVE
+                </a>
+<a class="flex items-center gap-3 px-6 py-3 text-xs font-mono uppercase text-[#dfe2ee]/40 hover:text-[#76A9FA]/80 hover:bg-[#1c2028] hover:translate-x-1 transition-all" href="#">
+<span class="material-symbols-outlined text-sm">terminal</span>
+                    TERMINAL_LOG
+                </a>
+</nav>
+<div class="px-6 mt-auto">
+<button class="w-full py-3 mb-6 bg-primary text-on-primary font-mono text-xs uppercase tracking-tighter active:scale-95 transition-transform">
+                    EXECUTE_SCAN
+                </button>
+<div class="space-y-2 border-t border-outline-variant/15 pt-4">
+<a class="flex items-center gap-3 text-xs font-mono uppercase text-outline hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">power_settings_new</span>
+                        LOG_OFF
+                    </a>
+<a class="flex items-center gap-3 text-xs font-mono uppercase text-outline hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">restart_alt</span>
+                        REBOOT_SYSTEM
+                    </a>
+</div>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="flex-1 flex flex-col relative overflow-hidden bg-surface">
+<!-- Scanline Texture Overlay -->
+<div class="absolute inset-0 pointer-events-none scanline opacity-5 z-10"></div>
+<div class="absolute inset-0 pointer-events-none grid-bg z-0"></div>
+<!-- TopAppBar -->
+<header class="flex justify-between items-center w-full px-6 py-3 h-16 bg-[#0f131c] dark:bg-[#0f131c] border-b border-[#424751]/15 z-20">
+<div class="flex items-center gap-8">
+<h1 class="text-2xl font-black text-[#76A9FA] tracking-tighter font-headline">INTELLIGENCE_OS</h1>
+<div class="hidden lg:flex items-center gap-6">
+<div class="flex items-center gap-2 px-3 py-1 bg-surface-container-high/50 border border-outline-variant/10">
+<span class="text-[10px] font-mono text-outline uppercase tracking-widest">STATUS:</span>
+<span class="text-[10px] font-mono text-tertiary font-bold tracking-widest">ACTIVE_INGESTION</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<button class="p-2 text-outline hover:text-primary transition-colors cursor-crosshair">
+<span class="material-symbols-outlined">sensors</span>
+</button>
+<button class="p-2 text-outline hover:text-primary transition-colors cursor-crosshair">
+<span class="material-symbols-outlined">monitoring</span>
+</button>
+<button class="p-2 text-outline hover:text-primary transition-colors cursor-crosshair">
+<span class="material-symbols-outlined">settings_input_antenna</span>
+</button>
+</div>
+<div class="w-8 h-8 bg-surface-container-highest flex items-center justify-center border border-outline-variant/20">
+<img alt="User Intelligence Profile" class="w-6 h-6 grayscale opacity-80" data-alt="User profile avatar silhouette" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBh9m44WQqXrSRMT6805ntjraPDQb5ysEZBa2wi5GdJxLvLPbUFQ65QRSGUZ_dd7rW_oWW5-E_Gk8IhjLSAL1XBEbWDzPdadeLw0eh8qEEunIwaIG6MSjeyY7lphkH9cvwVl5lTC-wCY7AeHVKxN0ymX7m3dCnMyDrU3c7hgkr3w4WRzE6ETPC2EGjFEVaRwR29iBEang9EesP4O5OOxQAWQ6fBq2rMJUNop0b5HfqLdZR45T9Mov5fXXrXo8PI0qWDRcrqY5dYPuY"/>
+</div>
+</div>
+</header>
+<!-- Content Area -->
+<div class="flex-1 overflow-y-auto p-6 relative z-20">
+<!-- Page Title -->
+<div class="mb-8 flex justify-between items-end border-b border-outline-variant/10 pb-4">
+<div>
+<h2 class="text-4xl font-black tracking-tighter font-headline uppercase text-on-surface">Infrastructure Monitor</h2>
+<p class="font-mono text-xs text-outline mt-1 uppercase tracking-widest">SYSTEM_CORE_LOG_09 // PIPELINE_VISUALIZATION_V2</p>
+</div>
+<div class="flex gap-4">
+<div class="text-right">
+<div class="text-[10px] font-mono text-outline">UPTIME</div>
+<div class="text-lg font-mono text-tertiary">99.998%</div>
+</div>
+<div class="text-right border-l border-outline-variant/20 pl-4">
+<div class="text-[10px] font-mono text-outline">NODES</div>
+<div class="text-lg font-mono text-primary">1,204</div>
+</div>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-12 gap-6">
+<!-- System Architecture & Data Flow Visualization (MAIN) -->
+<div class="col-span-12 lg:col-span-9 bg-surface-container-low relative p-1">
+<div class="bg-surface-container-lowest h-full w-full min-h-[500px] p-8 flex flex-col relative overflow-hidden">
+<!-- Background Graph Accents -->
+<div class="absolute top-4 left-4 font-mono text-[10px] text-outline/30 uppercase">[ FLOW_SCHEMATIC_V2.1 ]</div>
+<div class="absolute bottom-4 right-4 font-mono text-[10px] text-outline/30">SCALE: 1:1 NODE_RESOLUTION</div>
+<!-- Flow Architecture Container -->
+<div class="flex flex-1 items-center justify-between relative gap-4">
+<!-- 1. Input Observers -->
+<div class="flex flex-col gap-6 z-20">
+<div class="font-mono text-[10px] text-outline mb-2 uppercase tracking-tighter border-b border-outline-variant/20 pb-1">Input Observers</div>
+<div class="p-3 bg-surface-container border-l-2 border-primary-container/40 flex items-center justify-between w-40">
+<span class="font-mono text-xs text-primary-container">REUTERS</span>
+<span class="w-1.5 h-1.5 bg-tertiary animate-pulse"></span>
+</div>
+<div class="p-3 bg-surface-container border-l-2 border-primary-container/40 flex items-center justify-between w-40">
+<span class="font-mono text-xs text-primary-container">BBC</span>
+<span class="w-1.5 h-1.5 bg-tertiary"></span>
+</div>
+<div class="p-3 bg-surface-container border-l-2 border-primary-container/40 flex items-center justify-between w-40">
+<span class="font-mono text-xs text-primary-container">SWISSINFO</span>
+<span class="w-1.5 h-1.5 bg-tertiary animate-pulse"></span>
+</div>
+</div>
+<!-- Connection Lines: Step 1 to 2 -->
+<svg class="absolute left-40 top-0 h-full w-24 pointer-events-none opacity-40">
+<path d="M 0 92 L 60 92 L 96 240" fill="none" stroke="#76a9fa" stroke-width="1"></path>
+<path d="M 0 164 L 96 240" fill="none" stroke="#76a9fa" stroke-width="1"></path>
+<path d="M 0 236 L 96 240" fill="none" stroke="#76a9fa" stroke-width="1"></path>
+</svg>
+<!-- 2. Primary Task Queue -->
+<div class="z-20">
+<div class="p-6 bg-surface-container-high border-2 border-primary shadow-[0_0_15px_rgba(169,199,255,0.1)] flex flex-col items-center gap-2">
+<span class="material-symbols-outlined text-primary">dynamic_feed</span>
+<span class="font-mono text-xs font-bold text-on-surface">INGESTION_QUEUE</span>
+<span class="font-mono text-[9px] text-outline">BUFFER: 14.2 GB/s</span>
+</div>
+</div>
+<!-- Connection Lines: Step 2 to 3 -->
+<svg class="absolute left-[38%] top-0 h-full w-32 pointer-events-none opacity-40">
+<path d="M 0 240 L 128 100" fill="none" stroke="#76a9fa" stroke-dasharray="4 2" stroke-width="1"></path>
+<path d="M 0 240 L 128 170" fill="none" stroke="#76a9fa" stroke-dasharray="4 2" stroke-width="1"></path>
+<path d="M 0 240 L 128 250" fill="none" stroke="#76a9fa" stroke-dasharray="4 2" stroke-width="1"></path>
+<path d="M 0 240 L 128 320" fill="none" stroke="#76a9fa" stroke-dasharray="4 2" stroke-width="1"></path>
+</svg>
+<!-- 3. Distributed Scrapers -->
+<div class="flex flex-col gap-4 z-20">
+<div class="font-mono text-[10px] text-outline mb-1 uppercase tracking-tighter text-right border-b border-outline-variant/20 pb-1">Scraper Cluster</div>
+<div class="group cursor-crosshair px-3 py-2 bg-surface-container border border-outline-variant/30 hover:bg-surface-container-high hover:border-primary transition-colors flex items-center gap-3 w-44">
+<span class="material-symbols-outlined text-[16px] text-outline group-hover:text-primary">language</span>
+<span class="font-mono text-[10px] text-on-surface">GLOBAL_NEWS</span>
+</div>
+<div class="group cursor-crosshair px-3 py-2 bg-surface-container border border-outline-variant/30 hover:bg-surface-container-high hover:border-primary transition-colors flex items-center gap-3 w-44">
+<span class="material-symbols-outlined text-[16px] text-outline group-hover:text-primary">vpn_lock</span>
+<span class="font-mono text-[10px] text-on-surface">DARKNET</span>
+</div>
+<div class="group cursor-crosshair px-3 py-2 bg-surface-container border border-outline-variant/30 hover:bg-surface-container-high hover:border-primary transition-colors flex items-center gap-3 w-44">
+<span class="material-symbols-outlined text-[16px] text-outline group-hover:text-primary">share</span>
+<span class="font-mono text-[10px] text-on-surface">SOCIAL</span>
+</div>
+<div class="group cursor-crosshair px-3 py-2 bg-surface-container border border-outline-variant/30 hover:bg-surface-container-high hover:border-primary transition-colors flex items-center gap-3 w-44">
+<span class="material-symbols-outlined text-[16px] text-outline group-hover:text-primary">satellite_alt</span>
+<span class="font-mono text-[10px] text-on-surface">SAT_IMAGERY</span>
+</div>
+</div>
+<!-- Connection Lines: Step 3 to 4 -->
+<svg class="absolute right-[22%] top-0 h-full w-24 pointer-events-none opacity-40">
+<path d="M 0 100 L 96 210" fill="none" stroke="#76a9fa" stroke-width="1"></path>
+<path d="M 0 170 L 96 210" fill="none" stroke="#76a9fa" stroke-width="1"></path>
+<path d="M 0 250 L 96 210" fill="none" stroke="#76a9fa" stroke-width="1"></path>
+<path d="M 0 320 L 96 210" fill="none" stroke="#76a9fa" stroke-width="1"></path>
+</svg>
+<!-- 4. Processing Queue & Split -->
+<div class="flex flex-col items-end gap-12 z-20">
+<!-- Central Processing Hub -->
+<div class="p-4 bg-surface-container border-2 border-tertiary-container/30 flex flex-col items-center">
+<span class="font-mono text-[10px] font-bold text-tertiary">PROCESSING_QUEUE</span>
+<div class="h-1 w-full bg-outline-variant/20 mt-2 overflow-hidden">
+<div class="h-full bg-tertiary w-2/3"></div>
+</div>
+</div>
+<!-- Split Outputs -->
+<div class="flex flex-col gap-6 items-end">
+<div class="relative group">
+<div class="absolute -left-8 top-1/2 -translate-y-1/2 w-8 h-px bg-outline-variant/40"></div>
+<div class="p-3 bg-surface-container-high border-l-4 border-error/50 flex flex-col w-48">
+<span class="font-mono text-[10px] text-on-surface font-bold uppercase">TRAINING_STORAGE</span>
+<span class="font-mono text-[9px] text-outline">DEST: [STORAGE_CLUSTER_DELTA]</span>
+</div>
+</div>
+<div class="relative group">
+<div class="absolute -left-8 top-1/2 -translate-y-1/2 w-8 h-px bg-outline-variant/40"></div>
+<div class="p-3 bg-primary/10 border-l-4 border-primary flex flex-col w-48 glow-primary">
+<span class="font-mono text-[10px] text-primary font-bold uppercase">REALTIME_CLASSIFICATION</span>
+<span class="font-mono text-[9px] text-outline">STATUS: STREAMING_ACTIVE</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Legend / Accents -->
+<div class="flex justify-between items-center mt-6 pt-4 border-t border-outline-variant/10">
+<div class="flex gap-6">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 bg-primary"></span>
+<span class="font-mono text-[9px] text-outline uppercase">Active Signal</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 border border-primary/40"></span>
+<span class="font-mono text-[9px] text-outline uppercase">Pending Load</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 bg-error"></span>
+<span class="font-mono text-[9px] text-outline uppercase">Storage Buffer</span>
+</div>
+</div>
+<div class="font-mono text-[10px] text-primary-container font-bold tracking-[0.2em]">
+                                    SECURE_PROTOCOL_X86
+                                </div>
+</div>
+</div>
+</div>
+<!-- Side Metrics / Classification Stream -->
+<div class="col-span-12 lg:col-span-3 flex flex-col gap-6">
+<!-- Mini Radar/Map -->
+<div class="bg-surface-container p-4 border border-outline-variant/15 aspect-square relative overflow-hidden group">
+<img alt="Infrastructure geospatial location map" class="w-full h-full object-cover opacity-20 grayscale" data-location="New York" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCozuh7ISi-uEAbS1-pEO1HyXQqhdKHGEtmSLIuBL6pdz8eLImGDzWnDQspweMAxBWvnl1Heu7HaJcMhoEi-06NkD_7I1bqZdBTGEndSqsbMIUzwjQ2gJOKPxgdAnXNcbP88FKf-QrSmme0J41B4rdWxSQc6HZuGHcMjkPUHsyk4yJGa7o5KRg5L3EcsgtVIjroPze6c46xaidYbT8fC9caHOxbup9p0nYP_P_oL3qu0wXgReaIPSlTQDSxEBzS6qfFrodty-_7uDE"/>
+<div class="absolute inset-0 grid-bg opacity-30"></div>
+<div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+<div class="w-24 h-24 border border-primary/20 rounded-full flex items-center justify-center">
+<div class="w-16 h-16 border border-primary/40 rounded-full flex items-center justify-center animate-ping"></div>
+<div class="w-1 h-1 bg-primary"></div>
+</div>
+</div>
+<div class="absolute top-2 left-2 font-mono text-[10px] text-outline bg-surface/80 px-1">LAT: 40.7128</div>
+<div class="absolute bottom-2 right-2 font-mono text-[10px] text-outline bg-surface/80 px-1">LON: -74.0060</div>
+</div>
+<!-- System Logs Terminal -->
+<div class="flex-1 bg-surface-container-low border border-outline-variant/15 flex flex-col">
+<div class="bg-surface-container-highest px-4 py-2 flex justify-between items-center">
+<span class="font-mono text-[10px] font-bold text-on-surface">TERMINAL_OUTPUT</span>
+<div class="flex gap-1">
+<span class="w-1.5 h-1.5 bg-error/50"></span>
+<span class="w-1.5 h-1.5 bg-tertiary"></span>
+</div>
+</div>
+<div class="p-4 font-mono text-[11px] leading-relaxed text-outline terminal-scroll overflow-y-auto max-h-[300px]">
+<p class="text-tertiary">[SUCCESS] INGESTION_QUEUE synchronized with NODE_01</p>
+<p>[INFO] Scraping GLOBAL_NEWS... 240 new entries</p>
+<p>[INFO] Scraping SOCIAL... latency 12ms</p>
+<p class="text-primary-container">[STREAM] REALTIME_CLASSIFICATION: Sentiment detected: 0.82</p>
+<p>[INFO] Processing SAT_IMAGERY_XRAY_01... Done</p>
+<p class="text-error/80">[ALERT] TRAINING_STORAGE buffer at 78% capacity</p>
+<p>[INFO] Refreshing SWISSINFO node certificates...</p>
+<p>[INFO] Reuters API polling: 200 OK</p>
+<p class="animate-pulse">_</p>
+</div>
+</div>
+</div>
+<!-- Bottom Stats Row -->
+<div class="col-span-12 grid grid-cols-1 md:grid-cols-4 gap-6">
+<div class="bg-surface-container-low p-4 border border-outline-variant/10">
+<div class="text-[10px] font-mono text-outline uppercase tracking-widest mb-2">Network Latency</div>
+<div class="flex items-end gap-2">
+<span class="text-2xl font-mono text-primary font-bold">14ms</span>
+<span class="text-[10px] font-mono text-tertiary mb-1">+0.2ms</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-4 border border-outline-variant/10">
+<div class="text-[10px] font-mono text-outline uppercase tracking-widest mb-2">Throughput</div>
+<div class="flex items-end gap-2">
+<span class="text-2xl font-mono text-primary font-bold">1.2 TB/H</span>
+<span class="text-[10px] font-mono text-tertiary mb-1">Peak</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-4 border border-outline-variant/10">
+<div class="text-[10px] font-mono text-outline uppercase tracking-widest mb-2">Scraper Health</div>
+<div class="flex items-end gap-2">
+<span class="text-2xl font-mono text-primary font-bold">100%</span>
+<span class="text-[10px] font-mono text-tertiary mb-1">Optimal</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-4 border border-outline-variant/10">
+<div class="text-[10px] font-mono text-outline uppercase tracking-widest mb-2">Thread Count</div>
+<div class="flex items-end gap-2">
+<span class="text-2xl font-mono text-primary font-bold">4,096</span>
+<span class="text-[10px] font-mono text-outline mb-1">Active</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Mobile Navigation Shell -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-[#0f131c] border-t border-[#424751]/15 flex items-center justify-around z-50">
+<button class="flex flex-col items-center gap-1 text-[#dfe2ee]/60">
+<span class="material-symbols-outlined">sensors</span>
+<span class="text-[8px] font-mono">FEED</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-[#dfe2ee]/60">
+<span class="material-symbols-outlined">public</span>
+<span class="text-[8px] font-mono">MAP</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined">router</span>
+<span class="text-[8px] font-mono">INFRA</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-[#dfe2ee]/60">
+<span class="material-symbols-outlined">terminal</span>
+<span class="text-[8px] font-mono">LOGS</span>
+</button>
+</nav>
+</body></html>

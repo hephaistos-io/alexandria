@@ -1,0 +1,405 @@
+@import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+@import "@xyflow/react/dist/style.css";
+
+@theme {
+  /* === Surface Hierarchy === */
+  --color-surface: #0f131c;
+  --color-surface-dim: #0f131c;
+  --color-surface-bright: #353942;
+  --color-surface-container-lowest: #0a0e16;
+  --color-surface-container-low: #181c24;
+  --color-surface-container: #1c2028;
+  --color-surface-container-high: #262a33;
+  --color-surface-container-highest: #31353e;
+  --color-surface-variant: #31353e;
+  --color-surface-tint: #a9c7ff;
+
+  /* === Primary === */
+  --color-primary: #a9c7ff;
+  --color-primary-container: #76a9fa;
+  --color-primary-fixed: #d6e3ff;
+  --color-primary-fixed-dim: #a9c7ff;
+  --color-on-primary: #003062;
+  --color-on-primary-container: #003c79;
+  --color-on-primary-fixed: #001b3d;
+  --color-on-primary-fixed-variant: #00468b;
+  --color-inverse-primary: #225eaa;
+
+  /* === Secondary === */
+  --color-secondary: #bac8dc;
+  --color-secondary-container: #3a4859;
+  --color-secondary-fixed: #d6e4f9;
+  --color-secondary-fixed-dim: #bac8dc;
+  --color-on-secondary: #243141;
+  --color-on-secondary-container: #a8b6ca;
+  --color-on-secondary-fixed: #0f1c2c;
+  --color-on-secondary-fixed-variant: #3a4859;
+
+  /* === Tertiary (Cyan-Green Accents) === */
+  --color-tertiary: #5adace;
+  --color-tertiary-container: #31bbaf;
+  --color-tertiary-fixed: #79f7ea;
+  --color-tertiary-fixed-dim: #5adace;
+  --color-on-tertiary: #003733;
+  --color-on-tertiary-container: #004641;
+  --color-on-tertiary-fixed: #00201d;
+  --color-on-tertiary-fixed-variant: #00504a;
+
+  /* === Error === */
+  --color-error: #ffb4ab;
+  --color-error-container: #93000a;
+  --color-on-error: #690005;
+  --color-on-error-container: #ffdad6;
+
+  /* === Neutral / Text === */
+  --color-background: #0f131c;
+  --color-on-background: #dfe2ee;
+  --color-on-surface: #dfe2ee;
+  --color-on-surface-variant: #c2c6d3;
+  --color-outline: #8c919c;
+  --color-outline-variant: #424751;
+  --color-inverse-surface: #dfe2ee;
+  --color-inverse-on-surface: #2c3039;
+
+  /* === Typography === */
+  --font-headline: "Space Grotesk", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-label: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  /* === Zero border radius everywhere === */
+  --radius-*: initial;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
+  --radius-3xl: 0px;
+  --radius-full: 9999px;
+}
+
+/* === Global base === */
+@layer base {
+  body {
+    font-family: var(--font-body);
+    background-color: var(--color-background);
+    color: var(--color-on-surface);
+    overflow: hidden;
+    margin: 0;
+  }
+
+  .material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 300, "GRAD" 0, "opsz" 24;
+  }
+
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-surface);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-outline-variant);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary-container);
+  }
+}
+
+/* === Custom utilities === */
+@layer utilities {
+  .scanline-overlay {
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(223, 226, 238, 0.02) 0px,
+      rgba(223, 226, 238, 0.02) 1px,
+      transparent 1px,
+      transparent 2px
+    );
+    pointer-events: none;
+  }
+
+  .glow-primary {
+    box-shadow: 0 0 12px 2px rgba(169, 199, 255, 0.3);
+  }
+
+  .ghost-border {
+    border: 1px solid rgba(66, 71, 81, 0.15);
+  }
+
+  .grid-overlay {
+    background-image:
+      linear-gradient(rgba(118, 169, 250, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(118, 169, 250, 0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+}
+
+/* === Keyframe animations === */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.33);
+    opacity: 1;
+  }
+  80%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes pulse-dot {
+  0% {
+    transform: scale(0.8);
+  }
+  50% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(0.8);
+  }
+}
+
+/* === Leaflet overrides — strip all default chrome so the map reads as a
+   dark tactical surface rather than a consumer web map widget === */
+
+/* Remove the default Leaflet attribution box and zoom controls background */
+.leaflet-container {
+  background: var(--color-surface);
+  font-family: var(--font-mono);
+}
+
+/* Hide attribution — we don't need it cluttering the UI */
+.leaflet-control-attribution {
+  display: none;
+}
+
+/* Zoom control — restyle to match the design system */
+.leaflet-control-zoom {
+  border: none !important;
+}
+
+.leaflet-control-zoom a {
+  background: var(--color-surface-container-high) !important;
+  color: var(--color-outline) !important;
+  border: 1px solid var(--color-outline-variant) !important;
+  border-radius: 0 !important;
+  width: 24px !important;
+  height: 24px !important;
+  line-height: 24px !important;
+  font-size: 14px !important;
+  transition: color 150ms ease, background 150ms ease;
+}
+
+.leaflet-control-zoom a:hover {
+  background: var(--color-surface-container-highest) !important;
+  color: var(--color-primary) !important;
+}
+
+/* === Custom pulsing anchor marker === */
+
+.geo-anchor-marker {
+  /* Leaflet positions the icon by its top-left corner — we use negative
+     margins on the inner elements to visually center the dot on the coordinate */
+  position: relative;
+  width: 0;
+  height: 0;
+  overflow: visible;
+}
+
+.geo-anchor-dot {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 9999px;
+  background: var(--color-primary);
+  box-shadow: 0 0 12px 2px rgba(169, 199, 255, 0.5);
+  transform: translate(-50%, -50%);
+  animation: pulse-dot 2s ease-in-out infinite;
+  z-index: 2;
+}
+
+.geo-anchor-ring {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-radius: 9999px;
+  background: var(--color-primary);
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.33);
+  animation: pulse-ring 1.25s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+  z-index: 1;
+}
+
+.geo-anchor-label {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: rgba(169, 199, 255, 0.6);
+  white-space: nowrap;
+  letter-spacing: 0.05em;
+  pointer-events: none;
+}
+
+/* === Marker cluster badges === */
+
+/* Override the library's default rounded-white-circle style.
+   We want a sharp-edged dark badge with a subtle glow matching
+   the individual anchor markers. */
+.geo-cluster-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--color-surface-container-high);
+  border: 1px solid var(--color-outline-variant);
+  box-shadow: 0 0 14px 2px rgba(169, 199, 255, 0.25);
+}
+
+.geo-cluster-count {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-tertiary);
+  letter-spacing: 0.02em;
+}
+
+/* Hide the default MarkerCluster.Default.css styles that add
+   circular coloured backgrounds — we don't import that file,
+   but this guards against leakage from bundlers. */
+.marker-cluster-small,
+.marker-cluster-medium,
+.marker-cluster-large {
+  background: transparent !important;
+}
+.marker-cluster-small div,
+.marker-cluster-medium div,
+.marker-cluster-large div {
+  background: transparent !important;
+}
+
+/* === Leaflet popup — glassmorphism card === */
+
+/* Strip the default white popup bubble entirely */
+.leaflet-popup-content-wrapper {
+  background: rgba(38, 42, 51, 0.92) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(66, 71, 81, 0.4) !important;
+  border-radius: 0 !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6) !important;
+  padding: 0 !important;
+}
+
+.leaflet-popup-content {
+  margin: 0 !important;
+  width: auto !important;
+}
+
+/* Hide the default popup tip/arrow */
+.leaflet-popup-tip-container {
+  display: none !important;
+}
+
+/* Close button */
+.leaflet-popup-close-button {
+  color: var(--color-outline) !important;
+  font-size: 16px !important;
+  padding: 4px 8px !important;
+  top: 4px !important;
+  right: 4px !important;
+}
+
+.leaflet-popup-close-button:hover {
+  color: var(--color-primary) !important;
+  background: none !important;
+}
+
+/* === React Flow dark theme overrides === */
+
+/* Strip the default light background the library injects */
+.react-flow {
+  background: transparent;
+}
+
+/* Hide the "Powered by React Flow" attribution badge */
+.react-flow__attribution {
+  display: none !important;
+}
+
+/* Node wrapper — remove default white background and border-radius */
+.react-flow__node {
+  border-radius: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  font-family: var(--font-mono);
+}
+
+/* Edge paths */
+.react-flow__edge-path {
+  stroke-width: 1;
+}
+
+/* Selection box */
+.react-flow__selection {
+  border: 1px solid var(--color-primary-container);
+  background: rgba(169, 199, 255, 0.04);
+}
+
+/* Controls panel — restyle to match the design system */
+.react-flow__controls {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.react-flow__controls-button {
+  background: var(--color-surface-container-high) !important;
+  border: 1px solid var(--color-outline-variant) !important;
+  border-radius: 0 !important;
+  color: var(--color-outline) !important;
+  fill: var(--color-outline) !important;
+  width: 24px !important;
+  height: 24px !important;
+  transition: color 150ms ease, background 150ms ease;
+}
+
+.react-flow__controls-button:hover {
+  background: var(--color-surface-container-highest) !important;
+  color: var(--color-primary) !important;
+  fill: var(--color-primary) !important;
+}
+
+/* Handle dots — hide the default ring */
+.react-flow__handle {
+  border-radius: 0 !important;
+}
+
+/* Node interaction — hover glow + selection ring */
+.react-flow__node > * {
+  transition: box-shadow 150ms ease;
+}
+
+.react-flow__node:hover > * {
+  box-shadow: 0 0 0 1px var(--color-primary-container), 0 0 10px 2px rgba(118, 169, 250, 0.2);
+}
+
+.react-flow__node.selected > * {
+  box-shadow: 0 0 0 1px var(--color-primary-container), 0 0 14px 3px rgba(118, 169, 250, 0.3);
+}

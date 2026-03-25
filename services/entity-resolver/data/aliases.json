@@ -1,0 +1,1292 @@
+{
+  "entities": {
+    "us": {
+      "canonical_name": "United States",
+      "types": [
+        "GPE"
+      ],
+      "aliases": [
+        {
+          "alias": "united states",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "usa",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "united states of america",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "america",
+          "prior": 0.9,
+          "stability": 1.0
+        },
+        {
+          "alias": "u.s.",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "u.s.a.",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "the white house",
+          "prior": 0.85,
+          "stability": 1.0
+        },
+        {
+          "alias": "washington",
+          "prior": 0.7,
+          "stability": 0.5
+        },
+        {
+          "alias": "the pentagon",
+          "prior": 0.9,
+          "stability": 1.0
+        }
+      ]
+    },
+    "russia": {
+      "canonical_name": "Russia",
+      "types": [
+        "GPE"
+      ],
+      "aliases": [
+        {
+          "alias": "russia",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "russian federation",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "the kremlin",
+          "prior": 0.9,
+          "stability": 1.0
+        },
+        {
+          "alias": "moscow",
+          "prior": 0.7,
+          "stability": 0.5
+        },
+        {
+          "alias": "ussr",
+          "prior": 0.8,
+          "stability": 1.0
+        },
+        {
+          "alias": "soviet union",
+          "prior": 0.8,
+          "stability": 1.0
+        }
+      ]
+    },
+    "china": {
+      "canonical_name": "China",
+      "types": [
+        "GPE"
+      ],
+      "aliases": [
+        {
+          "alias": "china",
+          "prior": 0.95,
+          "stability": 1.0
+        },
+        {
+          "alias": "people's republic of china",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "prc",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "beijing",
+          "prior": 0.7,
+          "stability": 0.5
+        },
+        {
+          "alias": "mainland china",
+          "prior": 0.95,
+          "stability": 1.0
+        }
+      ]
+    },
+    "uk": {
+      "canonical_name": "United Kingdom",
+      "types": [
+        "GPE"
+      ],
+      "aliases": [
+        {
+          "alias": "united kingdom",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "britain",
+          "prior": 0.95,
+          "stability": 1.0
+        },
+        {
+          "alias": "great britain",
+          "prior": 0.95,
+          "stability": 1.0
+        },
+        {
+          "alias": "england",
+          "prior": 0.7,
+          "stability": 0.5
+        },
+        {
+          "alias": "downing street",
+          "prior": 0.9,
+          "stability": 1.0
+        },
+        {
+          "alias": "london",
+          "prior": 0.6,
+          "stability": 0.5
+        },
+        {
+          "alias": "uk",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "u.k.",
+          "prior": 1.0,
+          "stability": 1.0
+        }
+      ]
+    },
+    "france": {
+      "canonical_name": "France",
+      "types": [
+        "GPE"
+      ],
+      "aliases": [
+        {
+          "alias": "france",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "the elysee",
+          "prior": 0.9,
+          "stability": 1.0
+        },
+        {
+          "alias": "elysee palace",
+          "prior": 0.9,
+          "stability": 1.0
+        },
+        {
+          "alias": "paris",
+          "prior": 0.6,
+          "stability": 0.5
+        },
+        {
+          "alias": "french republic",
+          "prior": 1.0,
+          "stability": 1.0
+        }
+      ]
+    },
+    "germany": {
+      "canonical_name": "Germany",
+      "types": [
+        "GPE"
+      ],
+      "aliases": [
+        {
+          "alias": "germany",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "federal republic of germany",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "berlin",
+          "prior": 0.65,
+          "stability": 0.5
+        },
+        {
+          "alias": "bundesrepublik deutschland",
+          "prior": 1.0,
+          "stability": 1.0
+        }
+      ]
+    },
+    "iran": {
+      "canonical_name": "Iran",
+      "types": [
+        "GPE"
+      ],
+      "aliases": [
+        {
+          "alias": "iran",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "islamic republic of iran",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "tehran",
+          "prior": 0.75,
+          "stability": 0.5
+        },
+        {
+          "alias": "the islamic republic",
+          "prior": 0.85,
+          "stability": 1.0
+        },
+        {
+          "alias": "persia",
+          "prior": 0.8,
+          "stability": 1.0
+        }
+      ]
+    },
+    "israel": {
+      "canonical_name": "Israel",
+      "types": [
+        "GPE"
+      ],
+      "aliases": [
+        {
+          "alias": "israel",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "state of israel",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "tel aviv",
+          "prior": 0.7,
+          "stability": 0.5
+        },
+        {
+          "alias": "jerusalem",
+          "prior": 0.5,
+          "stability": 0.5
+        },
+        {
+          "alias": "the knesset",
+          "prior": 0.9,
+          "stability": 1.0
+        }
+      ]
+    },
+    "ukraine": {
+      "canonical_name": "Ukraine",
+      "types": [
+        "GPE"
+      ],
+      "aliases": [
+        {
+          "alias": "ukraine",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "kyiv",
+          "prior": 0.75,
+          "stability": 0.5
+        },
+        {
+          "alias": "kiev",
+          "prior": 0.75,
+          "stability": 0.5
+        }
+      ]
+    },
+    "india": {
+      "canonical_name": "India",
+      "types": [
+        "GPE"
+      ],
+      "aliases": [
+        {
+          "alias": "india",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "republic of india",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "new delhi",
+          "prior": 0.7,
+          "stability": 0.5
+        },
+        {
+          "alias": "bharat",
+          "prior": 0.95,
+          "stability": 1.0
+        }
+      ]
+    },
+    "japan": {
+      "canonical_name": "Japan",
+      "types": [
+        "GPE"
+      ],
+      "aliases": [
+        {
+          "alias": "japan",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "tokyo",
+          "prior": 0.65,
+          "stability": 0.5
+        },
+        {
+          "alias": "nippon",
+          "prior": 0.95,
+          "stability": 1.0
+        }
+      ]
+    },
+    "south_korea": {
+      "canonical_name": "South Korea",
+      "types": [
+        "GPE"
+      ],
+      "aliases": [
+        {
+          "alias": "south korea",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "republic of korea",
+          "prior": 0.9,
+          "stability": 1.0
+        },
+        {
+          "alias": "rok",
+          "prior": 0.9,
+          "stability": 1.0
+        },
+        {
+          "alias": "seoul",
+          "prior": 0.7,
+          "stability": 0.5
+        }
+      ]
+    },
+    "north_korea": {
+      "canonical_name": "North Korea",
+      "types": [
+        "GPE"
+      ],
+      "aliases": [
+        {
+          "alias": "north korea",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "dprk",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "democratic people's republic of korea",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "pyongyang",
+          "prior": 0.8,
+          "stability": 0.5
+        }
+      ]
+    },
+    "saudi_arabia": {
+      "canonical_name": "Saudi Arabia",
+      "types": [
+        "GPE"
+      ],
+      "aliases": [
+        {
+          "alias": "saudi arabia",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "kingdom of saudi arabia",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "ksa",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "riyadh",
+          "prior": 0.7,
+          "stability": 0.5
+        },
+        {
+          "alias": "the house of saud",
+          "prior": 0.9,
+          "stability": 1.0
+        }
+      ]
+    },
+    "turkey": {
+      "canonical_name": "Turkey",
+      "types": [
+        "GPE"
+      ],
+      "aliases": [
+        {
+          "alias": "turkey",
+          "prior": 0.9,
+          "stability": 1.0
+        },
+        {
+          "alias": "turkiye",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "republic of turkey",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "ankara",
+          "prior": 0.7,
+          "stability": 0.5
+        }
+      ]
+    },
+    "brazil": {
+      "canonical_name": "Brazil",
+      "types": [
+        "GPE"
+      ],
+      "aliases": [
+        {
+          "alias": "brazil",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "federative republic of brazil",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "brasilia",
+          "prior": 0.7,
+          "stability": 0.5
+        }
+      ]
+    },
+    "australia": {
+      "canonical_name": "Australia",
+      "types": [
+        "GPE"
+      ],
+      "aliases": [
+        {
+          "alias": "australia",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "commonwealth of australia",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "canberra",
+          "prior": 0.7,
+          "stability": 0.5
+        }
+      ]
+    },
+    "canada": {
+      "canonical_name": "Canada",
+      "types": [
+        "GPE"
+      ],
+      "aliases": [
+        {
+          "alias": "canada",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "ottawa",
+          "prior": 0.65,
+          "stability": 0.5
+        }
+      ]
+    },
+    "italy": {
+      "canonical_name": "Italy",
+      "types": [
+        "GPE"
+      ],
+      "aliases": [
+        {
+          "alias": "italy",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "italian republic",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "rome",
+          "prior": 0.55,
+          "stability": 0.5
+        },
+        {
+          "alias": "roma",
+          "prior": 0.5,
+          "stability": 0.5
+        }
+      ]
+    },
+    "poland": {
+      "canonical_name": "Poland",
+      "types": [
+        "GPE"
+      ],
+      "aliases": [
+        {
+          "alias": "poland",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "republic of poland",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "warsaw",
+          "prior": 0.7,
+          "stability": 0.5
+        }
+      ]
+    },
+    "taiwan": {
+      "canonical_name": "Taiwan",
+      "types": [
+        "GPE"
+      ],
+      "aliases": [
+        {
+          "alias": "taiwan",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "republic of china",
+          "prior": 0.7,
+          "stability": 0.5
+        },
+        {
+          "alias": "roc",
+          "prior": 0.7,
+          "stability": 0.5
+        },
+        {
+          "alias": "taipei",
+          "prior": 0.75,
+          "stability": 0.5
+        },
+        {
+          "alias": "chinese taipei",
+          "prior": 0.9,
+          "stability": 1.0
+        }
+      ]
+    },
+    "egypt": {
+      "canonical_name": "Egypt",
+      "types": [
+        "GPE"
+      ],
+      "aliases": [
+        {
+          "alias": "egypt",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "arab republic of egypt",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "cairo",
+          "prior": 0.7,
+          "stability": 0.5
+        }
+      ]
+    },
+    "syria": {
+      "canonical_name": "Syria",
+      "types": [
+        "GPE"
+      ],
+      "aliases": [
+        {
+          "alias": "syria",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "syrian arab republic",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "damascus",
+          "prior": 0.75,
+          "stability": 0.5
+        }
+      ]
+    },
+    "iraq": {
+      "canonical_name": "Iraq",
+      "types": [
+        "GPE"
+      ],
+      "aliases": [
+        {
+          "alias": "iraq",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "republic of iraq",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "baghdad",
+          "prior": 0.7,
+          "stability": 0.5
+        }
+      ]
+    },
+    "pakistan": {
+      "canonical_name": "Pakistan",
+      "types": [
+        "GPE"
+      ],
+      "aliases": [
+        {
+          "alias": "pakistan",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "islamic republic of pakistan",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "islamabad",
+          "prior": 0.7,
+          "stability": 0.5
+        }
+      ]
+    },
+    "afghanistan": {
+      "canonical_name": "Afghanistan",
+      "types": [
+        "GPE"
+      ],
+      "aliases": [
+        {
+          "alias": "afghanistan",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "islamic emirate of afghanistan",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "kabul",
+          "prior": 0.75,
+          "stability": 0.5
+        }
+      ]
+    },
+    "mexico": {
+      "canonical_name": "Mexico",
+      "types": [
+        "GPE"
+      ],
+      "aliases": [
+        {
+          "alias": "mexico",
+          "prior": 0.9,
+          "stability": 1.0
+        },
+        {
+          "alias": "united mexican states",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "mexico city",
+          "prior": 0.5,
+          "stability": 0.5
+        }
+      ]
+    },
+    "south_africa": {
+      "canonical_name": "South Africa",
+      "types": [
+        "GPE"
+      ],
+      "aliases": [
+        {
+          "alias": "south africa",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "rsa",
+          "prior": 0.8,
+          "stability": 1.0
+        },
+        {
+          "alias": "pretoria",
+          "prior": 0.65,
+          "stability": 0.5
+        },
+        {
+          "alias": "cape town",
+          "prior": 0.5,
+          "stability": 0.5
+        }
+      ]
+    },
+    "nato": {
+      "canonical_name": "NATO",
+      "types": [
+        "ORG"
+      ],
+      "aliases": [
+        {
+          "alias": "nato",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "north atlantic treaty organization",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "the alliance",
+          "prior": 0.5,
+          "stability": 0.5
+        },
+        {
+          "alias": "atlantic alliance",
+          "prior": 0.85,
+          "stability": 1.0
+        }
+      ]
+    },
+    "eu": {
+      "canonical_name": "European Union",
+      "types": [
+        "ORG"
+      ],
+      "aliases": [
+        {
+          "alias": "european union",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "eu",
+          "prior": 0.95,
+          "stability": 1.0
+        },
+        {
+          "alias": "brussels",
+          "prior": 0.6,
+          "stability": 0.5
+        },
+        {
+          "alias": "the european commission",
+          "prior": 0.9,
+          "stability": 1.0
+        },
+        {
+          "alias": "european commission",
+          "prior": 0.9,
+          "stability": 1.0
+        }
+      ]
+    },
+    "un": {
+      "canonical_name": "United Nations",
+      "types": [
+        "ORG"
+      ],
+      "aliases": [
+        {
+          "alias": "united nations",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "un",
+          "prior": 0.9,
+          "stability": 1.0
+        },
+        {
+          "alias": "the un",
+          "prior": 0.9,
+          "stability": 1.0
+        },
+        {
+          "alias": "united nations general assembly",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "unga",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "un security council",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "unsc",
+          "prior": 1.0,
+          "stability": 1.0
+        }
+      ]
+    },
+    "opec": {
+      "canonical_name": "OPEC",
+      "types": [
+        "ORG"
+      ],
+      "aliases": [
+        {
+          "alias": "opec",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "organization of the petroleum exporting countries",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "opec+",
+          "prior": 0.85,
+          "stability": 1.0
+        }
+      ]
+    },
+    "who": {
+      "canonical_name": "World Health Organization",
+      "types": [
+        "ORG"
+      ],
+      "aliases": [
+        {
+          "alias": "world health organization",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "who",
+          "prior": 0.7,
+          "stability": 0.5
+        },
+        {
+          "alias": "the who",
+          "prior": 0.5,
+          "stability": 0.5
+        }
+      ]
+    },
+    "imf": {
+      "canonical_name": "International Monetary Fund",
+      "types": [
+        "ORG"
+      ],
+      "aliases": [
+        {
+          "alias": "international monetary fund",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "imf",
+          "prior": 0.95,
+          "stability": 1.0
+        },
+        {
+          "alias": "the fund",
+          "prior": 0.4,
+          "stability": 0.5
+        }
+      ]
+    },
+    "world_bank": {
+      "canonical_name": "World Bank",
+      "types": [
+        "ORG"
+      ],
+      "aliases": [
+        {
+          "alias": "world bank",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "ibrd",
+          "prior": 0.9,
+          "stability": 1.0
+        },
+        {
+          "alias": "international bank for reconstruction and development",
+          "prior": 1.0,
+          "stability": 1.0
+        }
+      ]
+    },
+    "wto": {
+      "canonical_name": "World Trade Organization",
+      "types": [
+        "ORG"
+      ],
+      "aliases": [
+        {
+          "alias": "world trade organization",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "wto",
+          "prior": 0.95,
+          "stability": 1.0
+        }
+      ]
+    },
+    "brics": {
+      "canonical_name": "BRICS",
+      "types": [
+        "ORG"
+      ],
+      "aliases": [
+        {
+          "alias": "brics",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "brics+",
+          "prior": 0.85,
+          "stability": 1.0
+        },
+        {
+          "alias": "brics nations",
+          "prior": 0.95,
+          "stability": 1.0
+        }
+      ]
+    },
+    "asean": {
+      "canonical_name": "ASEAN",
+      "types": [
+        "ORG"
+      ],
+      "aliases": [
+        {
+          "alias": "asean",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "association of southeast asian nations",
+          "prior": 1.0,
+          "stability": 1.0
+        }
+      ]
+    },
+    "iaea": {
+      "canonical_name": "International Atomic Energy Agency",
+      "types": [
+        "ORG"
+      ],
+      "aliases": [
+        {
+          "alias": "international atomic energy agency",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "iaea",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "the atomic agency",
+          "prior": 0.8,
+          "stability": 1.0
+        }
+      ]
+    },
+    "hezbollah": {
+      "canonical_name": "Hezbollah",
+      "types": [
+        "ORG"
+      ],
+      "aliases": [
+        {
+          "alias": "hezbollah",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "hizbullah",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "hizballah",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "party of god",
+          "prior": 0.7,
+          "stability": 0.5
+        }
+      ]
+    },
+    "hamas": {
+      "canonical_name": "Hamas",
+      "types": [
+        "ORG"
+      ],
+      "aliases": [
+        {
+          "alias": "hamas",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "islamic resistance movement",
+          "prior": 0.8,
+          "stability": 1.0
+        }
+      ]
+    },
+    "wagner": {
+      "canonical_name": "Wagner Group",
+      "types": [
+        "ORG"
+      ],
+      "aliases": [
+        {
+          "alias": "wagner group",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "wagner",
+          "prior": 0.85,
+          "stability": 0.5
+        },
+        {
+          "alias": "wagner pmc",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "pmc wagner",
+          "prior": 1.0,
+          "stability": 1.0
+        }
+      ]
+    },
+    "crude_oil": {
+      "canonical_name": "Crude Oil",
+      "types": [],
+      "aliases": [
+        {
+          "alias": "crude oil",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "oil",
+          "prior": 0.6,
+          "stability": 0.5
+        },
+        {
+          "alias": "petroleum",
+          "prior": 0.9,
+          "stability": 1.0
+        },
+        {
+          "alias": "black gold",
+          "prior": 0.8,
+          "stability": 1.0
+        },
+        {
+          "alias": "brent crude",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "wti crude",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "west texas intermediate",
+          "prior": 1.0,
+          "stability": 1.0
+        }
+      ]
+    },
+    "natural_gas": {
+      "canonical_name": "Natural Gas",
+      "types": [],
+      "aliases": [
+        {
+          "alias": "natural gas",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "lng",
+          "prior": 0.9,
+          "stability": 1.0
+        },
+        {
+          "alias": "liquefied natural gas",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "nord stream",
+          "prior": 0.8,
+          "stability": 1.0
+        }
+      ]
+    },
+    "strait_of_hormuz": {
+      "canonical_name": "Strait of Hormuz",
+      "types": [
+        "LOC"
+      ],
+      "aliases": [
+        {
+          "alias": "strait of hormuz",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "hormuz strait",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "hormuz",
+          "prior": 0.85,
+          "stability": 1.0
+        }
+      ]
+    },
+    "suez_canal": {
+      "canonical_name": "Suez Canal",
+      "types": [
+        "LOC",
+        "FAC"
+      ],
+      "aliases": [
+        {
+          "alias": "suez canal",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "suez",
+          "prior": 0.75,
+          "stability": 0.5
+        }
+      ]
+    },
+    "south_china_sea": {
+      "canonical_name": "South China Sea",
+      "types": [
+        "LOC"
+      ],
+      "aliases": [
+        {
+          "alias": "south china sea",
+          "prior": 1.0,
+          "stability": 1.0
+        },
+        {
+          "alias": "west philippine sea",
+          "prior": 0.9,
+          "stability": 1.0
+        },
+        {
+          "alias": "scs",
+          "prior": 0.7,
+          "stability": 0.5
+        }
+      ]
+    }
+  }
+}

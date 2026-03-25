@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>INTELLIGENCE_OS | Classification &amp; Ingestion Monitor</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-tint": "#a9c7ff",
+              "secondary-container": "#3a4859",
+              "secondary-fixed": "#d6e4f9",
+              "background": "#0f131c",
+              "inverse-primary": "#225eaa",
+              "tertiary": "#5adace",
+              "outline": "#8c919c",
+              "primary-container": "#76a9fa",
+              "on-secondary": "#243141",
+              "on-tertiary-container": "#004641",
+              "on-primary-fixed-variant": "#00468b",
+              "on-secondary-fixed": "#0f1c2c",
+              "surface-dim": "#0f131c",
+              "on-primary-container": "#003c79",
+              "primary-fixed": "#d6e3ff",
+              "on-tertiary": "#003733",
+              "outline-variant": "#424751",
+              "tertiary-fixed": "#79f7ea",
+              "on-primary-fixed": "#001b3d",
+              "on-error-container": "#ffdad6",
+              "on-background": "#dfe2ee",
+              "surface-container-highest": "#31353e",
+              "on-secondary-fixed-variant": "#3a4859",
+              "on-tertiary-fixed-variant": "#00504a",
+              "on-primary": "#003062",
+              "tertiary-fixed-dim": "#5adace",
+              "secondary": "#bac8dc",
+              "inverse-on-surface": "#2c3039",
+              "tertiary-container": "#31bbaf",
+              "inverse-surface": "#dfe2ee",
+              "on-error": "#690005",
+              "on-secondary-container": "#a8b6ca",
+              "surface-container-lowest": "#0a0e16",
+              "surface": "#0f131c",
+              "primary": "#a9c7ff",
+              "on-surface": "#dfe2ee",
+              "surface-bright": "#353942",
+              "error": "#ffb4ab",
+              "surface-variant": "#31353e",
+              "surface-container": "#1c2028",
+              "primary-fixed-dim": "#a9c7ff",
+              "secondary-fixed-dim": "#bac8dc",
+              "surface-container-low": "#181c24",
+              "surface-container-high": "#262a33",
+              "on-tertiary-fixed": "#00201d",
+              "error-container": "#93000a",
+              "on-surface-variant": "#c2c6d3"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"],
+              "label": ["Space Grotesk"],
+              "mono": ["JetBrains Mono"]
+            },
+            borderRadius: {"DEFAULT": "0px", "lg": "0px", "xl": "0px", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .scanline-overlay {
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(223, 226, 238, 0.02),
+                rgba(223, 226, 238, 0.02) 2px,
+                transparent 2px,
+                transparent 4px
+            );
+            pointer-events: none;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0a0e16;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #424751;
+        }
+        .glow-primary {
+            box-shadow: 0 0 12px rgba(169, 199, 255, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar -->
+<header class="bg-[#0f131c] dark:bg-[#0f131c] docked full-width top-0 rounded-none shadow-[0_0_20px_rgba(118,169,250,0.1)] z-50 fixed border-b border-[#424751]/15">
+<div class="flex justify-between items-center w-full px-6 py-3 h-16">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-black text-[#76A9FA] tracking-tighter font-['Space_Grotesk'] uppercase">INTELLIGENCE_OS</span>
+<div class="hidden md:flex gap-6 font-['Space_Grotesk'] uppercase tracking-widest text-sm">
+<a class="text-[#dfe2ee]/60 hover:bg-[#262a33] transition-all duration-150 px-2 py-1 cursor-crosshair" href="#">OVERVIEW</a>
+<a class="text-[#76A9FA] font-bold px-2 py-1 cursor-crosshair" href="#">MONITOR</a>
+<a class="text-[#dfe2ee]/60 hover:bg-[#262a33] transition-all duration-150 px-2 py-1 cursor-crosshair" href="#">ANALYTICS</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="font-['Space_Grotesk'] uppercase tracking-widest text-sm text-[#76A9FA]">[STATUS: ACTIVE_INGESTION]</span>
+<div class="flex gap-2">
+<button class="p-2 text-[#76A9FA] hover:bg-[#262a33] transition-all duration-150 cursor-crosshair active:scale-95">
+<span class="material-symbols-outlined">sensors</span>
+</button>
+<button class="p-2 text-[#76A9FA] hover:bg-[#262a33] transition-all duration-150 cursor-crosshair active:scale-95">
+<span class="material-symbols-outlined">monitoring</span>
+</button>
+<button class="p-2 text-[#76A9FA] hover:bg-[#262a33] transition-all duration-150 cursor-crosshair active:scale-95">
+<span class="material-symbols-outlined">settings_input_antenna</span>
+</button>
+</div>
+<div class="h-8 w-8 bg-surface-container-highest border border-outline-variant/30 overflow-hidden">
+<img alt="User Intelligence Profile" class="w-full h-full object-cover" data-alt="Cyber-intelligence user profile avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLi7Lw4QUxDwGnfPr1XylFSIuMI7rkbGe2pUd3xSA2in-21swv4A40Hz3Ac0GnHWrs8BdvYmoRj2XxEPaABDgMKDS7blvkLSk9HRGBe7Jrh2sP69O3GcLnRqliYW-pI2in2Q7ZE80385dY6IZl2MaN9DFQqYdm8w8mn5SSLSMo_DOuHQr7MZ8YPOLwiAMvfNnDA6kezbl5vPD4BxI3E98vNKRpcR5vA4Clx9PREb5QPsl48qPa8NVZw0RRTscKdpraoRKCvH1nEvQ"/>
+</div>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="hidden md:flex fixed left-0 top-16 h-[calc(100vh-64px)] w-64 bg-[#0f131c] dark:bg-[#181c24] border-r border-[#424751]/15 flex-col py-8 z-40">
+<div class="px-6 mb-8">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-2 h-2 bg-tertiary"></div>
+<span class="font-mono text-xs uppercase text-primary">NODE_01_DASHBOARD</span>
+</div>
+<span class="font-mono text-[10px] text-outline">[40.7128° N, 74.0060° W]</span>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-4 px-6 py-3 text-[#dfe2ee]/40 hover:text-[#76A9FA]/80 hover:bg-[#1c2028] hover:translate-x-1 transition-all font-mono text-xs uppercase" href="#">
+<span class="material-symbols-outlined text-sm">sensors</span> INTERCEPT_FEED
+            </a>
+<a class="flex items-center gap-4 px-6 py-3 text-[#dfe2ee]/40 hover:text-[#76A9FA]/80 hover:bg-[#1c2028] hover:translate-x-1 transition-all font-mono text-xs uppercase" href="#">
+<span class="material-symbols-outlined text-sm">public</span> GEOSPATIAL_MAP
+            </a>
+<a class="flex items-center gap-4 px-6 py-3 bg-[#262a33] text-[#76A9FA] border-l-4 border-[#76A9FA] font-mono text-xs uppercase" href="#">
+<span class="material-symbols-outlined text-sm">category</span> DATA_CLASSIFY
+            </a>
+<a class="flex items-center gap-4 px-6 py-3 text-[#dfe2ee]/40 hover:text-[#76A9FA]/80 hover:bg-[#1c2028] hover:translate-x-1 transition-all font-mono text-xs uppercase" href="#">
+<span class="material-symbols-outlined text-sm">inventory_2</span> SIGNAL_ARCHIVE
+            </a>
+<a class="flex items-center gap-4 px-6 py-3 text-[#dfe2ee]/40 hover:text-[#76A9FA]/80 hover:bg-[#1c2028] hover:translate-x-1 transition-all font-mono text-xs uppercase" href="#">
+<span class="material-symbols-outlined text-sm">terminal</span> TERMINAL_LOG
+            </a>
+</nav>
+<div class="px-6 mb-8">
+<button class="w-full py-3 bg-primary text-on-primary font-mono text-xs uppercase hover:glow-primary transition-all active:scale-95">
+                EXECUTE_SCAN
+            </button>
+</div>
+<div class="border-t border-[#424751]/15 pt-4">
+<a class="flex items-center gap-4 px-6 py-2 text-[#dfe2ee]/40 hover:text-[#76A9FA]/80 font-mono text-xs uppercase" href="#">
+<span class="material-symbols-outlined text-sm">power_settings_new</span> LOG_OFF
+            </a>
+<a class="flex items-center gap-4 px-6 py-2 text-[#dfe2ee]/40 hover:text-[#76A9FA]/80 font-mono text-xs uppercase" href="#">
+<span class="material-symbols-outlined text-sm">restart_alt</span> REBOOT_SYSTEM
+            </a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="md:ml-64 pt-24 px-6 pb-12 relative min-h-screen">
+<div class="scanline-overlay fixed inset-0 z-0 opacity-20"></div>
+<div class="relative z-10 max-w-7xl mx-auto">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row justify-between items-end mb-10 gap-6">
+<div>
+<div class="flex items-center gap-2 mb-2">
+<span class="font-mono text-tertiary text-sm">LIVE_STREAM_v4.2</span>
+<div class="w-1.5 h-1.5 bg-tertiary animate-pulse"></div>
+</div>
+<h1 class="text-6xl font-black font-headline tracking-tighter text-on-surface uppercase">Classification <span class="text-primary-container">&amp;</span> Ingestion</h1>
+</div>
+<div class="text-right font-mono text-xs text-outline space-y-1">
+<p>SYSTEM_UPTIME: 142:08:12</p>
+<p>QUEUE_LATENCY: 12ms</p>
+<p>ACTIVE_THREAD_COUNT: 48</p>
+</div>
+</div>
+<!-- Bento Grid Dashboard -->
+<div class="grid grid-cols-12 gap-6">
+<!-- Main Activity Graph -->
+<div class="col-span-12 lg:col-span-8 bg-surface-container-low p-6 relative">
+<div class="absolute top-0 right-0 p-2 font-mono text-[10px] text-outline/40">REF_ID: GRPH_001</div>
+<div class="flex justify-between items-center mb-8 border-b border-outline-variant/15 pb-4">
+<h3 class="font-headline font-bold uppercase tracking-widest text-sm text-primary">Ingestion Rate / Magnitude</h3>
+<div class="flex gap-4 font-mono text-[10px]">
+<span class="flex items-center gap-1"><span class="w-2 h-2 bg-primary"></span> SIGNAL</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 bg-tertiary"></span> NOISE</span>
+</div>
+</div>
+<div class="h-64 flex items-end gap-1 overflow-hidden">
+<!-- Mocking a bar graph with tailwind -->
+<div class="flex-1 bg-primary/20 hover:bg-primary/40 transition-colors h-24 relative group">
+<div class="absolute bottom-0 w-full bg-primary h-12 group-hover:h-16 transition-all"></div>
+</div>
+<div class="flex-1 bg-primary/20 hover:bg-primary/40 transition-colors h-40 relative group">
+<div class="absolute bottom-0 w-full bg-primary h-24 group-hover:h-30 transition-all"></div>
+</div>
+<div class="flex-1 bg-primary/20 hover:bg-primary/40 transition-colors h-32 relative group">
+<div class="absolute bottom-0 w-full bg-primary h-18 group-hover:h-22 transition-all"></div>
+</div>
+<div class="flex-1 bg-primary/20 hover:bg-primary/40 transition-colors h-56 relative group">
+<div class="absolute bottom-0 w-full bg-primary h-44 group-hover:h-48 transition-all"></div>
+</div>
+<div class="flex-1 bg-primary/20 hover:bg-primary/40 transition-colors h-48 relative group">
+<div class="absolute bottom-0 w-full bg-primary h-36 group-hover:h-40 transition-all"></div>
+</div>
+<div class="flex-1 bg-primary/20 hover:bg-primary/40 transition-colors h-60 relative group">
+<div class="absolute bottom-0 w-full bg-primary h-52 group-hover:h-56 transition-all"></div>
+</div>
+<div class="flex-1 bg-primary/20 hover:bg-primary/40 transition-colors h-36 relative group">
+<div class="absolute bottom-0 w-full bg-primary h-20 group-hover:h-24 transition-all"></div>
+</div>
+<div class="flex-1 bg-primary/20 hover:bg-primary/40 transition-colors h-44 relative group">
+<div class="absolute bottom-0 w-full bg-primary h-32 group-hover:h-38 transition-all"></div>
+</div>
+<div class="flex-1 bg-primary/20 hover:bg-primary/40 transition-colors h-28 relative group">
+<div class="absolute bottom-0 w-full bg-primary h-14 group-hover:h-20 transition-all"></div>
+</div>
+<div class="flex-1 bg-primary/20 hover:bg-primary/40 transition-colors h-52 relative group">
+<div class="absolute bottom-0 w-full bg-primary h-40 group-hover:h-46 transition-all"></div>
+</div>
+</div>
+</div>
+<!-- Engine Status Panel -->
+<div class="col-span-12 lg:col-span-4 flex flex-col gap-6">
+<div class="bg-surface-container p-6 flex-1 relative overflow-hidden">
+<div class="absolute -right-4 -top-4 opacity-5">
+<span class="material-symbols-outlined text-8xl" style="font-variation-settings: 'wght' 100;">memory</span>
+</div>
+<h3 class="font-headline font-bold uppercase tracking-widest text-sm text-tertiary mb-6">Classification Core</h3>
+<div class="space-y-4 relative z-10">
+<div class="flex justify-between items-center">
+<span class="font-mono text-xs text-outline">CONFIDENCE_AVG</span>
+<span class="font-mono text-sm text-on-surface">98.42%</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1">
+<div class="bg-tertiary h-full w-[98.42%]"></div>
+</div>
+<div class="flex justify-between items-center mt-6">
+<span class="font-mono text-xs text-outline">THROUGHPUT</span>
+<span class="font-mono text-sm text-on-surface">1.2GB/s</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1">
+<div class="bg-primary-container h-full w-[65%]"></div>
+</div>
+</div>
+<div class="mt-8 pt-6 border-t border-outline-variant/15 flex items-center gap-4">
+<div class="w-10 h-10 border border-outline-variant/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary">check_circle</span>
+</div>
+<div>
+<p class="font-headline font-bold text-xs uppercase text-on-surface">CORE_OPTIMIZED</p>
+<p class="font-mono text-[10px] text-outline">Last check: 0.2ms ago</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Scrolling Event Log -->
+<div class="col-span-12 lg:col-span-9 bg-surface-container-low p-6 h-96 flex flex-col">
+<div class="flex justify-between items-center mb-4">
+<h3 class="font-headline font-bold uppercase tracking-widest text-sm text-on-surface">System Event Log</h3>
+<div class="flex gap-2">
+<span class="px-2 py-1 bg-surface-container-highest font-mono text-[10px] text-on-surface">LOG_LEVEL: VERBOSE</span>
+<span class="px-2 py-1 bg-surface-container-highest font-mono text-[10px] text-on-surface">STREAM: ENABLED</span>
+</div>
+</div>
+<div class="flex-1 bg-surface-container-lowest font-mono text-xs p-4 overflow-y-auto custom-scrollbar space-y-2 border border-outline-variant/5">
+<p class="text-tertiary/70">[14:22:01.03] <span class="text-on-surface">_INITIATING_INGESTION: DATA_NODE_TX_92</span></p>
+<p class="text-primary/70">[14:22:01.45] <span class="text-on-surface">Article Ingested: ID_10293 [SOURCE: Reuters]</span></p>
+<p class="text-primary/70">[14:22:02.12] <span class="text-on-surface">Actor Identified: <span class="text-tertiary">Entity_X_Bravo</span> [Confidence: 0.99]</span></p>
+<p class="text-outline/50">[14:22:02.89] SYNCING_REDUNDANT_BUFFER_B...</p>
+<p class="text-primary/70">[14:22:03.11] <span class="text-on-surface">Article Ingested: ID_10294 [SOURCE: AP_Global]</span></p>
+<p class="text-primary/70">[14:22:03.56] <span class="text-on-surface">Classification Tagged: <span class="text-primary">Political_Instability</span></span></p>
+<p class="text-error/70">[14:22:04.01] WARNING: LATENCY_SPIKE_DETECTED (+4ms)</p>
+<p class="text-tertiary/70">[14:22:04.22] <span class="text-on-surface">_OPTIMIZING_THREAD_POOL: AUTO_BALANCING...</span></p>
+<p class="text-primary/70">[14:22:05.08] <span class="text-on-surface">Actor Identified: <span class="text-tertiary">Entity_Y_Zulu</span> [Confidence: 0.87]</span></p>
+<p class="text-primary/70">[14:22:05.45] <span class="text-on-surface">Article Ingested: ID_10295 [SOURCE: X_OSINT_Feed]</span></p>
+<p class="text-primary/70">[14:22:06.12] <span class="text-on-surface">Classification Tagged: <span class="text-primary">Resource_Scarcity</span></span></p>
+<p class="text-outline/50">[14:22:06.89] BUFFER_CLEAR: CACHE_NODE_04</p>
+<p class="text-tertiary/70">[14:22:07.01] <span class="text-on-surface">_SYSTEM_READY</span></p>
+</div>
+</div>
+<!-- Metrics Grid -->
+<div class="col-span-12 lg:col-span-3 grid grid-cols-1 gap-6">
+<div class="bg-surface-container p-4 border-l-2 border-primary">
+<p class="font-mono text-[10px] text-outline mb-1">TOTAL_RECORDS_INGESTED</p>
+<p class="text-2xl font-headline font-black text-on-surface">42,901,232</p>
+</div>
+<div class="bg-surface-container p-4 border-l-2 border-tertiary">
+<p class="font-mono text-[10px] text-outline mb-1">ACCURACY_DELTA (24H)</p>
+<p class="text-2xl font-headline font-black text-tertiary">+0.04%</p>
+</div>
+<div class="bg-surface-container p-4 border-l-2 border-outline-variant">
+<p class="font-mono text-[10px] text-outline mb-1">ACTIVE_API_ENDPOINTS</p>
+<p class="text-2xl font-headline font-black text-on-surface">12</p>
+</div>
+<div class="bg-surface-container-high p-4 flex items-center justify-between group cursor-pointer hover:bg-primary transition-colors">
+<span class="font-mono text-xs text-on-surface group-hover:text-on-primary">_DOWNLOAD_REPORT</span>
+<span class="material-symbols-outlined text-primary group-hover:text-on-primary">download</span>
+</div>
+</div>
+</div>
+<!-- Footer Tech Accents -->
+<div class="mt-12 flex justify-between items-center border-t border-outline-variant/15 pt-6">
+<div class="flex items-center gap-10">
+<div class="flex items-center gap-2">
+<div class="w-1 h-6 bg-primary"></div>
+<div class="w-1 h-4 bg-primary/40"></div>
+<div class="w-1 h-2 bg-primary/20"></div>
+</div>
+<div class="font-mono text-[10px] text-outline leading-tight">
+<p>COORD: 51.5074° N, 0.1278° W</p>
+<p>ENCRYPTION: AES-256-GCM</p>
+</div>
+</div>
+<div class="font-headline font-bold text-xs uppercase text-primary-container tracking-[0.2em]">
+                    System_Core // Node_01 // Stable
+                </div>
+</div>
+</div>
+</main>
+<!-- Contextual FAB (Only on Home/Dashboard screens) -->
+<button class="fixed bottom-8 right-8 w-14 h-14 bg-primary text-on-primary flex items-center justify-center glow-primary active:scale-95 transition-all z-50">
+<span class="material-symbols-outlined">add_moderator</span>
+</button>
+</body></html>

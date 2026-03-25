@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TACTICAL_MONOLITH_OS | LABELLING_MANAGEMENT</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-bright": "#353942",
+                        "on-tertiary-fixed-variant": "#00504a",
+                        "tertiary-fixed": "#79f7ea",
+                        "primary-fixed-dim": "#a9c7ff",
+                        "inverse-on-surface": "#2c3039",
+                        "surface-container": "#1c2028",
+                        "surface": "#0f131c",
+                        "tertiary-container": "#31bbaf",
+                        "on-tertiary-fixed": "#00201d",
+                        "on-primary": "#003062",
+                        "surface-dim": "#0f131c",
+                        "outline": "#8c919c",
+                        "surface-container-low": "#181c24",
+                        "error-container": "#93000a",
+                        "on-secondary-fixed": "#0f1c2c",
+                        "surface-variant": "#31353e",
+                        "on-tertiary-container": "#004641",
+                        "on-secondary": "#243141",
+                        "on-error": "#690005",
+                        "secondary-fixed": "#d6e4f9",
+                        "on-surface": "#dfe2ee",
+                        "outline-variant": "#424751",
+                        "on-primary-fixed": "#001b3d",
+                        "secondary-container": "#3a4859",
+                        "secondary-fixed-dim": "#bac8dc",
+                        "inverse-primary": "#225eaa",
+                        "on-tertiary": "#003733",
+                        "on-primary-container": "#003c79",
+                        "inverse-surface": "#dfe2ee",
+                        "surface-tint": "#a9c7ff",
+                        "on-error-container": "#ffdad6",
+                        "on-primary-fixed-variant": "#00468b",
+                        "on-background": "#dfe2ee",
+                        "background": "#0f131c",
+                        "tertiary-fixed-dim": "#5adace",
+                        "primary-fixed": "#d6e3ff",
+                        "primary-container": "#76a9fa",
+                        "surface-container-high": "#262a33",
+                        "surface-container-highest": "#31353e",
+                        "on-secondary-fixed-variant": "#3a4859",
+                        "surface-container-lowest": "#0a0e16",
+                        "tertiary": "#5adace",
+                        "primary": "#a9c7ff",
+                        "on-surface-variant": "#c2c6d3",
+                        "error": "#ffb4ab",
+                        "on-secondary-container": "#a8b6ca",
+                        "secondary": "#bac8dc"
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Space Grotesk"],
+                        "mono": ["JetBrains Mono"]
+                    },
+                    borderRadius: { "DEFAULT": "0px", "lg": "0px", "xl": "0px", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .scanline {
+            background: linear-gradient(to bottom, transparent 50%, rgba(223, 226, 238, 0.02) 50%);
+            background-size: 100% 4px;
+        }
+        .glow-primary:hover {
+            box-shadow: 0 0 12px rgba(169, 199, 255, 0.3);
+        }
+        .ghost-border {
+            border: 1px solid rgba(66, 71, 81, 0.15);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary-container selection:text-on-primary-container scanline min-h-screen flex overflow-hidden">
+<!-- SideNavBar Anchor -->
+<aside class="hidden md:flex flex-col h-full py-8 bg-[#181c24] dark:bg-[#181c24] w-64 flex-shrink-0 z-20 shadow-[2px_0_0_0_#262a33]">
+<div class="px-6 mb-10">
+<h1 class="font-['Space_Grotesk'] font-black text-[#76A9FA] text-xl tracking-tighter">INTEL_CORE</h1>
+<p class="font-['JetBrains_Mono'] text-[10px] uppercase tracking-widest text-outline opacity-70">[40.7128° N]</p>
+</div>
+<nav class="flex-grow space-y-1">
+<a class="flex items-center px-6 py-3 text-[#dfe2ee] opacity-50 font-['JetBrains_Mono'] text-xs uppercase tracking-widest hover:bg-[#1c2028] hover:opacity-100 transition-colors" href="#">
+<span class="material-symbols-outlined mr-3 text-sm" data-icon="sensors">sensors</span>
+                INTERCEPT_FEED
+            </a>
+<a class="flex items-center px-6 py-3 text-[#dfe2ee] opacity-50 font-['JetBrains_Mono'] text-xs uppercase tracking-widest hover:bg-[#1c2028] hover:opacity-100 transition-colors" href="#">
+<span class="material-symbols-outlined mr-3 text-sm" data-icon="public">public</span>
+                GEOSPATIAL_MAP
+            </a>
+<a class="flex items-center px-6 py-3 text-[#dfe2ee] opacity-50 font-['JetBrains_Mono'] text-xs uppercase tracking-widest hover:bg-[#1c2028] hover:opacity-100 transition-colors" href="#">
+<span class="material-symbols-outlined mr-3 text-sm" data-icon="analytics">analytics</span>
+                DATA_CLASSIFY
+            </a>
+<a class="flex items-center px-6 py-3 text-[#dfe2ee] opacity-50 font-['JetBrains_Mono'] text-xs uppercase tracking-widest hover:bg-[#1c2028] hover:opacity-100 transition-colors" href="#">
+<span class="material-symbols-outlined mr-3 text-sm" data-icon="settings_input_component">settings_input_component</span>
+                INFRASTRUCTURE
+            </a>
+<!-- Active State -->
+<a class="flex items-center px-6 py-3 bg-[#262a33] text-[#76A9FA] border-l-4 border-[#76A9FA] shadow-[0_0_12px_rgba(118,169,250,0.3)] font-['JetBrains_Mono'] text-xs uppercase tracking-widest translate-x-1" href="#">
+<span class="material-symbols-outlined mr-3 text-sm" data-icon="label_important">label_important</span>
+                LABELLING
+            </a>
+<a class="flex items-center px-6 py-3 text-[#dfe2ee] opacity-50 font-['JetBrains_Mono'] text-xs uppercase tracking-widest hover:bg-[#1c2028] hover:opacity-100 transition-colors" href="#">
+<span class="material-symbols-outlined mr-3 text-sm" data-icon="history_edu">history_edu</span>
+                SIGNAL_ARCHIVE
+            </a>
+<a class="flex items-center px-6 py-3 text-[#dfe2ee] opacity-50 font-['JetBrains_Mono'] text-xs uppercase tracking-widest hover:bg-[#1c2028] hover:opacity-100 transition-colors" href="#">
+<span class="material-symbols-outlined mr-3 text-sm" data-icon="terminal">terminal</span>
+                TERMINAL_LOG
+            </a>
+</nav>
+<div class="px-6 pt-6 border-t border-outline-variant/10 space-y-1">
+<a class="flex items-center py-2 text-[#dfe2ee] opacity-50 font-['JetBrains_Mono'] text-[10px] uppercase tracking-widest hover:opacity-100" href="#">
+<span class="material-symbols-outlined mr-2 text-xs" data-icon="security">security</span>
+                SYSTEM_STATUS
+            </a>
+<a class="flex items-center py-2 text-[#dfe2ee] opacity-50 font-['JetBrains_Mono'] text-[10px] uppercase tracking-widest hover:opacity-100" href="#">
+<span class="material-symbols-outlined mr-2 text-xs" data-icon="logout">logout</span>
+                LOGOUT
+            </a>
+</div>
+</aside>
+<main class="flex-grow flex flex-col min-w-0 overflow-hidden relative">
+<!-- TopAppBar Anchor -->
+<header class="flex justify-between items-center w-full px-6 h-16 bg-[#0f131c] dark:bg-[#0f131c] border-b border-outline-variant/20 z-10">
+<div class="flex items-center gap-4">
+<span class="font-['Space_Grotesk'] font-bold text-xl tracking-widest text-[#76A9FA]">TACTICAL_MONOLITH_OS</span>
+<span class="h-4 w-[1px] bg-outline-variant/30"></span>
+<span class="font-['Space_Grotesk'] tracking-tighter uppercase text-sm text-outline">LABELLING_CORE_v4.02</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center bg-surface-container-high px-3 py-1 ghost-border">
+<span class="material-symbols-outlined text-outline text-sm" data-icon="search">search</span>
+<input class="bg-transparent border-none text-xs font-mono focus:ring-0 text-on-surface w-32 placeholder:opacity-30" placeholder="QUERY_ID..." type="text"/>
+</div>
+<div class="flex items-center gap-4 text-outline">
+<button class="hover:text-primary transition-colors"><span class="material-symbols-outlined" data-icon="notifications_active">notifications_active</span></button>
+<button class="hover:text-primary transition-colors"><span class="material-symbols-outlined" data-icon="terminal">terminal</span></button>
+<button class="hover:text-primary transition-colors"><span class="material-symbols-outlined" data-icon="settings">settings</span></button>
+<div class="w-8 h-8 bg-surface-container-highest flex items-center justify-center ghost-border">
+<img alt="OPERATOR_AVATAR" data-alt="Cybernetic operator avatar placeholder" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5dzhtDJAeZqFv3aK8px2G3A6iA7P7h4xiQJX9FnQSTkEACQwHZTpclmAkvUuyQ_vD8p-coSvApNWv9o-he36KvFcXeatHH9PzEOZsRVVwR0ple_Da1Qw9FdsRlUiLTcn7wPLpJyc_P1fyXZpHdgHZdKDnLO2hjn9RvgoIuXjMSnx3_RMsYVqA2RSpwIEw4MGD3UrqrMtkvipg5RGEtKFNRTg81crc6fiIFVREOvPHu0ytlEamON8ANOyhZ-9y1akyEsSY3SFoMx0"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<div class="flex-grow p-8 overflow-y-auto space-y-8">
+<!-- Summary Bento Grid -->
+<section class="grid grid-cols-1 md:grid-cols-4 gap-4">
+<div class="bg-surface-container-low p-6 flex flex-col justify-between relative overflow-hidden">
+<div class="absolute top-0 right-0 p-2 opacity-5 font-mono text-[60px] leading-none pointer-events-none">01</div>
+<span class="font-mono text-[10px] text-outline uppercase tracking-tighter mb-4">_TOTAL_UNLABELLED</span>
+<div class="flex items-baseline gap-2">
+<span class="text-4xl font-headline font-bold text-primary">1,402</span>
+<span class="text-xs font-mono text-tertiary">ENTRIES</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 flex flex-col justify-between relative">
+<span class="font-mono text-[10px] text-outline uppercase tracking-tighter mb-4">_LABELLING_PROGRESS</span>
+<div class="space-y-2">
+<div class="flex justify-between font-mono text-[10px]">
+<span class="text-on-surface">84.2%</span>
+<span class="text-outline">TARGET: 100%</span>
+</div>
+<div class="w-full h-1 bg-surface-container">
+<div class="bg-primary h-full w-[84%] shadow-[0_0_8px_rgba(169,199,255,0.4)]"></div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 flex flex-col justify-between relative">
+<span class="font-mono text-[10px] text-outline uppercase tracking-tighter mb-4">_MODEL_READINESS</span>
+<div class="flex items-center gap-4">
+<div class="relative w-12 h-12 flex items-center justify-center">
+<svg class="w-full h-full -rotate-90">
+<circle class="text-surface-container-highest" cx="24" cy="24" fill="transparent" r="20" stroke="currentColor" stroke-width="4"></circle>
+<circle class="text-tertiary" cx="24" cy="24" fill="transparent" r="20" stroke="currentColor" stroke-dasharray="125.6" stroke-dashoffset="12.5" stroke-width="4"></circle>
+</svg>
+<span class="absolute text-[10px] font-mono font-bold">91%</span>
+</div>
+<div>
+<span class="block text-xl font-headline font-bold text-on-surface tracking-tight">OPERATIONAL</span>
+<span class="block text-[10px] font-mono text-outline uppercase">SIGINT_OVERRIDE_ENABLED</span>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 flex flex-col justify-center gap-4">
+<button class="w-full py-3 px-4 bg-primary text-on-primary font-headline font-bold text-xs uppercase tracking-widest glow-primary transition-all active:scale-95">
+<span class="material-symbols-outlined text-sm mr-2" data-icon="download">download</span>
+                        DOWNLOAD ALL UNLABELLED
+                    </button>
+<div class="flex items-center gap-2 px-2">
+<span class="w-1.5 h-1.5 bg-tertiary"></span>
+<span class="font-mono text-[9px] text-outline uppercase">Queue: 40.2GB JSONL Data</span>
+</div>
+</div>
+</section>
+<!-- Grid Controls -->
+<section class="flex flex-col md:flex-row justify-between items-end gap-4">
+<div class="flex gap-1 bg-surface-container p-1 ghost-border">
+<button class="px-6 py-2 bg-surface-container-high text-primary font-mono text-[10px] font-bold uppercase tracking-widest border-b-2 border-primary">ALL</button>
+<button class="px-6 py-2 text-outline font-mono text-[10px] font-bold uppercase tracking-widest hover:text-on-surface transition-colors">LABELLED</button>
+<button class="px-6 py-2 text-outline font-mono text-[10px] font-bold uppercase tracking-widest hover:text-on-surface transition-colors">NOT LABELLED</button>
+</div>
+<div class="flex items-center gap-3 font-mono text-[10px] text-outline">
+<span>SORT_BY:</span>
+<select class="bg-surface-container border-none text-[10px] py-1 pl-2 pr-8 focus:ring-0 text-on-surface uppercase font-mono">
+<option>DATE_INGESTED (DESC)</option>
+<option>CONFIDENCE_SCORE</option>
+<option>SOURCE_ORIGIN</option>
+</select>
+</div>
+</section>
+<!-- Technical Data Grid -->
+<section class="bg-surface-container-low relative">
+<!-- Corner Accents -->
+<div class="absolute -top-[1px] -left-[1px] w-2 h-2 border-t border-l border-primary/40"></div>
+<div class="absolute -top-[1px] -right-[1px] w-2 h-2 border-t border-r border-primary/40"></div>
+<div class="absolute -bottom-[1px] -left-[1px] w-2 h-2 border-b border-l border-primary/40"></div>
+<div class="absolute -bottom-[1px] -right-[1px] w-2 h-2 border-b border-r border-primary/40"></div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-lowest border-b border-outline-variant/10">
+<th class="py-4 px-6 font-mono text-[10px] text-outline font-bold uppercase tracking-tighter">REF_ID</th>
+<th class="py-4 px-6 font-mono text-[10px] text-outline font-bold uppercase tracking-tighter">SOURCE_NODE</th>
+<th class="py-4 px-6 font-mono text-[10px] text-outline font-bold uppercase tracking-tighter">DATE_INGESTED</th>
+<th class="py-4 px-6 font-mono text-[10px] text-outline font-bold uppercase tracking-tighter">CLASSIFICATION</th>
+<th class="py-4 px-6 font-mono text-[10px] text-outline font-bold uppercase tracking-tighter text-right">ACTIONS_EXEC</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/5">
+<!-- Entry 1 -->
+<tr class="hover:bg-surface-container/50 transition-colors group">
+<td class="py-4 px-6 font-mono text-xs text-primary font-medium tracking-tight">ART-901-QX</td>
+<td class="py-4 px-6 font-body text-xs text-on-surface-variant">GEO_RELAY_BRAVO</td>
+<td class="py-4 px-6 font-mono text-[10px] text-outline">2023.10.24 14:02:11</td>
+<td class="py-4 px-6"><div class="flex flex-wrap gap-1.5">
+<span class="px-2 py-0.5 bg-tertiary/10 text-tertiary text-[9px] font-mono border border-tertiary/20 uppercase">THREAT_VECTOR</span>
+<span class="px-2 py-0.5 bg-primary/10 text-primary text-[9px] font-mono border border-primary/20 uppercase">ACTIVE</span>
+<span class="px-2 py-0.5 bg-surface-variant text-outline text-[9px] font-mono uppercase">L3_SENSITIVITY</span>
+</div></td>
+<td class="py-4 px-6 text-right">
+<div class="flex justify-end gap-2 opacity-40 group-hover:opacity-100 transition-opacity">
+<button class="p-2 hover:bg-surface-container-highest text-outline hover:text-primary"><span class="material-symbols-outlined text-sm" data-icon="download">download</span></button>
+<button class="p-2 hover:bg-surface-container-highest text-outline hover:text-primary"><span class="material-symbols-outlined text-sm" data-icon="edit_note">edit_note</span></button>
+</div>
+</td>
+</tr>
+<!-- Entry 2 (Unlabelled) -->
+<tr class="hover:bg-surface-container/50 transition-colors group">
+<td class="py-4 px-6 font-mono text-xs text-primary font-medium tracking-tight">ART-904-LZ</td>
+<td class="py-4 px-6 font-body text-xs text-on-surface-variant">SAT_UPLINK_09</td>
+<td class="py-4 px-6 font-mono text-[10px] text-outline">2023.10.24 16:44:59</td>
+<td class="py-4 px-6"><div class="flex flex-wrap gap-1.5">
+<span class="px-2 py-0.5 bg-outline-variant/10 text-outline text-[9px] font-mono italic uppercase">PENDING_REVIEW</span>
+<span class="px-2 py-0.5 bg-error/10 text-error text-[9px] font-mono border border-error/20 uppercase">HIGH_PRIORITY</span>
+</div></td>
+<td class="py-4 px-6 text-right">
+<div class="flex justify-end gap-2">
+<button class="px-3 py-1 bg-primary text-on-primary font-headline font-bold text-[10px] uppercase tracking-widest active:scale-95">LABEL ENTRY</button>
+<button class="p-2 hover:bg-surface-container-highest text-outline hover:text-primary"><span class="material-symbols-outlined text-sm" data-icon="download">download</span></button>
+</div>
+</td>
+</tr>
+<!-- Entry 3 -->
+<tr class="hover:bg-surface-container/50 transition-colors group">
+<td class="py-4 px-6 font-mono text-xs text-primary font-medium tracking-tight">ART-905-TT</td>
+<td class="py-4 px-6 font-body text-xs text-on-surface-variant">INFRA_TAP_NY</td>
+<td class="py-4 px-6 font-mono text-[10px] text-outline">2023.10.25 01:20:00</td>
+<td class="py-4 px-6"><div class="flex flex-wrap gap-1.5">
+<span class="px-2 py-0.5 bg-secondary/10 text-secondary text-[9px] font-mono border border-secondary/20 uppercase">ECON_ANOMALY</span>
+<span class="px-2 py-0.5 bg-surface-variant text-outline text-[9px] font-mono uppercase">GEO_BOUND</span>
+<span class="px-2 py-0.5 bg-tertiary/10 text-tertiary text-[9px] font-mono border border-tertiary/20 uppercase">VERIFIED</span>
+</div></td>
+<td class="py-4 px-6 text-right">
+<div class="flex justify-end gap-2 opacity-40 group-hover:opacity-100 transition-opacity">
+<button class="p-2 hover:bg-surface-container-highest text-outline hover:text-primary"><span class="material-symbols-outlined text-sm" data-icon="download">download</span></button>
+<button class="p-2 hover:bg-surface-container-highest text-outline hover:text-primary"><span class="material-symbols-outlined text-sm" data-icon="edit_note">edit_note</span></button>
+</div>
+</td>
+</tr>
+<!-- Entry 4 (Unlabelled) -->
+<tr class="hover:bg-surface-container/50 transition-colors group">
+<td class="py-4 px-6 font-mono text-xs text-primary font-medium tracking-tight">ART-911-FK</td>
+<td class="py-4 px-6 font-body text-xs text-on-surface-variant">EXT_SCRAPE_API</td>
+<td class="py-4 px-6 font-mono text-[10px] text-outline">2023.10.25 04:12:05</td>
+<td class="py-4 px-6"><div class="flex flex-wrap gap-1.5">
+<span class="px-2 py-0.5 bg-outline-variant/10 text-outline text-[9px] font-mono italic uppercase">PENDING_REVIEW</span>
+<span class="px-2 py-0.5 bg-surface-variant text-outline text-[9px] font-mono uppercase">UNASSIGNED</span>
+</div></td>
+<td class="py-4 px-6 text-right">
+<div class="flex justify-end gap-2">
+<button class="px-3 py-1 bg-primary text-on-primary font-headline font-bold text-[10px] uppercase tracking-widest active:scale-95">LABEL ENTRY</button>
+<button class="p-2 hover:bg-surface-container-highest text-outline hover:text-primary"><span class="material-symbols-outlined text-sm" data-icon="download">download</span></button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Footer Pagination Control -->
+<div class="flex justify-between items-center p-4 bg-surface-container-lowest font-mono text-[10px] text-outline">
+<div class="flex items-center gap-4">
+<span>PAGE_INDEX: 001/244</span>
+<span>SHOWING: 50/12,204 ENTRIES</span>
+</div>
+<div class="flex gap-2">
+<button class="px-3 py-1 bg-surface-container-high hover:text-on-surface transition-colors">PREV</button>
+<button class="px-3 py-1 bg-surface-container-high hover:text-on-surface transition-colors">NEXT</button>
+</div>
+</div>
+</section>
+</div>
+<!-- Terminal Status Line Footer -->
+<footer class="h-8 bg-surface-container-lowest border-t border-outline-variant/10 flex items-center justify-between px-6 font-mono text-[9px] text-outline uppercase tracking-widest">
+<div class="flex items-center gap-4">
+<span class="flex items-center gap-1"><span class="w-2 h-2 bg-tertiary"></span> SYSTEM_ONLINE</span>
+<span>ENC: AES-256-GCM</span>
+<span>LATENCY: 12ms</span>
+</div>
+<div>
+                [ USER: ROOT_OPERATOR_01 ] [ SESSION_EXP: 14400s ]
+            </div>
+</footer>
+</main>
+<!-- Contextual FAB - Only for specific global tasks -->
+<button class="fixed bottom-12 right-12 w-14 h-14 bg-primary text-on-primary flex items-center justify-center shadow-[0_0_20px_rgba(169,199,255,0.4)] active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="add_circle" style="font-variation-settings: 'FILL' 1;">add_circle</span>
+</button>
+</body></html>

@@ -1,0 +1,32 @@
+[project]
+name = "monitoring-api"
+version = "0.1.0"
+description = "Monitoring API for Alexandria — aggregates container, queue, and database status"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn>=0.34",
+    "websockets>=14.0",
+    "httpx>=0.28",
+    "docker>=7.0",
+    "psycopg[binary]>=3.1",
+    "pika>=1.3",
+    "neo4j>=5.0",
+]
+
+[dependency-groups]
+dev = ["pytest>=8.0", "ruff>=0.11", "httpx>=0.28"]
+
+[build-system]
+requires = ["uv_build>=0.10.11,<0.11.0"]
+build-backend = "uv_build"
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

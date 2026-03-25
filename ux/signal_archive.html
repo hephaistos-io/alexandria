@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TACTICAL_MONOLITH_OS - SIGNAL_ARCHIVE</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f131c;
+            color: #dfe2ee;
+            margin: 0;
+            overflow-x: hidden;
+        }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .font-headline { font-family: 'Space Grotesk', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Scanning Line Texture */
+        .scanline-overlay {
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(223, 226, 238, 0.02) 0px,
+                rgba(223, 226, 238, 0.02) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+        }
+    </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "secondary": "#bac8dc",
+              "on-secondary-fixed": "#0f1c2c",
+              "primary": "#a9c7ff",
+              "on-primary-container": "#003c79",
+              "outline-variant": "#424751",
+              "tertiary-fixed": "#79f7ea",
+              "inverse-primary": "#225eaa",
+              "secondary-fixed-dim": "#bac8dc",
+              "on-surface": "#dfe2ee",
+              "surface-container-high": "#262a33",
+              "on-tertiary-fixed": "#00201d",
+              "on-tertiary-fixed-variant": "#00504a",
+              "on-tertiary": "#003733",
+              "on-primary-fixed-variant": "#00468b",
+              "on-primary-fixed": "#001b3d",
+              "surface-container-low": "#181c24",
+              "error": "#ffb4ab",
+              "on-secondary-fixed-variant": "#3a4859",
+              "secondary-container": "#3a4859",
+              "tertiary-fixed-dim": "#5adace",
+              "surface-dim": "#0f131c",
+              "surface-container-lowest": "#0a0e16",
+              "on-error-container": "#ffdad6",
+              "surface-tint": "#a9c7ff",
+              "primary-fixed": "#d6e3ff",
+              "on-tertiary-container": "#004641",
+              "on-secondary": "#243141",
+              "on-background": "#dfe2ee",
+              "inverse-surface": "#dfe2ee",
+              "tertiary-container": "#31bbaf",
+              "surface-variant": "#31353e",
+              "surface-container-highest": "#31353e",
+              "surface-container": "#1c2028",
+              "tertiary": "#5adace",
+              "surface": "#0f131c",
+              "on-surface-variant": "#c2c6d3",
+              "on-error": "#690005",
+              "error-container": "#93000a",
+              "outline": "#8c919c",
+              "on-secondary-container": "#a8b6ca",
+              "background": "#0f131c",
+              "primary-container": "#76a9fa",
+              "primary-fixed-dim": "#a9c7ff",
+              "surface-bright": "#353942",
+              "on-primary": "#003062",
+              "inverse-on-surface": "#2c3039",
+              "secondary-fixed": "#d6e4f9"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"],
+              "label": ["Space Grotesk"]
+            },
+            borderRadius: {"DEFAULT": "0", "lg": "0", "xl": "0", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+</head>
+<body class="bg-surface text-on-surface selection:bg-primary selection:text-on-primary">
+<div class="fixed inset-0 scanline-overlay z-50"></div>
+<div class="flex h-screen overflow-hidden">
+<!-- SideNavBar (JSON Derived) -->
+<aside class="hidden md:flex flex-col h-full w-64 bg-[#181c24] border-r border-[#424751]/15 z-40">
+<div class="p-6">
+<div class="flex items-center gap-3 mb-8">
+<div class="w-2 h-2 bg-tertiary"></div>
+<div>
+<div class="font-headline font-bold text-lg tracking-widest text-primary uppercase leading-tight">SYSTEM_CORE</div>
+<div class="font-mono text-[10px] text-outline tracking-widest">[40.7128° N]</div>
+</div>
+</div>
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-outline hover:text-on-surface transition-all font-mono text-[10px] tracking-widest uppercase hover:bg-[#1c2028]" href="#">
+<span class="material-symbols-outlined text-sm">radar</span>
+                        INTERCEPT_FEED
+                    </a>
+<a class="flex items-center gap-3 px-4 py-3 text-outline hover:text-on-surface transition-all font-mono text-[10px] tracking-widest uppercase hover:bg-[#1c2028]" href="#">
+<span class="material-symbols-outlined text-sm">public</span>
+                        GEOSPATIAL_MAP
+                    </a>
+<a class="flex items-center gap-3 px-4 py-3 text-outline hover:text-on-surface transition-all font-mono text-[10px] tracking-widest uppercase hover:bg-[#1c2028]" href="#">
+<span class="material-symbols-outlined text-sm">analytics</span>
+                        DATA_CLASSIFY
+                    </a>
+<a class="flex items-center gap-3 px-4 py-3 text-outline hover:text-on-surface transition-all font-mono text-[10px] tracking-widest uppercase hover:bg-[#1c2028]" href="#">
+<span class="material-symbols-outlined text-sm">settings_input_component</span>
+                        INFRASTRUCTURE
+                    </a>
+<a class="flex items-center gap-3 px-4 py-3 text-outline hover:text-on-surface transition-all font-mono text-[10px] tracking-widest uppercase hover:bg-[#1c2028]" href="#">
+<span class="material-symbols-outlined text-sm">label</span>
+                        LABELLING
+                    </a>
+<a class="flex items-center gap-3 px-4 py-3 bg-[#262a33] text-primary border-l-4 border-primary shadow-[0_0_12px_rgba(169,199,255,0.2)] font-mono text-[10px] tracking-widest uppercase" href="#">
+<span class="material-symbols-outlined text-sm">archive</span>
+                        SIGNAL_ARCHIVE
+                    </a>
+</nav>
+<button class="mt-8 w-full py-3 bg-primary text-on-primary font-mono text-[10px] tracking-widest uppercase font-bold hover:shadow-[0_0_15px_rgba(169,199,255,0.4)] transition-all active:scale-95">
+                    NEW_ENCRYPTION
+                </button>
+</div>
+<div class="mt-auto p-6 border-t border-outline-variant/10 space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 text-outline/60 hover:text-on-surface font-mono text-[10px] tracking-widest uppercase" href="#">
+<span class="material-symbols-outlined text-sm">settings</span>
+                    SETTINGS
+                </a>
+<a class="flex items-center gap-3 px-4 py-2 text-outline/60 hover:text-on-surface font-mono text-[10px] tracking-widest uppercase" href="#">
+<span class="material-symbols-outlined text-sm">power_settings_new</span>
+                    LOGOUT
+                </a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col min-w-0 bg-surface relative">
+<!-- TopAppBar (JSON Derived) -->
+<header class="flex justify-between items-center w-full px-6 h-14 bg-[#181c24] z-30">
+<div class="flex items-center gap-4">
+<span class="font-headline text-xl font-bold tracking-widest text-primary uppercase before:content-['//'] before:mr-2">TACTICAL_MONOLITH_OS</span>
+<span class="h-4 w-px bg-outline-variant/30 hidden md:block"></span>
+<span class="font-mono text-[10px] text-primary/70 tracking-[0.2em] hidden md:block">SIGNAL_ARCHIVE // ACTIVE_SESSION</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden lg:flex items-center gap-4 text-outline">
+<span class="material-symbols-outlined text-lg cursor-pointer hover:text-primary transition-colors">sensors</span>
+<span class="material-symbols-outlined text-lg cursor-pointer hover:text-primary transition-colors">memory</span>
+<span class="material-symbols-outlined text-lg cursor-pointer hover:text-primary transition-colors">security</span>
+</div>
+<div class="flex items-center gap-3 pl-4 border-l border-outline-variant/30">
+<div class="text-right hidden sm:block">
+<div class="font-mono text-[10px] leading-none text-primary">OPERATOR_01</div>
+<div class="font-mono text-[8px] leading-none text-outline mt-1 uppercase">Level 4 Access</div>
+</div>
+<img class="w-8 h-8 object-cover border border-primary/30" data-alt="Operator portrait in dim tactical lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOYRDq7mZKMh9Cvhcnt4CdjmfyLpy0uql2haOWlhS1z5P2jOltcjiPvTcKp-M-I1BctAL6oG2OblLnTAnsGqh1eJYCJBOvF-ccs7w5nAQnUvurYsnLdS8Zm4iRX8YC0RFBGInegoY-88NF1uDWZEq4nK5E2qsRadWFYaDGWnC0imnWNITHpA9Nh3L5Vtb-wPlS5rlb3cF5oyRq5SLVZ-BqdiHb2Ps2I2jfNllWLR_qjVYRaPfE8Rny3kK7KDiPOYj2uib3ZAN1plc"/>
+</div>
+</div>
+</header>
+<!-- Content Area -->
+<div class="flex-1 overflow-y-auto p-6 md:p-8 space-y-8 custom-scrollbar">
+<!-- Search & Filters -->
+<section class="max-w-7xl mx-auto w-full">
+<div class="bg-surface-container-low p-1 border-b border-outline-variant/20 flex flex-col md:flex-row items-stretch md:items-center gap-4">
+<div class="flex-1 relative flex items-center group">
+<span class="material-symbols-outlined absolute left-4 text-outline group-focus-within:text-primary transition-colors">search</span>
+<input class="w-full bg-surface-container-highest border-none focus:ring-0 text-on-surface font-mono text-xs pl-12 pr-4 py-4 placeholder:text-outline/40" placeholder="SEARCH_ARCHIVE // INPUT_QUERY..." type="text"/>
+<div class="absolute right-4 font-mono text-[8px] text-outline/30 select-none">CMD+F</div>
+</div>
+<div class="flex items-center bg-surface-container-highest px-4 border-l border-outline-variant/20">
+<span class="font-mono text-[10px] text-outline mr-4 uppercase">Sort: DATE_DESC</span>
+<button class="p-2 text-outline hover:text-primary">
+<span class="material-symbols-outlined">filter_list</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Intelligence Grid -->
+<section class="max-w-7xl mx-auto w-full">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Article Card 1 -->
+<div class="bg-surface-container-low group flex flex-col transition-all hover:bg-surface-container border-l-2 border-transparent hover:border-primary">
+<div class="bg-surface-container-highest px-4 py-2 flex justify-between items-center border-b border-outline-variant/10">
+<span class="font-mono text-[10px] text-primary font-bold tracking-tighter">ART-901-QX</span>
+<span class="font-mono text-[9px] text-outline">2024.03.15 14:02</span>
+</div>
+<div class="p-5 flex-1 flex flex-col">
+<h3 class="font-headline font-bold text-base text-on-surface group-hover:text-primary transition-colors mb-3 leading-snug">Satellite Telemetry Shift in North Atlantic Corridor</h3>
+<p class="text-on-surface-variant text-xs leading-relaxed mb-6 font-body opacity-80">Unusual orbital oscillation detected in Sector 7-G. High-frequency encryption handshake observed across multiple non-state relay nodes.</p>
+<div class="mt-auto flex flex-wrap gap-2">
+<span class="px-2 py-0.5 bg-error/10 border border-error/20 text-error font-mono text-[9px]">[THREAT_VECTOR]</span>
+<span class="px-2 py-0.5 bg-tertiary/10 border border-tertiary/20 text-tertiary font-mono text-[9px]">[ACTIVE]</span>
+<span class="px-2 py-0.5 bg-outline-variant/20 border border-outline-variant/30 text-on-surface-variant font-mono text-[9px]">[L3_SENSITIVITY]</span>
+</div>
+</div>
+</div>
+<!-- Article Card 2 -->
+<div class="bg-surface-container-low group flex flex-col transition-all hover:bg-surface-container border-l-2 border-transparent hover:border-primary">
+<div class="bg-surface-container-highest px-4 py-2 flex justify-between items-center border-b border-outline-variant/10">
+<span class="font-mono text-[10px] text-primary font-bold tracking-tighter">ART-905-VY</span>
+<span class="font-mono text-[9px] text-outline">2024.03.14 09:12</span>
+</div>
+<div class="p-5 flex-1 flex flex-col">
+<h3 class="font-headline font-bold text-base text-on-surface group-hover:text-primary transition-colors mb-3 leading-snug">Deep Sea Fiber Breach: Eurasian Convergence Point</h3>
+<p class="text-on-surface-variant text-xs leading-relaxed mb-6 font-body opacity-80">Physical tampering suspected at 4,000m depth. Sub-surface acoustic anomalies consistent with drone-deployable cutting tools.</p>
+<div class="mt-auto flex flex-wrap gap-2">
+<span class="px-2 py-0.5 bg-error/10 border border-error/20 text-error font-mono text-[9px]">[CRITICAL]</span>
+<span class="px-2 py-0.5 bg-outline-variant/20 border border-outline-variant/30 text-on-surface-variant font-mono text-[9px]">[L4_TOP_SECRET]</span>
+</div>
+</div>
+</div>
+<!-- Article Card 3 -->
+<div class="bg-surface-container-low group flex flex-col transition-all hover:bg-surface-container border-l-2 border-transparent hover:border-primary">
+<div class="bg-surface-container-highest px-4 py-2 flex justify-between items-center border-b border-outline-variant/10">
+<span class="font-mono text-[10px] text-primary font-bold tracking-tighter">ART-912-LM</span>
+<span class="font-mono text-[9px] text-outline">2024.03.13 22:45</span>
+</div>
+<div class="p-5 flex-1 flex flex-col">
+<h3 class="font-headline font-bold text-base text-on-surface group-hover:text-primary transition-colors mb-3 leading-snug">Quantum Entropy Spike: Basel Hub Analysis</h3>
+<p class="text-on-surface-variant text-xs leading-relaxed mb-6 font-body opacity-80">Local decryption servers reporting 400% increase in background noise. Potential early-stage brute force via quantum-capable hardware.</p>
+<div class="mt-auto flex flex-wrap gap-2">
+<span class="px-2 py-0.5 bg-primary/10 border border-primary/20 text-primary font-mono text-[9px]">[DATA_SPIKE]</span>
+<span class="px-2 py-0.5 bg-tertiary/10 border border-tertiary/20 text-tertiary font-mono text-[9px]">[STABLE]</span>
+</div>
+</div>
+</div>
+<!-- Article Card 4 -->
+<div class="bg-surface-container-low group flex flex-col transition-all hover:bg-surface-container border-l-2 border-transparent hover:border-primary">
+<div class="bg-surface-container-highest px-4 py-2 flex justify-between items-center border-b border-outline-variant/10">
+<span class="font-mono text-[10px] text-primary font-bold tracking-tighter">ART-922-ZK</span>
+<span class="font-mono text-[9px] text-outline">2024.03.13 18:30</span>
+</div>
+<div class="p-5 flex-1 flex flex-col">
+<h3 class="font-headline font-bold text-base text-on-surface group-hover:text-primary transition-colors mb-3 leading-snug">Urban Mesh Network Interference: SECTOR_B4</h3>
+<p class="text-on-surface-variant text-xs leading-relaxed mb-6 font-body opacity-80">Ghost packets circulating in municipal smart grid. Origins traced to defunct ISP routing tables updated 4 hours ago.</p>
+<div class="mt-auto flex flex-wrap gap-2">
+<span class="px-2 py-0.5 bg-outline-variant/20 border border-outline-variant/30 text-on-surface-variant font-mono text-[9px]">[LOCAL_LEVEL]</span>
+<span class="px-2 py-0.5 bg-tertiary/10 border border-tertiary/20 text-tertiary font-mono text-[9px]">[INVESTIGATING]</span>
+</div>
+</div>
+</div>
+<!-- Article Card 5 -->
+<div class="bg-surface-container-low group flex flex-col transition-all hover:bg-surface-container border-l-2 border-transparent hover:border-primary">
+<div class="bg-surface-container-highest px-4 py-2 flex justify-between items-center border-b border-outline-variant/10">
+<span class="font-mono text-[10px] text-primary font-bold tracking-tighter">ART-930-PP</span>
+<span class="font-mono text-[9px] text-outline">2024.03.12 11:00</span>
+</div>
+<div class="p-5 flex-1 flex flex-col">
+<h3 class="font-headline font-bold text-base text-on-surface group-hover:text-primary transition-colors mb-3 leading-snug">Infiltration Vector: Zero-Day Log4J Variant</h3>
+<p class="text-on-surface-variant text-xs leading-relaxed mb-6 font-body opacity-80">New mutation of legacy exploit targeting isolated air-gapped systems via supply chain firmware updates.</p>
+<div class="mt-auto flex flex-wrap gap-2">
+<span class="px-2 py-0.5 bg-error/10 border border-error/20 text-error font-mono text-[9px]">[CRITICAL]</span>
+<span class="px-2 py-0.5 bg-error/10 border border-error/20 text-error font-mono text-[9px]">[MALWARE]</span>
+<span class="px-2 py-0.5 bg-outline-variant/20 border border-outline-variant/30 text-on-surface-variant font-mono text-[9px]">[L5_SIGMA]</span>
+</div>
+</div>
+</div>
+<!-- Article Card 6 -->
+<div class="bg-surface-container-low group flex flex-col transition-all hover:bg-surface-container border-l-2 border-transparent hover:border-primary relative overflow-hidden">
+<div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="bg-surface-container-highest px-4 py-2 flex justify-between items-center border-b border-outline-variant/10">
+<span class="font-mono text-[10px] text-primary font-bold tracking-tighter">ART-944-CC</span>
+<span class="font-mono text-[9px] text-outline">2024.03.11 04:21</span>
+</div>
+<div class="p-5 flex-1 flex flex-col relative z-10">
+<h3 class="font-headline font-bold text-base text-on-surface group-hover:text-primary transition-colors mb-3 leading-snug">Geospatial Re-Alignment: Arctic Borders</h3>
+<p class="text-on-surface-variant text-xs leading-relaxed mb-6 font-body opacity-80">Border markers in GPS databases shifted 12m south without authorized legislative updates. Digital cartography warfare suspected.</p>
+<div class="mt-auto flex flex-wrap gap-2">
+<span class="px-2 py-0.5 bg-primary/10 border border-primary/20 text-primary font-mono text-[9px]">[GEOPOLITICAL]</span>
+<span class="px-2 py-0.5 bg-outline-variant/20 border border-outline-variant/30 text-on-surface-variant font-mono text-[9px]">[RESOLVED]</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Pagination (Tactical Style) -->
+<section class="max-w-7xl mx-auto w-full pt-8 pb-12">
+<div class="flex flex-col sm:flex-row items-center justify-between gap-6 border-t border-outline-variant/20 pt-8">
+<div class="flex items-center gap-2">
+<span class="font-mono text-[10px] text-outline uppercase">Showing: 1-6 OF 284 ENTRIES</span>
+</div>
+<div class="flex items-center bg-surface-container-low">
+<button class="px-4 py-3 border border-outline-variant/20 hover:bg-surface-container-highest transition-colors flex items-center group">
+<span class="material-symbols-outlined text-sm group-hover:-translate-x-1 transition-transform">chevron_left</span>
+<span class="font-mono text-[10px] tracking-widest ml-2 uppercase">PREV_BLOCK</span>
+</button>
+<div class="flex border-y border-outline-variant/20">
+<button class="w-12 h-10 flex items-center justify-center font-mono text-[10px] bg-primary text-on-primary font-bold">01</button>
+<button class="w-12 h-10 flex items-center justify-center font-mono text-[10px] hover:bg-surface-container-highest transition-colors text-outline">02</button>
+<button class="w-12 h-10 flex items-center justify-center font-mono text-[10px] hover:bg-surface-container-highest transition-colors text-outline">03</button>
+<div class="w-12 h-10 flex items-center justify-center font-mono text-[10px] text-outline/30">...</div>
+<button class="w-12 h-10 flex items-center justify-center font-mono text-[10px] hover:bg-surface-container-highest transition-colors text-outline">48</button>
+</div>
+<button class="px-4 py-3 border border-outline-variant/20 hover:bg-surface-container-highest transition-colors flex items-center group">
+<span class="font-mono text-[10px] tracking-widest mr-2 uppercase">NEXT_BLOCK</span>
+<span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">chevron_right</span>
+</button>
+</div>
+<div class="font-mono text-[9px] text-outline/40 italic uppercase">
+                            LAST_SYNC: 2024.03.15 15:45:01_UTC
+                        </div>
+</div>
+</section>
+</div>
+<!-- Footer Meta / Status Bar -->
+<footer class="h-8 bg-surface-container-lowest border-t border-outline-variant/10 flex items-center px-6 justify-between z-30">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<div class="w-1.5 h-1.5 bg-tertiary rounded-full animate-pulse"></div>
+<span class="font-mono text-[8px] text-tertiary uppercase tracking-tighter">System Link: Stable</span>
+</div>
+<span class="font-mono text-[8px] text-outline/30">|</span>
+<span class="font-mono text-[8px] text-outline/60 uppercase">Encryption: AES-256_ACTIVE</span>
+</div>
+<div class="font-mono text-[8px] text-outline/40">
+                    TM_OS // VERSION_4.0.2 // ARCHIVE_MODULE_8
+                </div>
+</footer>
+</main>
+</div>
+</body></html>

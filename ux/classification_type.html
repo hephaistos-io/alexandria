@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TACTICAL_MONOLITH_OS - Classification Schema Manager</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#a9c7ff",
+                        "on-primary-container": "#003c79",
+                        "outline-variant": "#424751",
+                        "secondary": "#bac8dc",
+                        "on-secondary-fixed": "#0f1c2c",
+                        "surface-container-high": "#262a33",
+                        "on-tertiary-fixed": "#00201d",
+                        "tertiary-fixed": "#79f7ea",
+                        "inverse-primary": "#225eaa",
+                        "secondary-fixed-dim": "#bac8dc",
+                        "on-surface": "#dfe2ee",
+                        "on-primary-fixed": "#001b3d",
+                        "on-tertiary-fixed-variant": "#00504a",
+                        "on-tertiary": "#003733",
+                        "on-primary-fixed-variant": "#00468b",
+                        "surface-container-low": "#181c24",
+                        "on-secondary-fixed-variant": "#3a4859",
+                        "secondary-container": "#3a4859",
+                        "error": "#ffb4ab",
+                        "surface-container-lowest": "#0a0e16",
+                        "tertiary-fixed-dim": "#5adace",
+                        "surface-dim": "#0f131c",
+                        "surface-tint": "#a9c7ff",
+                        "on-error-container": "#ffdad6",
+                        "primary-fixed": "#d6e3ff",
+                        "on-tertiary-container": "#004641",
+                        "on-background": "#dfe2ee",
+                        "inverse-surface": "#dfe2ee",
+                        "tertiary-container": "#31bbaf",
+                        "surface-variant": "#31353e",
+                        "on-secondary": "#243141",
+                        "surface-container-highest": "#31353e",
+                        "tertiary": "#5adace",
+                        "surface": "#0f131c",
+                        "surface-container": "#1c2028",
+                        "outline": "#8c919c",
+                        "on-secondary-container": "#a8b6ca",
+                        "on-surface-variant": "#c2c6d3",
+                        "on-error": "#690005",
+                        "error-container": "#93000a",
+                        "primary-container": "#76a9fa",
+                        "background": "#0f131c",
+                        "surface-bright": "#353942",
+                        "primary-fixed-dim": "#a9c7ff",
+                        "secondary-fixed": "#d6e4f9",
+                        "on-primary": "#003062",
+                        "inverse-on-surface": "#2c3039"
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Space Grotesk"],
+                        "mono": ["JetBrains Mono"]
+                    },
+                    borderRadius: {"DEFAULT": "0rem", "lg": "0rem", "xl": "0rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .scanline {
+            background: linear-gradient(to bottom, transparent 50%, rgba(223, 226, 238, 0.02) 50%);
+            background-size: 100% 4px;
+        }
+        .glass-panel {
+            backdrop-filter: blur(20px);
+            background-color: rgba(49, 53, 62, 0.7);
+        }
+        .primary-glow {
+            box-shadow: 0 0 12px rgba(169, 199, 255, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body overflow-hidden h-screen flex select-none">
+<!-- Sidebar Navigation -->
+<aside class="w-64 bg-[#0f131c] flex flex-col h-full py-4 border-r-0 z-20">
+<div class="px-6 mb-8">
+<h1 class="text-lg font-black text-[#76A9FA] font-headline tracking-widest uppercase">INTEL_CORE_v4.2</h1>
+<p class="font-mono text-[10px] text-outline tracking-[0.2em]">[40.7128° N, 74.0060° W]</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="text-slate-500 px-6 py-3 flex items-center gap-3 font-mono text-[11px] tracking-widest uppercase hover:bg-[#262a33] hover:text-[#76A9FA] transition-all" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="radar">radar</span>
+                INTERCEPT_FEED
+            </a>
+<a class="text-slate-500 px-6 py-3 flex items-center gap-3 font-mono text-[11px] tracking-widest uppercase hover:bg-[#262a33] hover:text-[#76A9FA] transition-all" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="public">public</span>
+                GEOSPATIAL_MAP
+            </a>
+<a class="bg-[#1c2028] text-[#76A9FA] border-l-4 border-[#76A9FA] shadow-[0_0_12px_rgba(118,169,250,0.3)] px-6 py-3 flex items-center gap-3 font-mono text-[11px] tracking-widest uppercase" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="security_update_good">security_update_good</span>
+                DATA_CLASSIFY
+            </a>
+<a class="text-slate-500 px-6 py-3 flex items-center gap-3 font-mono text-[11px] tracking-widest uppercase hover:bg-[#262a33] hover:text-[#76A9FA] transition-all" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="router">router</span>
+                INFRASTRUCTURE
+            </a>
+<a class="text-slate-500 px-6 py-3 flex items-center gap-3 font-mono text-[11px] tracking-widest uppercase hover:bg-[#262a33] hover:text-[#76A9FA] transition-all" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="label_important">label_important</span>
+                LABELLING
+            </a>
+<a class="text-slate-500 px-6 py-3 flex items-center gap-3 font-mono text-[11px] tracking-widest uppercase hover:bg-[#262a33] hover:text-[#76A9FA] transition-all" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="history_edu">history_edu</span>
+                SIGNAL_ARCHIVE
+            </a>
+</nav>
+<div class="px-6 mt-auto pt-4 flex items-center gap-3">
+<div class="w-8 h-8 bg-surface-container-high border border-outline-variant/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-lg" data-icon="person">person</span>
+</div>
+<div class="flex flex-col">
+<span class="font-mono text-[10px] text-on-surface">OPERATOR_ID_ALPHA</span>
+<span class="font-mono text-[8px] text-tertiary">LEVEL_5_CLEARANCE</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col min-w-0 bg-surface relative overflow-hidden">
+<!-- Scanline Overlay -->
+<div class="absolute inset-0 pointer-events-none scanline opacity-30 z-10"></div>
+<!-- Top Navigation Bar -->
+<header class="bg-[#0f131c] flex justify-between items-center w-full px-6 h-16 border-b-0 z-20">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-headline tracking-tighter uppercase text-[#76A9FA]">TACTICAL_MONOLITH_OS</span>
+<div class="hidden lg:flex items-center gap-6">
+<span class="text-[#76A9FA] border-b-2 border-[#76A9FA] h-16 flex items-center px-1 text-xs font-mono tracking-widest uppercase cursor-default">SCHEMA_MANAGER</span>
+<span class="text-slate-500 hover:text-slate-300 h-16 flex items-center px-1 text-xs font-mono tracking-widest uppercase cursor-pointer transition-colors duration-150">VALIDATION_QUEUE</span>
+<span class="text-slate-500 hover:text-slate-300 h-16 flex items-center px-1 text-xs font-mono tracking-widest uppercase cursor-pointer transition-colors duration-150">POLICIES</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="bg-[#181c24] flex items-center px-3 py-1 gap-2 border border-outline-variant/15">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="search">search</span>
+<input class="bg-transparent border-none text-[10px] font-mono text-primary focus:ring-0 w-32 placeholder:text-slate-600" placeholder="QUERY_LABELS..." type="text"/>
+</div>
+<div class="flex items-center gap-1">
+<button class="w-10 h-10 flex items-center justify-center hover:bg-[#262a33] text-primary transition-colors duration-150">
+<span class="material-symbols-outlined" data-icon="sensors">sensors</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center hover:bg-[#262a33] text-primary transition-colors duration-150">
+<span class="material-symbols-outlined" data-icon="security">security</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center hover:bg-[#262a33] text-primary transition-colors duration-150">
+<span class="material-symbols-outlined" data-icon="terminal">terminal</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Content Grid -->
+<div class="p-8 grid grid-cols-12 gap-8 overflow-y-auto z-10">
+<!-- Left Column: Schema Health & New Label -->
+<div class="col-span-12 xl:col-span-4 flex flex-col gap-8">
+<!-- Schema Health Module -->
+<section class="bg-surface-container-low border-none p-6 relative">
+<div class="absolute top-0 right-0 p-2 text-[10px] font-mono text-outline-variant/40 select-none">[SEC_DASH_01]</div>
+<div class="flex items-center gap-2 mb-6">
+<div class="w-1 h-4 bg-tertiary"></div>
+<h2 class="font-headline text-lg tracking-tight uppercase">Schema Health</h2>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-6">
+<div class="bg-surface-container p-4">
+<p class="font-mono text-[10px] text-outline uppercase mb-1">Total Labels</p>
+<p class="font-headline text-3xl text-primary font-bold">128</p>
+</div>
+<div class="bg-surface-container p-4">
+<p class="font-mono text-[10px] text-outline uppercase mb-1">Index Coverage</p>
+<p class="font-headline text-3xl text-tertiary font-bold">94.2%</p>
+</div>
+</div>
+<div class="space-y-4">
+<div>
+<div class="flex justify-between font-mono text-[10px] mb-2">
+<span>DISTRIBUTION_BY_CLASS</span>
+<span class="text-tertiary">OPTIMAL</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container flex">
+<div class="h-full bg-primary" style="width: 45%;"></div>
+<div class="h-full bg-secondary" style="width: 25%;"></div>
+<div class="h-full bg-tertiary" style="width: 15%;"></div>
+<div class="h-full bg-outline-variant" style="width: 15%;"></div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-y-2">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 bg-primary"></div>
+<span class="font-mono text-[9px] text-outline">THREAT_LEVEL</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 bg-secondary"></div>
+<span class="font-mono text-[9px] text-outline">GEO_ENTITIES</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 bg-tertiary"></div>
+<span class="font-mono text-[9px] text-outline">FIN_ANOMALY</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 bg-outline-variant"></div>
+<span class="font-mono text-[9px] text-outline">META_DATA</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Add New Label Module -->
+<section class="bg-surface-container-low p-6 relative">
+<div class="absolute top-0 right-0 p-2 text-[10px] font-mono text-outline-variant/40 select-none">[SYS_APPEND]</div>
+<div class="flex items-center gap-2 mb-6">
+<div class="w-1 h-4 bg-primary"></div>
+<h2 class="font-headline text-lg tracking-tight uppercase">Define_New_Entity</h2>
+</div>
+<form class="space-y-6">
+<div class="relative">
+<label class="block font-mono text-[10px] text-outline uppercase mb-2">Label Identity</label>
+<input class="w-full bg-surface-container-highest border-0 border-b border-outline p-3 font-mono text-xs text-on-surface focus:ring-0 focus:border-primary transition-all" placeholder="e.g. CYBER_PROTOCOL" type="text"/>
+<span class="absolute top-0 right-0 font-mono text-[8px] text-outline-variant">[KEY_STRING]</span>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="relative">
+<label class="block font-mono text-[10px] text-outline uppercase mb-2">Hex Code</label>
+<div class="flex items-center bg-surface-container-highest border-0 border-b border-outline p-3">
+<span class="text-outline-variant font-mono text-xs mr-2">#</span>
+<input class="w-full bg-transparent border-none p-0 font-mono text-xs text-on-surface focus:ring-0" placeholder="76A9FA" type="text"/>
+</div>
+</div>
+<div class="relative">
+<label class="block font-mono text-[10px] text-outline uppercase mb-2">Namespace</label>
+<select class="w-full bg-surface-container-highest border-0 border-b border-outline p-3 font-mono text-xs text-on-surface focus:ring-0">
+<option>GLOBAL_SEC</option>
+<option>REGIONAL_IO</option>
+<option>INTERNAL_LOG</option>
+</select>
+</div>
+</div>
+<div class="relative">
+<label class="block font-mono text-[10px] text-outline uppercase mb-2">Telemetry Description</label>
+<textarea class="w-full bg-surface-container-highest border-0 border-b border-outline p-3 font-mono text-xs text-on-surface focus:ring-0 focus:border-primary transition-all resize-none" placeholder="Define the operational parameters of this classification..." rows="3"></textarea>
+</div>
+<button class="w-full bg-primary text-on-primary py-4 font-headline font-bold uppercase tracking-widest primary-glow transition-all hover:brightness-110 active:scale-[0.98]" type="submit">
+                            INITIATE_DEPLOYMENT
+                        </button>
+</form>
+</section>
+</div>
+<!-- Right Column: Classification List -->
+<div class="col-span-12 xl:col-span-8">
+<div class="bg-surface-container-low min-h-full flex flex-col">
+<div class="p-6 border-b border-outline-variant/10 flex justify-between items-center">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="terminal">terminal</span>
+<h2 class="font-headline text-xl tracking-tight uppercase font-bold">Registry_Interface</h2>
+</div>
+<div class="flex gap-4">
+<button class="font-mono text-[10px] text-outline hover:text-primary transition-colors">_EXPORT_CSV</button>
+<button class="font-mono text-[10px] text-outline hover:text-primary transition-colors">_BULK_EDIT</button>
+</div>
+</div>
+<div class="p-0">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-highest/50">
+<th class="px-6 py-4 font-mono text-[10px] text-outline uppercase tracking-widest border-b border-outline-variant/10">Descriptor</th>
+<th class="px-6 py-4 font-mono text-[10px] text-outline uppercase tracking-widest border-b border-outline-variant/10">Definition_Node</th>
+<th class="px-6 py-4 font-mono text-[10px] text-outline uppercase tracking-widest border-b border-outline-variant/10">Usage_Metrics</th>
+<th class="px-6 py-4 font-mono text-[10px] text-outline uppercase tracking-widest border-b border-outline-variant/10 text-right">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/5">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-high transition-colors group">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-2 h-8 bg-error"></div>
+<div class="flex flex-col">
+<span class="font-mono text-sm font-bold text-error tracking-tight">THREAT_VECTOR</span>
+<span class="font-mono text-[8px] text-outline-variant">ID: 8821-X</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-5">
+<p class="text-xs text-on-surface-variant max-w-xs leading-relaxed">Active identification of aggressive digital or physical intrusion attempts targeting core infrastructure.</p>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-baseline gap-2">
+<span class="font-mono text-base text-primary">12,402</span>
+<span class="font-mono text-[9px] text-tertiary">↑ 4%</span>
+</div>
+</td>
+<td class="px-6 py-5 text-right">
+<div class="inline-flex items-center gap-2 px-3 py-1 bg-error/10 border border-error/20">
+<span class="w-1.5 h-1.5 bg-error"></span>
+<span class="font-mono text-[9px] text-error">CRITICAL</span>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-high transition-colors group">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-2 h-8 bg-tertiary"></div>
+<div class="flex flex-col">
+<span class="font-mono text-sm font-bold text-tertiary tracking-tight">ECON_ANOMALY</span>
+<span class="font-mono text-[8px] text-outline-variant">ID: 4490-A</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-5">
+<p class="text-xs text-on-surface-variant max-w-xs leading-relaxed">Irregular financial transactions or market fluctuations deviating from standard projection models.</p>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-baseline gap-2">
+<span class="font-mono text-base text-primary">8,912</span>
+<span class="font-mono text-[9px] text-outline">STABLE</span>
+</div>
+</td>
+<td class="px-6 py-5 text-right">
+<div class="inline-flex items-center gap-2 px-3 py-1 bg-tertiary/10 border border-tertiary/20">
+<span class="w-1.5 h-1.5 bg-tertiary"></span>
+<span class="font-mono text-[9px] text-tertiary">ACTIVE</span>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-high transition-colors group">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-2 h-8 bg-primary"></div>
+<div class="flex flex-col">
+<span class="font-mono text-sm font-bold text-primary tracking-tight">GEO_BOUND</span>
+<span class="font-mono text-[8px] text-outline-variant">ID: 2110-G</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-5">
+<p class="text-xs text-on-surface-variant max-w-xs leading-relaxed">Entities restricted by geographic or political boundaries requiring heightened perimeter monitoring.</p>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-baseline gap-2">
+<span class="font-mono text-base text-primary">45,110</span>
+<span class="font-mono text-[9px] text-error">↑ 12%</span>
+</div>
+</td>
+<td class="px-6 py-5 text-right">
+<div class="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/20">
+<span class="w-1.5 h-1.5 bg-primary"></span>
+<span class="font-mono text-[9px] text-primary">SYSTEM</span>
+</div>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-high transition-colors group">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-2 h-8 bg-secondary"></div>
+<div class="flex flex-col">
+<span class="font-mono text-sm font-bold text-secondary tracking-tight">VERIFIED</span>
+<span class="font-mono text-[8px] text-outline-variant">ID: 0001-V</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-5">
+<p class="text-xs text-on-surface-variant max-w-xs leading-relaxed">Data streams authenticated by Level 3 clearance or higher with zero discrepancy rating.</p>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-baseline gap-2">
+<span class="font-mono text-base text-primary">120,402</span>
+<span class="font-mono text-[9px] text-tertiary">MAX</span>
+</div>
+</td>
+<td class="px-6 py-5 text-right">
+<div class="inline-flex items-center gap-2 px-3 py-1 bg-secondary/10 border border-secondary/20">
+<span class="w-1.5 h-1.5 bg-secondary"></span>
+<span class="font-mono text-[9px] text-secondary">STABLE</span>
+</div>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-surface-container-high transition-colors group">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-2 h-8 bg-outline-variant"></div>
+<div class="flex flex-col">
+<span class="font-mono text-sm font-bold text-outline-variant tracking-tight">PENDING_REVIEW</span>
+<span class="font-mono text-[8px] text-outline-variant">ID: 9999-R</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-5">
+<p class="text-xs text-on-surface-variant max-w-xs leading-relaxed">Intercepts requiring manual human-in-the-loop verification before core integration.</p>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-baseline gap-2">
+<span class="font-mono text-base text-primary">432</span>
+<span class="font-mono text-[9px] text-error">↓ 2%</span>
+</div>
+</td>
+<td class="px-6 py-5 text-right">
+<div class="inline-flex items-center gap-2 px-3 py-1 bg-surface-container-highest border border-outline-variant/30">
+<span class="w-1.5 h-1.5 bg-outline-variant"></span>
+<span class="font-mono text-[9px] text-outline-variant">QUEUED</span>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<!-- System Footer / Status Bar -->
+<footer class="mt-auto bg-[#0f131c] h-10 border-t border-outline-variant/10 flex items-center justify-between px-6 z-20">
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 bg-tertiary animate-pulse"></span>
+<span class="font-mono text-[9px] text-tertiary uppercase">Core_Link: ESTABLISHED</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-mono text-[9px] text-outline uppercase">Uptime: 1,422:12:08</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-mono text-[9px] text-outline uppercase">Latency: 12ms</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="font-mono text-[9px] text-outline-variant uppercase">© 2024 TACTICAL_MONOLITH_CORP</span>
+<span class="font-mono text-[9px] text-primary uppercase">v4.2.1-STABLE</span>
+</div>
+</footer>
+</main>
+<!-- Contextual FAB (Hidden on this transactional screen as per instructions, but placeholder logic if needed) -->
+</body></html>

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>INTEL_OS_v4.2 | KNOWLEDGE_GRAPH</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-tint": "#a9c7ff",
+                        "tertiary-fixed": "#79f7ea",
+                        "surface-container-low": "#181c24",
+                        "surface": "#0f131c",
+                        "primary-fixed": "#d6e3ff",
+                        "inverse-surface": "#dfe2ee",
+                        "primary-fixed-dim": "#a9c7ff",
+                        "outline": "#8c919c",
+                        "surface-container-lowest": "#0a0e16",
+                        "on-tertiary-fixed-variant": "#00504a",
+                        "outline-variant": "#424751",
+                        "surface-bright": "#353942",
+                        "on-tertiary": "#003733",
+                        "on-tertiary-container": "#004641",
+                        "on-secondary-fixed-variant": "#3a4859",
+                        "on-background": "#dfe2ee",
+                        "tertiary-container": "#31bbaf",
+                        "on-secondary": "#243141",
+                        "on-tertiary-fixed": "#00201d",
+                        "on-surface": "#dfe2ee",
+                        "on-secondary-fixed": "#0f1c2c",
+                        "surface-variant": "#31353e",
+                        "secondary-fixed": "#d6e4f9",
+                        "surface-container-highest": "#31353e",
+                        "primary-container": "#76a9fa",
+                        "surface-container-high": "#262a33",
+                        "secondary-fixed-dim": "#bac8dc",
+                        "inverse-primary": "#225eaa",
+                        "on-error": "#690005",
+                        "tertiary": "#5adace",
+                        "on-surface-variant": "#c2c6d3",
+                        "secondary": "#bac8dc",
+                        "primary": "#a9c7ff",
+                        "on-primary-fixed-variant": "#00468b",
+                        "tertiary-fixed-dim": "#5adace",
+                        "error-container": "#93000a",
+                        "on-primary": "#003062",
+                        "on-secondary-container": "#a8b6ca",
+                        "background": "#0f131c",
+                        "on-primary-container": "#003c79",
+                        "error": "#ffb4ab",
+                        "inverse-on-surface": "#2c3039",
+                        "secondary-container": "#3a4859",
+                        "on-primary-fixed": "#001b3d",
+                        "surface-dim": "#0f131c",
+                        "on-error-container": "#ffdad6",
+                        "surface-container": "#1c2028"
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Space Grotesk"],
+                        "mono": ["JetBrains Mono"]
+                    },
+                    borderRadius: {"DEFAULT": "0px", "lg": "0px", "xl": "0px", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .scanline {
+            background: linear-gradient(to bottom, rgba(223, 226, 238, 0.02) 50%, rgba(15, 19, 28, 0) 50%);
+            background-size: 100% 4px;
+        }
+        .ghost-border {
+            border: 1px solid rgba(66, 71, 81, 0.15);
+        }
+        .primary-glow {
+            box-shadow: 0 0 12px rgba(169, 199, 255, 0.3);
+        }
+        .node-glow {
+            filter: drop-shadow(0 0 4px rgba(118, 169, 250, 0.6));
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary selection:text-on-primary">
+<!-- TOP APP BAR -->
+<header class="fixed top-0 z-50 flex justify-between items-center w-full px-6 h-14 bg-[#0f131c] border-b-0">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold text-[#76A9FA] tracking-tighter font-headline">INTEL_OS_v4.2</span>
+<nav class="hidden md:flex gap-6 h-full items-center">
+<a class="font-['Space_Grotesk'] uppercase tracking-widest text-xs transition-colors duration-150 text-[#76A9FA] border-b border-[#76A9FA] shadow-[0_0_12px_rgba(118,169,250,0.3)] h-full flex items-center px-2" href="#">KNOWLEDGE_GRAPH</a>
+<a class="font-['Space_Grotesk'] uppercase tracking-widest text-xs transition-colors duration-150 text-[#424751] hover:text-[#dfe2ee]" href="#">RELATIONS</a>
+<a class="font-['Space_Grotesk'] uppercase tracking-widest text-xs transition-colors duration-150 text-[#424751] hover:text-[#dfe2ee]" href="#">SYSTEM_LOGS</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden lg:flex items-center bg-surface-container-high px-3 py-1 ghost-border">
+<span class="material-symbols-outlined text-outline text-sm mr-2">search</span>
+<input class="bg-transparent border-none text-[10px] font-mono focus:ring-0 w-32 uppercase placeholder:text-outline-variant" placeholder="QUERY_ENTITY..." type="text"/>
+</div>
+<div class="flex gap-3">
+<button class="text-outline hover:text-primary transition-colors"><span class="material-symbols-outlined">terminal</span></button>
+<button class="text-outline hover:text-primary transition-colors"><span class="material-symbols-outlined">notifications</span></button>
+<button class="text-outline hover:text-primary transition-colors"><span class="material-symbols-outlined">settings</span></button>
+</div>
+<div class="w-8 h-8 bg-surface-container-highest flex items-center justify-center ghost-border">
+<span class="text-[10px] font-mono text-primary">OP_01</span>
+</div>
+</div>
+</header>
+<!-- SIDE NAV BAR -->
+<aside class="fixed left-0 top-14 bottom-0 w-64 bg-[#181c24] flex flex-col h-full py-4 z-40">
+<div class="px-6 mb-8">
+<div class="flex items-center gap-3 mb-1">
+<span class="w-2 h-2 bg-tertiary shadow-[0_0_8px_#5adace]"></span>
+<span class="text-[#76A9FA] font-black font-headline tracking-tighter text-sm uppercase">GRAPH_ENGINE</span>
+</div>
+<span class="font-mono text-[10px] text-outline">[40.7128° N]</span>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-4 px-6 py-3 font-['Space_Grotesk'] font-medium text-[11px] tracking-tight bg-[#1c2028] text-[#76A9FA] border-l-2 border-[#76A9FA] shadow-[inset_4px_0_10px_rgba(118,169,250,0.1)]" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="hub">hub</span>
+                NETWORK
+            </a>
+<a class="flex items-center gap-4 px-6 py-3 font-['Space_Grotesk'] font-medium text-[11px] tracking-tight text-[#dfe2ee] opacity-60 hover:bg-[#262a33] hover:opacity-100 transition-all" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="adjust">adjust</span>
+                NODES
+            </a>
+<a class="flex items-center gap-4 px-6 py-3 font-['Space_Grotesk'] font-medium text-[11px] tracking-tight text-[#dfe2ee] opacity-60 hover:bg-[#262a33] hover:opacity-100 transition-all" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="share">share</span>
+                EDGES
+            </a>
+<a class="flex items-center gap-4 px-6 py-3 font-['Space_Grotesk'] font-medium text-[11px] tracking-tight text-[#dfe2ee] opacity-60 hover:bg-[#262a33] hover:opacity-100 transition-all" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="account_tree">account_tree</span>
+                SCHEMA
+            </a>
+<a class="flex items-center gap-4 px-6 py-3 font-['Space_Grotesk'] font-medium text-[11px] tracking-tight text-[#dfe2ee] opacity-60 hover:bg-[#262a33] hover:opacity-100 transition-all" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="inventory_2">inventory_2</span>
+                ARCHIVE
+            </a>
+</nav>
+<div class="px-6 py-4">
+<button class="w-full py-2 bg-primary text-on-primary font-headline font-bold text-xs tracking-widest uppercase primary-glow">NEW_ENTITY</button>
+</div>
+<div class="mt-auto border-t border-outline-variant/10">
+<a class="flex items-center gap-4 px-6 py-3 font-['Space_Grotesk'] font-medium text-[11px] tracking-tight text-outline hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="analytics">analytics</span>
+                DIAGNOSTICS
+            </a>
+<a class="flex items-center gap-4 px-6 py-3 font-['Space_Grotesk'] font-medium text-[11px] tracking-tight text-outline hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="logout">logout</span>
+                LOGOUT
+            </a>
+</div>
+</aside>
+<!-- MAIN CANVAS -->
+<main class="ml-64 mt-14 h-[calc(100vh-3.5rem)] flex flex-col relative overflow-hidden bg-surface">
+<div class="absolute inset-0 scanline opacity-30 pointer-events-none"></div>
+<!-- SUB-HEADER TABS -->
+<div class="h-12 bg-surface-container-low flex items-center px-6 border-b border-outline-variant/10 z-10">
+<div class="flex gap-8 h-full">
+<button class="h-full border-b-2 border-primary text-primary font-headline text-[10px] tracking-widest font-bold px-2 uppercase">RELATIONS_GRAPH</button>
+<button class="h-full border-b-2 border-transparent text-outline hover:text-on-surface font-headline text-[10px] tracking-widest font-medium px-2 transition-colors uppercase">SCHEMA_DEFINITION</button>
+</div>
+<div class="ml-auto flex items-center gap-4">
+<span class="font-mono text-[9px] text-outline uppercase">Active_Filters: [NONE]</span>
+<span class="font-mono text-[9px] text-tertiary uppercase">Latency: 14ms</span>
+</div>
+</div>
+<!-- GRAPH AREA & SIDEBAR CONTAINER -->
+<div class="flex-1 flex overflow-hidden">
+<!-- INTERACTIVE NETWORK GRAPH (SIMULATED) -->
+<div class="flex-1 relative bg-surface-container-lowest overflow-hidden">
+<!-- Grid Lines Decoration -->
+<div class="absolute inset-0 opacity-5 pointer-events-none" style="background-image: linear-gradient(#8c919c 1px, transparent 1px), linear-gradient(90deg, #8c919c 1px, transparent 1px); background-size: 40px 40px;"></div>
+<!-- Graph Content (Mockup) -->
+<svg class="w-full h-full">
+<!-- Definitions for arrows -->
+<defs>
+<marker id="arrowhead" markerheight="7" markerwidth="10" orient="auto" refx="15" refy="3.5">
+<polygon fill="#424751" points="0 0, 10 3.5, 0 7"></polygon>
+</marker>
+<marker id="arrowhead-active" markerheight="7" markerwidth="10" orient="auto" refx="15" refy="3.5">
+<polygon fill="#76A9FA" points="0 0, 10 3.5, 0 7"></polygon>
+</marker>
+</defs>
+<!-- Edges -->
+<g class="edges">
+<line marker-end="url(#arrowhead)" stroke="#424751" stroke-width="1.5" x1="30%" x2="50%" y1="40%" y2="60%"></line>
+<line class="node-glow" marker-end="url(#arrowhead-active)" stroke="#76A9FA" stroke-width="3" x1="50%" x2="70%" y1="60%" y2="30%"></line>
+<line marker-end="url(#arrowhead)" stroke="#424751" stroke-dasharray="4" stroke-width="1" x1="70%" x2="40%" y1="30%" y2="20%"></line>
+</g>
+<!-- Nodes -->
+<g class="nodes">
+<!-- PEOPLE Node -->
+<g class="cursor-pointer group" transform="translate(100, 100)">
+<rect class="ghost-border" fill="#1c2028" height="40" width="120" x="0" y="0"></rect>
+<text class="font-mono text-[10px] uppercase" fill="#dfe2ee" text-anchor="middle" x="60" y="25">ID_042: PEOPLE</text>
+<text class="font-mono text-[8px]" fill="#76A9FA" x="10" y="10">[active]</text>
+</g>
+<!-- ORGANIZATION Node -->
+<g class="cursor-pointer" transform="translate(450, 320)">
+<rect class="node-glow" fill="#262a33" height="48" stroke="#76A9FA" stroke-width="1" width="160" x="0" y="0"></rect>
+<text class="font-mono text-[10px] font-bold uppercase tracking-wider" fill="#a9c7ff" text-anchor="middle" x="80" y="22">CORP_ZENITH</text>
+<text class="font-mono text-[8px] uppercase" fill="#8c919c" text-anchor="middle" x="80" y="38">ORGANIZATION</text>
+</g>
+<!-- CITY Node -->
+<g class="cursor-pointer" transform="translate(700, 150)">
+<rect class="ghost-border" fill="#1c2028" height="40" width="110" x="0" y="0"></rect>
+<text class="font-mono text-[10px] uppercase" fill="#dfe2ee" text-anchor="middle" x="55" y="25">CITY: NEO_TOKYO</text>
+</g>
+</g>
+</svg>
+<!-- Edge Labels -->
+<div class="absolute top-[52%] left-[58%] -translate-x-1/2 -translate-y-1/2 px-2 py-0.5 bg-surface-container text-[9px] font-mono text-primary uppercase border border-primary/20">made_deal_with</div>
+<div class="absolute top-[48%] left-[42%] -translate-x-1/2 -translate-y-1/2 px-2 py-0.5 bg-surface-container text-[9px] font-mono text-outline-variant uppercase">is_friend_of</div>
+<!-- Floating Coordinates Overlay -->
+<div class="absolute bottom-6 right-6 flex flex-col items-end pointer-events-none">
+<span class="text-primary font-mono text-[10px] tracking-widest">X_COORD: 1042.882</span>
+<span class="text-primary font-mono text-[10px] tracking-widest">Y_COORD: 394.102</span>
+<span class="text-outline font-mono text-[9px] mt-1 opacity-50 uppercase">Viewport_Lock: TRUE</span>
+</div>
+</div>
+<!-- ENTITY_DETAILS SIDEBAR -->
+<div class="w-80 bg-surface-container-low flex flex-col z-20 shadow-[-10px_0_20px_rgba(0,0,0,0.4)]">
+<!-- Sidebar Header -->
+<div class="p-5 bg-surface-container-high border-b border-outline-variant/20">
+<div class="flex justify-between items-start mb-2">
+<span class="font-headline font-bold text-xs tracking-widest text-primary uppercase">ENTITY_DETAILS</span>
+<span class="material-symbols-outlined text-outline cursor-pointer hover:text-on-surface">close</span>
+</div>
+<h2 class="font-headline font-black text-xl text-on-surface leading-tight">CORP_ZENITH</h2>
+<span class="font-mono text-[10px] text-tertiary">#E-9942-XJ</span>
+</div>
+<!-- Metadata Content -->
+<div class="flex-1 overflow-y-auto p-5 space-y-6">
+<!-- Section: Attributes -->
+<section>
+<h3 class="text-[10px] font-headline font-bold text-outline-variant uppercase tracking-tighter mb-3 flex items-center gap-2">
+<span class="w-1 h-1 bg-outline-variant"></span> Attributes
+                        </h3>
+<div class="space-y-2">
+<div class="bg-surface-container p-3 flex flex-col gap-1 border-b border-outline-variant/10">
+<span class="text-[9px] font-mono text-outline uppercase tracking-tight">classification</span>
+<span class="text-[11px] font-mono text-on-surface uppercase">MULTI_NATIONAL_CONGLOMERATE</span>
+</div>
+<div class="bg-surface-container p-3 flex flex-col gap-1 border-b border-outline-variant/10">
+<span class="text-[9px] font-mono text-outline uppercase tracking-tight">net_worth_index</span>
+<span class="text-[11px] font-mono text-tertiary font-bold tracking-widest">88.42_PTS</span>
+</div>
+<div class="bg-surface-container p-3 flex flex-col gap-1 border-b border-outline-variant/10">
+<span class="text-[9px] font-mono text-outline uppercase tracking-tight">origin_date</span>
+<span class="text-[11px] font-mono text-on-surface">2044.02.12</span>
+</div>
+</div>
+</section>
+<!-- Section: Recent Relations -->
+<section>
+<h3 class="text-[10px] font-headline font-bold text-outline-variant uppercase tracking-tighter mb-3 flex items-center gap-2">
+<span class="w-1 h-1 bg-outline-variant"></span> Recent_Relations
+                        </h3>
+<div class="space-y-1">
+<div class="flex items-center justify-between p-2 bg-surface-container-highest/50 hover:bg-surface-container-highest cursor-pointer group transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-sm text-primary" data-icon="east">east</span>
+<span class="text-[10px] font-mono uppercase text-on-surface">NEO_TOKYO</span>
+</div>
+<span class="text-[9px] font-mono text-outline group-hover:text-primary-container">is_located_in</span>
+</div>
+<div class="flex items-center justify-between p-2 bg-surface-container-highest/50 hover:bg-surface-container-highest cursor-pointer group transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-sm text-primary" data-icon="sync">sync</span>
+<span class="text-[10px] font-mono uppercase text-on-surface">SATO_SYSTEMS</span>
+</div>
+<span class="text-[9px] font-mono text-outline group-hover:text-primary-container">joint_venture</span>
+</div>
+</div>
+</section>
+<!-- Section: Security Graph -->
+<section>
+<h3 class="text-[10px] font-headline font-bold text-outline-variant uppercase tracking-tighter mb-3 flex items-center gap-2">
+<span class="w-1 h-1 bg-outline-variant"></span> Security_Visual
+                        </h3>
+<div class="h-24 bg-surface-container-lowest relative overflow-hidden flex items-center justify-center ghost-border">
+<div class="absolute inset-0 opacity-10">
+<img class="w-full h-full object-cover" data-alt="abstract technological pattern with blue neon lights and futuristic circuit board lines with depth of field" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBv89oVF_Ut0V3QCTZVHsu5KRqOXadgHyMpz0i6wpvnb-faOTfc40VnlvAatQXOBVZ8fSrqorVv5Tmu6kOdB_FUs6IG24CB9Gwbk2tSu_h7l7zbwj4k56SEZYWY9EybCPP9KWQF4weSD7yHJQcxlRDeZeK2jXw2x54x6pN8709OZuCNuwhHP967CKjOMLW4HulZCwThtVeI4HKFSf6WrfgOKHyISF5Otqi11f8WvnOFh42cmh6YMsFhKGyt8A678DHjWlSXRTrGPKA"/>
+</div>
+<span class="relative font-mono text-[9px] text-tertiary-fixed tracking-[0.2em] px-4 py-1 border border-tertiary-fixed/30 bg-surface/80">SCANNING_ACCESS...</span>
+</div>
+</section>
+</div>
+<!-- Sidebar Footer CTA -->
+<div class="p-5 bg-surface-container-low border-t border-outline-variant/20">
+<button class="w-full py-2 bg-surface-container-highest text-primary font-headline font-bold text-[10px] tracking-widest uppercase border border-primary/20 hover:bg-primary/10 transition-all">_MODIFY_SCHEMA</button>
+</div>
+</div>
+</div>
+<!-- BOTTOM TOOLBAR -->
+<div class="h-10 bg-surface-container-highest flex items-center px-4 gap-6 border-t border-outline-variant/10 z-10">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-outline">zoom_in</span>
+<div class="w-32 h-1 bg-surface-container flex">
+<div class="w-3/4 h-full bg-primary primary-glow"></div>
+</div>
+<span class="font-mono text-[9px] text-outline">75%</span>
+</div>
+<div class="h-4 w-px bg-outline-variant/30"></div>
+<div class="flex gap-4">
+<button class="flex items-center gap-2 text-outline hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm">filter_list</span>
+<span class="font-mono text-[9px] uppercase">Filter</span>
+</button>
+<button class="flex items-center gap-2 text-outline hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm">layers</span>
+<span class="font-mono text-[9px] uppercase">Layers</span>
+</button>
+<button class="flex items-center gap-2 text-outline hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm">auto_fix_high</span>
+<span class="font-mono text-[9px] uppercase">Auto_Layout</span>
+</button>
+</div>
+<div class="ml-auto flex items-center gap-2">
+<span class="w-1.5 h-1.5 bg-tertiary"></span>
+<span class="font-mono text-[9px] text-on-surface opacity-60 uppercase">System: OPERATIONAL</span>
+</div>
+</div>
+</main>
+<!-- FAB for Global Actions (only on Dashboard level) -->
+<button class="fixed bottom-14 right-8 w-14 h-14 bg-primary text-on-primary shadow-[0_0_20px_rgba(169,199,255,0.4)] flex items-center justify-center z-50 hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-3xl" data-weight="fill">add</span>
+</button>
+</body></html>

@@ -42,7 +42,7 @@ def load_role_types(database_url: str) -> list[LabelDefinition]:
                 )
                 rows = cur.fetchall()
         role_types = [LabelDefinition(name=row[0], description=row[1]) for row in rows]
-        logger.info("Loaded %d entity role types from DB", len(role_types))
+        logger.debug("Loaded %d entity role types from DB", len(role_types))
         return role_types
     except Exception as exc:
         logger.warning("Failed to load entity role types: %s", exc)

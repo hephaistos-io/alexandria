@@ -95,10 +95,14 @@ class RoleClassifier:
         """Replace the candidate role type list.
 
         Called periodically to pick up role type changes from the DB without
-        restarting the process.
+        restarting the process.  Only logs when the list actually changes to
+        avoid noisy repeated output every refresh cycle.
         """
+        new_names = [r.name for r in role_types]
+        old_names = [r.name for r in self._role_types]
+        if new_names != old_names:
+            logger.info("Role type list updated: %s", new_names)
         self._role_types = role_types
-        logger.info("Role type list updated: %s", [r.name for r in role_types])
 
     def classify_entity_roles(
         self,

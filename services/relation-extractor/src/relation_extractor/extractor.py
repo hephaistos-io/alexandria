@@ -185,10 +185,13 @@ class RelationExtractor:
         """Replace the candidate relation type list.
 
         Called periodically to pick up relation type changes from the DB without
-        restarting the process.
+        restarting the process.  Only logs when the list actually changes.
         """
+        new_names = [r.name for r in relation_types]
+        old_names = [r.name for r in self._relation_types]
+        if new_names != old_names:
+            logger.info("Relation type list updated: %s", new_names)
         self._relation_types = relation_types
-        logger.info("Relation type list updated: %s", [r.name for r in relation_types])
 
     def extract_relations(
         self,

@@ -43,7 +43,7 @@ def load_labels(database_url: str) -> list[LabelDefinition]:
                 )
                 rows = cur.fetchall()
         labels = [LabelDefinition(name=row[0], description=row[1]) for row in rows]
-        logger.info("Loaded %d classification labels from DB", len(labels))
+        logger.debug("Loaded %d classification labels from DB", len(labels))
         return labels
     except Exception as exc:
         logger.warning("Failed to load classification labels: %s", exc)

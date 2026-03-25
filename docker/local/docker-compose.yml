@@ -496,6 +496,8 @@ services:
       context: ../..
       dockerfile: services/role-classifier/Dockerfile
     restart: on-failure
+    deploy:
+      replicas: 2
     labels:
       alexandria.pipeline.inputs: "queue:articles.resolved"
       alexandria.pipeline.outputs: "queue:articles.role-classified"

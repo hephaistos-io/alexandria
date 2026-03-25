@@ -48,7 +48,7 @@ def load_relation_types(database_url: str) -> list[RelationDefinition]:
             RelationDefinition(name=row[0], description=row[1], directed=row[2])
             for row in rows
         ]
-        logger.info("Loaded %d relation types from DB", len(relation_types))
+        logger.debug("Loaded %d relation types from DB", len(relation_types))
         return relation_types
     except Exception as exc:
         logger.warning("Failed to load relation types: %s", exc)

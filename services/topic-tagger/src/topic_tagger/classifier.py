@@ -73,10 +73,13 @@ class TopicClassifier:
         """Replace the candidate label list.
 
         Called periodically to pick up label changes from the DB without
-        restarting the process.
+        restarting the process.  Only logs when the list actually changes.
         """
+        new_names = [label.name for label in labels]
+        old_names = [label.name for label in self._labels]
+        if new_names != old_names:
+            logger.info("Label list updated: %s", new_names)
         self._labels = labels
-        logger.info("Label list updated: %s", [label.name for label in labels])
 
     def classify(self, text: str) -> list[dict]:
         """Classify text against the current candidate labels.

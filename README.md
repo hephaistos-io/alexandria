@@ -8,7 +8,7 @@ Actively developed as a learning project for python, data pipelines, NLP. Built 
 
 - **Data Ingestion**: Pull data from multiple open sources (APIs, feeds, scraped content)
 - **Processing Pipeline**: Clean, normalize, and enrich raw data into structured intelligence
-- **On-Demand Model Training**: Fine-tune small ML models on collected data for domain-specific analysis
+- **On-Demand Model Training**: Fine-tune small ML models on collected data for domain-specific analysis (Only manual labelling is implemented, the training pipeline doesn't exist yet...)
 - **Search & Analysis**: Query the knowledge base and surface patterns across sources
 
 ## Current Status

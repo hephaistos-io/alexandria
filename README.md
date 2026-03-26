@@ -24,7 +24,9 @@ Active development — pipeline is functional end-to-end.
 <img width="1501" height="823" alt="image" src="https://github.com/user-attachments/assets/d422428a-1622-41ad-9962-af3a383c922a" />
 
 - **On-Demand Model Training**: Not implemented yet
-- **Search & Analysis**: Basic graph database & viewer show current events, persons and their relations
+- **Search & Analysis**: Basic graph database & viewer show current events, persons and their relations (The default relations are a bit wonky)
+<img width="1502" height="831" alt="image" src="https://github.com/user-attachments/assets/beb108e4-f1d9-4e96-89a4-0fa840385b69" />
+
 
 ## Frontend Usability
 

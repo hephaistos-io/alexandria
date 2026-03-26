@@ -101,6 +101,59 @@ psql postgresql://alexandria:alexandria@localhost:5432/alexandria
 ```
 
 
+## Tooling
+
+### Languages & Runtimes
+
+| | |
+|---|---|
+| **Backend** | Python 3.13+ |
+| **Frontend** | TypeScript 5.9 / React 19 |
+| **Containers** | Docker & Docker Compose |
+
+### Backend
+
+| Tool | Role |
+|---|---|
+| [uv](https://docs.astral.sh/uv/) | Package management & dependency locking |
+| [FastAPI](https://fastapi.tiangolo.com/) | REST API (monitoring-api) |
+| [pika](https://pika.readthedocs.io/) | RabbitMQ client (all services) |
+| [psycopg 3](https://www.psycopg.org/psycopg3/) | PostgreSQL driver |
+| [httpx](https://www.python-httpx.org/) | Async HTTP client |
+| [Ruff](https://docs.astral.sh/ruff/) | Linting & formatting |
+| [pytest](https://docs.pytest.org/) | Testing |
+
+### NLP / ML
+
+| Tool | Role |
+|---|---|
+| [spaCy](https://spacy.io/) | Named-entity recognition (ner-tagger) |
+| [Hugging Face Transformers](https://huggingface.co/docs/transformers/) | Zero-shot classification (role-classifier, topic-tagger, relation-extractor) |
+| [PyTorch](https://pytorch.org/) | Inference runtime (CPU-only) |
+| [trafilatura](https://trafilatura.readthedocs.io/) | Article text extraction (article-scraper) |
+| [feedparser](https://feedparser.readthedocs.io/) | RSS/Atom parsing (article-fetcher) |
+
+### Frontend
+
+| Tool | Role |
+|---|---|
+| [Vite](https://vite.dev/) | Build tool & dev server |
+| [React](https://react.dev/) | UI framework |
+| [Tailwind CSS](https://tailwindcss.com/) | Styling |
+| [Leaflet](https://leafletjs.com/) / react-leaflet | World map |
+| [React Flow](https://reactflow.dev/) | Pipeline topology diagrams |
+| [react-force-graph-2d](https://github.com/vasturiano/react-force-graph) | Entity relation graphs |
+| [ESLint](https://eslint.org/) | Linting |
+
+### Infrastructure
+
+| Tool | Role |
+|---|---|
+| [RabbitMQ](https://www.rabbitmq.com/) | Message broker (inter-service queues & fanout exchanges) |
+| [PostgreSQL 17](https://www.postgresql.org/) | Primary datastore (articles, labels, roles, relations) |
+| [Neo4j](https://neo4j.com/) | Graph database (entity relations) |
+| [Redis](https://redis.io/) | Cache (entity-resolver lookups, feed dedup) |
+
 ## Design/UX
 
 Design as well as UX is managed using googles [stitch](https://stitch.withgoogle.com) AI UX tool.

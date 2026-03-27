@@ -1,4 +1,4 @@
-"""PostgreSQL schema for articles, classification_labels, and entity_role_types tables."""
+"""PostgreSQL schema for articles, classification_labels, entity_role_types, and conflict_events tables."""
 
 import psycopg
 
@@ -207,6 +207,29 @@ END $$;
 """
 
 
+# Stores structured conflict events produced by data-ingestion services
+# (e.g. ACLED, UCDP, GDELT). source + source_id together form the natural key
+# — the UNIQUE constraint plus ON CONFLICT DO NOTHING in the consumer means
+# re-ingesting the same event from the same source is a safe no-op.
+SCHEMA_CONFLICT_EVENTS = """
+CREATE TABLE IF NOT EXISTS conflict_events (
+    id              SERIAL PRIMARY KEY,
+    source_id       TEXT NOT NULL,
+    source          TEXT NOT NULL,
+    title           TEXT NOT NULL,
+    description     TEXT,
+    latitude        DOUBLE PRECISION NOT NULL,
+    longitude       DOUBLE PRECISION NOT NULL,
+    event_date      TIMESTAMPTZ,
+    place_desc      TEXT,
+    links           TEXT[],
+    fetched_at      TIMESTAMPTZ NOT NULL,
+    created_at      TIMESTAMPTZ DEFAULT now(),
+    UNIQUE (source, source_id)
+);
+"""
+
+
 def apply_schema(conn: psycopg.Connection) -> None:
     """Create tables and run all pending migrations.
 
@@ -223,6 +246,7 @@ def apply_schema(conn: psycopg.Connection) -> None:
     10. Add manual_entity_roles JSONB and entity_roles_labelled_at columns
     11. Create relation_types table (IF NOT EXISTS)
     12. Seed default relation types (ON CONFLICT DO NOTHING)
+    13. Create conflict_events table (IF NOT EXISTS)
     """
     with conn.cursor() as cur:
         cur.execute(SCHEMA)
@@ -237,4 +261,5 @@ def apply_schema(conn: psycopg.Connection) -> None:
         cur.execute(MIGRATE_ADD_ENTITY_ROLE_COLUMNS)
         cur.execute(SCHEMA_RELATION_TYPES)
         cur.execute(SEED_RELATION_TYPES)
+        cur.execute(SCHEMA_CONFLICT_EVENTS)
     conn.commit()

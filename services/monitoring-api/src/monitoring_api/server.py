@@ -45,6 +45,7 @@ from monitoring_api.article_client import (
     MAX_LABELS,
     ArticleClient,
 )
+from monitoring_api.conflict_client import ConflictClient
 from monitoring_api.db_client import DbClient, DbStats
 from monitoring_api.docker_client import ContainerStatus, DockerClient
 from monitoring_api.graph_client import GraphClient
@@ -164,6 +165,7 @@ def create_app(
     role_type_client: EntityRoleTypeClient | None = None,
     relation_type_client: RelationTypeClient | None = None,
     graph_client: GraphClient | None = None,
+    conflict_client: ConflictClient | None = None,
 ) -> FastAPI:
     """Factory function that builds and returns the FastAPI application.
 
@@ -187,6 +189,7 @@ def create_app(
         "role_types": role_type_client,
         "relation_types": relation_type_client,
         "graph": graph_client,
+        "conflicts": conflict_client,
         "env": config,
     }
 
@@ -215,6 +218,8 @@ def create_app(
         if state["graph"] is None and config["neo4j_url"]:
             user, password = config["neo4j_auth"].split("/", 1)
             state["graph"] = GraphClient(uri=config["neo4j_url"], auth=(user, password))
+        if state["conflicts"] is None and config["database_url"]:
+            state["conflicts"] = ConflictClient(database_url=config["database_url"])
 
         logger.info("Monitoring API started")
         yield
@@ -364,6 +369,31 @@ def create_app(
                 media_type="application/json",
             )
         return [dataclasses.asdict(a) for a in result]
+
+    @app.get("/api/dashboard/conflict-events", response_model=None)
+    async def dashboard_conflict_events(limit: int = 200):
+        """Return recent conflict events for the dashboard map."""
+        loop = asyncio.get_event_loop()
+        conflict_ref: ConflictClient | None = state["conflicts"]
+        if conflict_ref is None:
+            return Response(
+                content=json.dumps({"error": "unavailable"}),
+                status_code=503,
+                media_type="application/json",
+            )
+        try:
+            result = await loop.run_in_executor(
+                None,
+                lambda: conflict_ref.get_dashboard_events(min(limit, 500)),
+            )
+            return [dataclasses.asdict(e) for e in result]
+        except Exception:
+            logger.exception("Failed to fetch conflict events")
+            return Response(
+                content=json.dumps({"error": "internal"}),
+                status_code=500,
+                media_type="application/json",
+            )
 
     # ------------------------------------------------------------------
     # Archive endpoints

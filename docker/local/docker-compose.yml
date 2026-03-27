@@ -489,6 +489,110 @@ services:
       DATABASE_URL: "postgresql://alexandria:alexandria@postgres:5432/alexandria"
 
   # -------------------------------------------------------------------
+  # OSINT geo-fetcher — pulls conflict events from OSINT sources
+  # -------------------------------------------------------------------
+  osint-geo-fetcher:
+    build:
+      context: ../..
+      dockerfile: services/osint-geo-fetcher/Dockerfile
+    restart: on-failure
+    labels:
+      alexandria.pipeline.label: "OSINT_GEO"
+      alexandria.pipeline.outputs: "queue:conflict_events.raw"
+      alexandria.pipeline.stores: "redis"
+      alexandria.pipeline.icon: "crisis_alert"
+    depends_on:
+      base:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672"
+      REDIS_URL: "redis://redis:6379/0"
+      FETCH_INTERVAL: "10800"
+
+  # -------------------------------------------------------------------
+  # UCDP fetcher — pulls conflict events from Uppsala Conflict Data Program
+  # -------------------------------------------------------------------
+  ucdp-fetcher:
+    build:
+      context: ../..
+      dockerfile: services/ucdp-fetcher/Dockerfile
+    restart: on-failure
+    labels:
+      alexandria.pipeline.label: "UCDP"
+      alexandria.pipeline.outputs: "queue:conflict_events.raw"
+      alexandria.pipeline.stores: "redis"
+      alexandria.pipeline.icon: "military_tech"
+    depends_on:
+      base:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672"
+      REDIS_URL: "redis://redis:6379/0"
+      UCDP_ACCESS_TOKEN: "${UCDP_ACCESS_TOKEN:-}"
+      FETCH_INTERVAL: "604800"
+
+  # -------------------------------------------------------------------
+  # GDELT fetcher — pulls geolocated conflict events from GDELT 2.0.
+  # Updates every 15 minutes (matching GDELT's export cadence).
+  # -------------------------------------------------------------------
+  gdelt-fetcher:
+    build:
+      context: ../..
+      dockerfile: services/gdelt-fetcher/Dockerfile
+    restart: on-failure
+    labels:
+      alexandria.pipeline.label: "GDELT"
+      alexandria.pipeline.outputs: "queue:conflict_events.raw"
+      alexandria.pipeline.stores: "redis"
+      alexandria.pipeline.icon: "public"
+    depends_on:
+      base:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672"
+      REDIS_URL: "redis://redis:6379/0"
+      FETCH_INTERVAL: "900"
+
+  # -------------------------------------------------------------------
+  # Conflict store — persists conflict events to PostgreSQL.
+  # Same image as article-store, different entry point.
+  # -------------------------------------------------------------------
+  conflict-store:
+    build:
+      context: ../..
+      dockerfile: services/article-store/Dockerfile
+    command: ["uv", "run", "--no-sync", "python", "-m", "article_store.conflict_consumer"]
+    restart: on-failure
+    labels:
+      alexandria.pipeline.label: "CONFLICT_STORE"
+      alexandria.pipeline.inputs: "queue:conflict_events.raw"
+      alexandria.pipeline.stores: "postgres"
+      alexandria.pipeline.icon: "gps_fixed"
+      alexandria.pipeline.sublabel: "conflicts → DB"
+    depends_on:
+      base:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    environment:
+      RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672"
+      DATABASE_URL: "postgresql://alexandria:alexandria@postgres:5432/alexandria"
+
+  # -------------------------------------------------------------------
   # Role classifier — zero-shot entity role classification via transformers
   # -------------------------------------------------------------------
   role-classifier:

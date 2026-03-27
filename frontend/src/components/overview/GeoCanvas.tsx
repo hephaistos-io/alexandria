@@ -3,6 +3,8 @@ import { divIcon, type LatLngBoundsExpression } from "leaflet";
 import { MapContainer, TileLayer, useMap } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import { AnchorPoint } from "./AnchorPoint";
+import { HeatmapLayer } from "./HeatmapLayer";
+import { LayerToggle, type LayerVisibility } from "./LayerToggle";
 import type { GeoAnchor } from "../../types/pipeline";
 
 // We need the default markercluster CSS for spiderfy animations, then
@@ -61,9 +63,21 @@ interface GeoCanvasProps {
   selectedAnchorId?: string | null;
   onAnchorSelect?: (anchorId: string) => void;
   roleColors?: Map<string, string>;
+  /** Coordinates for the conflict heatmap layer: [lat, lng][] */
+  heatmapPoints?: [number, number][];
+  /** Which layers are currently visible */
+  layers: LayerVisibility;
+  /** Callback when the user toggles a layer */
+  onLayersChange: (layers: LayerVisibility) => void;
 }
 
-export function GeoCanvas({ anchors, focusedAnchorId = null, selectedAnchorId = null, onAnchorSelect, roleColors }: GeoCanvasProps) {
+export function GeoCanvas({ anchors, focusedAnchorId = null, selectedAnchorId = null, onAnchorSelect, roleColors, heatmapPoints = [], layers, onLayersChange }: GeoCanvasProps) {
+  // Filter anchors based on layer visibility. Each anchor is either an article
+  // or a conflict event — we check the category to decide which toggle applies.
+  const visibleAnchors = anchors.filter((a) => {
+    if (a.category === "CONFLICT_EVENT") return layers.conflicts;
+    return layers.articles;
+  });
   return (
     // The outer div is position:relative so all the overlay chrome (crosshairs,
     // readouts, gradient) can be absolutely positioned on top of the map.
@@ -94,6 +108,11 @@ export function GeoCanvas({ anchors, focusedAnchorId = null, selectedAnchorId = 
         <TileLayer url={TILE_URL} attribution={TILE_ATTRIBUTION} noWrap />
         <MapController focusedAnchorId={focusedAnchorId} anchors={anchors} />
 
+        {/* Heatmap canvas layer — rendered below markers so dots sit on top.
+            leaflet.heat draws onto a <canvas> element which Leaflet composites
+            at the tile-layer z-index. Markers live in a higher pane. */}
+        <HeatmapLayer points={heatmapPoints} visible={layers.heatmap} />
+
         {/* MarkerClusterGroup merges nearby markers into count badges at
             low zoom. As the user zooms in past level 5, clusters break apart
             into individual markers. Spiderfy handles the case where markers
@@ -113,7 +132,7 @@ export function GeoCanvas({ anchors, focusedAnchorId = null, selectedAnchorId = 
             })
           }
         >
-          {anchors.map((anchor) => (
+          {visibleAnchors.map((anchor) => (
             <AnchorPoint key={anchor.id} anchor={anchor} selected={anchor.id === selectedAnchorId} onSelect={onAnchorSelect} roleColors={roleColors} />
           ))}
         </MarkerClusterGroup>
@@ -136,6 +155,9 @@ export function GeoCanvas({ anchors, focusedAnchorId = null, selectedAnchorId = 
       <div className="absolute top-6 left-8 font-mono text-[10px] text-outline/60 leading-relaxed pointer-events-none z-[400]">
         LAT: 20.0000 // LNG: 0.0000
       </div>
+
+      {/* Layer visibility toggles */}
+      <LayerToggle layers={layers} onChange={onLayersChange} />
 
       {/* Bottom-right telemetry readout */}
       <div className="absolute bottom-8 right-8 font-mono text-[10px] text-outline/60 text-right leading-relaxed pointer-events-none z-[400]">

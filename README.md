@@ -17,7 +17,8 @@ Active development — pipeline is functional end-to-end.
 
 
 - **Data Ingestion**: Generic RSS scraper can be used for various sources that provide one
-- **World Map Influence**: See which news affect which countries
+- **Conflict Data Ingestion**: Two independent fetcher services pull geolocated armed conflict events from OSINT sources (Bellingcat, Texty, etc.) and the UCDP Candidate Events API
+- **World Map Influence**: See which news affect which countries, overlaid with a conflict event heatmap and toggleable map layers
 <img width="1518" height="961" alt="image" src="https://github.com/user-attachments/assets/b888b1da-a736-460f-a7aa-179cb2d66475" />
 
 - **Processing Pipeline**: Fetching of articles, finding entities and categorizing them based on different goals
@@ -34,7 +35,7 @@ The frontend is a React SPA at `http://localhost:5173`. The sidebar has seven ma
 
 | Menu Item | What it shows |
 |---|---|
-| **INTERCEPT_FEED** | World map with article markers clustered by location. Clicking a marker selects the article in the right-hand feed panel (title, summary, labels, source). A floating status widget shows live pipeline health: queue depth, active services, ingest count. |
+| **INTERCEPT_FEED** | World map with article markers and conflict event markers, clustered by location. A heatmap layer visualizes conflict density (amber → red gradient). Layer toggles (Articles / Conflicts / Heatmap) let you show or hide each data source. Clicking a marker selects the article or event in the right-hand feed panel. A floating status widget shows live pipeline health. |
 | **INFRASTRUCTURE** | Interactive pipeline topology (React Flow diagram auto-generated from Docker Compose labels), container health, queue metrics, uptime stats, and a live terminal log. |
 | **LABELLING** | Two tabs: **LABEL_ASSIGNMENT** — table of articles with filters and manual label editing. **LABEL_SCHEMA** — create, edit, and delete the classification labels that the topic-tagger uses. |
 | **ATTRIBUTION** | Two tabs: **ROLE_ASSIGNMENT** — article list with entity role assignments and inline editing. **ROLE_SCHEMA** — manage the entity role types (name, description, color) used by the role-classifier. |
@@ -60,13 +61,21 @@ flowchart LR
     FO2 -- articles.classified.store --> LABEL["label-updater"]
     FO2 -- articles.classified.relation --> RELEXT["relation-extractor"]
 
+    OSINT["osint-geo-fetcher"] -- conflict_events.raw --> CSTORE["conflict-store"]
+    UCDP["ucdp-fetcher"] -- conflict_events.raw --> CSTORE
+    GDELT["gdelt-fetcher"] -- conflict_events.raw --> CSTORE
+
     FETCH -.- RED[("Redis")]
+    OSINT -.- RED
+    UCDP -.- RED
+    GDELT -.- RED
     RESOLVE -.- RED
     STORE -.- PG[("PostgreSQL")]
     LABEL -.- PG
     ROLE -.- PG
     TOPIC -.- PG
     RELEXT -.- PG
+    CSTORE -.- PG
     RELEXT -.- NEO[("Neo4j")]
 
     PG -.- API["monitoring-api"]
@@ -74,7 +83,14 @@ flowchart LR
     API -.- FE["Frontend"]
 ```
 
-All services communicate via RabbitMQ queues. Queue names are shown on each edge. Fanout exchanges split the stream to multiple consumers. Dashed lines (-.-)  show store connections (PostgreSQL for label/role/relation type definitions, Redis for caching, Neo4j for the knowledge graph).
+All services communicate via RabbitMQ queues. Queue names are shown on each edge. Fanout exchanges split the stream to multiple consumers. Dashed lines (-.-) show store connections (PostgreSQL for articles + conflict events, Redis for dedup + scheduling, Neo4j for the knowledge graph).
+
+The **conflict data pipeline** runs in parallel to the article pipeline. Three independent fetcher services publish geolocated conflict events to a shared `conflict_events.raw` queue:
+- `osint-geo-fetcher` — Bellingcat, Texty, GeoConfirmed, DefMon, CenInfoRes via [osint-geo-extractor](https://github.com/conflict-investigations/osint-geo-extractor) (every 3h)
+- `ucdp-fetcher` — [UCDP Candidate Events API](https://ucdp.uu.se/) (weekly)
+- `gdelt-fetcher` — [GDELT 2.0](https://www.gdeltproject.org/) material conflict events filtered by CAMEO codes 18/19/20 (every 15 min)
+
+The `conflict-store` consumer writes events to PostgreSQL with dedup on `(source, source_id)`. The frontend renders these as red markers and an aggregated heatmap layer on the world map.
 
 ### Running Locally
 
@@ -122,6 +138,7 @@ psql postgresql://alexandria:alexandria@localhost:5432/alexandria
 | [httpx](https://www.python-httpx.org/) | Async HTTP client |
 | [Ruff](https://docs.astral.sh/ruff/) | Linting & formatting |
 | [pytest](https://docs.pytest.org/) | Testing |
+| [osint-geo-extractor](https://github.com/conflict-investigations/osint-geo-extractor) | OSINT conflict event data (Bellingcat, Texty, GeoConfirmed, DefMon, CenInfoRes) |
 
 ### NLP / ML
 
@@ -141,6 +158,7 @@ psql postgresql://alexandria:alexandria@localhost:5432/alexandria
 | [React](https://react.dev/) | UI framework |
 | [Tailwind CSS](https://tailwindcss.com/) | Styling |
 | [Leaflet](https://leafletjs.com/) / react-leaflet | World map |
+| [leaflet.heat](https://github.com/Leaflet/Leaflet.heat) | Conflict event heatmap layer |
 | [React Flow](https://reactflow.dev/) | Pipeline topology diagrams |
 | [react-force-graph-2d](https://github.com/vasturiano/react-force-graph) | Entity relation graphs |
 | [ESLint](https://eslint.org/) | Linting |
@@ -150,9 +168,9 @@ psql postgresql://alexandria:alexandria@localhost:5432/alexandria
 | Tool | Role |
 |---|---|
 | [RabbitMQ](https://www.rabbitmq.com/) | Message broker (inter-service queues & fanout exchanges) |
-| [PostgreSQL 17](https://www.postgresql.org/) | Primary datastore (articles, labels, roles, relations) |
+| [PostgreSQL 17](https://www.postgresql.org/) | Primary datastore (articles, conflict events, labels, roles, relations) |
 | [Neo4j](https://neo4j.com/) | Graph database (entity relations) |
-| [Redis](https://redis.io/) | Cache (entity-resolver lookups, feed dedup) |
+| [Redis](https://redis.io/) | Cache & scheduling (entity-resolver lookups, feed dedup, fetcher scheduling) |
 
 ## Design/UX
 

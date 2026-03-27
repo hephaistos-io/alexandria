@@ -2,10 +2,13 @@ import { useMemo, useState } from "react";
 import { GeoCanvas } from "../components/overview/GeoCanvas";
 import { ScrapedFeedsPanel } from "../components/overview/ScrapedFeedsPanel";
 import { SystemStatusFloat } from "../components/overview/SystemStatusFloat";
+import { useConflictEvents } from "../hooks/useConflictEvents";
 import { useDashboardArticles } from "../hooks/useDashboardArticles";
 import { useEntityRoleTypes } from "../hooks/useEntityRoleTypes";
 import { useInfraStatus } from "../hooks/useInfraStatus";
 import type { DashboardArticle } from "../types/dashboard";
+import type { ConflictEvent } from "../types/conflict";
+import type { LayerVisibility } from "../components/overview/LayerToggle";
 import type { GeoAnchor, SecondaryLocation } from "../types/pipeline";
 
 // Spatial entity labels from the NER pipeline that carry coordinates.
@@ -111,15 +114,48 @@ function deriveAnchors(articles: DashboardArticle[]): GeoAnchor[] {
     .filter((a): a is GeoAnchor => a !== null);
 }
 
+function deriveConflictAnchors(events: ConflictEvent[]): GeoAnchor[] {
+  return events.map((e) => ({
+    id: `conflict-${e.id}`,
+    city: e.place_desc || "Unknown",
+    label: e.title,
+    category: "CONFLICT_EVENT",
+    summary: e.description ?? "",
+    source: e.source,
+    date: e.event_date?.split("T")[0] ?? "",
+    coordinates: [e.latitude, e.longitude] as [number, number],
+    actionLabel: "VIEW_EVENT",
+    labels: ["CONFLICT_EVENT"],
+    secondaryLocations: [],
+  }));
+}
+
 const FEED_LIMITS = [10, 20, 30] as const;
 
 export function GlobalOverviewPage() {
   const [feedLimit, setFeedLimit] = useState<number>(10);
   const { articles, loading } = useDashboardArticles(feedLimit);
+  const { events: conflictEvents } = useConflictEvents();
   const { roleTypes } = useEntityRoleTypes();
   const { data: infraStatus } = useInfraStatus();
   const anchors = useMemo(() => deriveAnchors(articles), [articles]);
+  const conflictAnchors = useMemo(() => deriveConflictAnchors(conflictEvents), [conflictEvents]);
+  const allAnchors = useMemo(() => [...anchors, ...conflictAnchors], [anchors, conflictAnchors]);
   const [selectedAnchorId, setSelectedAnchorId] = useState<string | null>(null);
+
+  // Layer toggle state — all layers visible by default.
+  const [layers, setLayers] = useState<LayerVisibility>({
+    articles: true,
+    conflicts: true,
+    heatmap: true,
+  });
+
+  // Extract [lat, lng] pairs for the heatmap. Memoized because the conflict
+  // event list only changes on poll cycles (~60s), not on every render.
+  const heatmapPoints = useMemo<[number, number][]>(
+    () => conflictEvents.map((e) => [e.latitude, e.longitude]),
+    [conflictEvents],
+  );
 
   // Build a role name → hex color lookup from the user-defined role types.
   const roleColors = useMemo(() => {
@@ -130,7 +166,7 @@ export function GlobalOverviewPage() {
     return map;
   }, [roleTypes]);
 
-  const selectedAnchor = anchors.find((a) => a.id === selectedAnchorId) ?? null;
+  const selectedAnchor = allAnchors.find((a) => a.id === selectedAnchorId) ?? null;
 
   // Clicking an article in the feed list selects its map marker (flyTo + arcs).
   // Clicking a map marker selects the article in the feed panel.
@@ -156,11 +192,14 @@ export function GlobalOverviewPage() {
     <>
       <div className="flex h-full">
         <GeoCanvas
-          anchors={anchors}
+          anchors={allAnchors}
           focusedAnchorId={selectedAnchorId}
           selectedAnchorId={selectedAnchorId}
           onAnchorSelect={handleAnchorSelect}
           roleColors={roleColors}
+          heatmapPoints={heatmapPoints}
+          layers={layers}
+          onLayersChange={setLayers}
         />
         <ScrapedFeedsPanel
           articles={articles}

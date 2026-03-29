@@ -220,3 +220,81 @@ def test_dashboard_articles_no_article_client_gives_503():
 
     assert resp.status_code == 503
     assert resp.json()["error"] == "unavailable"
+
+
+def test_dashboard_articles_invalid_since_gives_400():
+    """An invalid `since` value returns 400 instead of crashing."""
+    mock = MagicMock()
+    mock.get_dashboard_articles.return_value = []
+
+    with _build_app(mock) as client:
+        resp = client.get("/api/dashboard/articles?since=garbage")
+
+    assert resp.status_code == 400
+    assert "invalid" in resp.json()["error"]
+    mock.get_dashboard_articles.assert_not_called()
+
+
+# ---------------------------------------------------------------------------
+# /api/dashboard/events — detected events
+# ---------------------------------------------------------------------------
+
+
+def _build_event_app(event_mock: MagicMock) -> TestClient:
+    mocks = _make_mocks()
+    app = create_app(**mocks, event_client=event_mock)
+    return TestClient(app)
+
+
+def test_dashboard_events_returns_list():
+    """Happy path: detected events endpoint returns a list."""
+    mock = MagicMock()
+    mock.get_dashboard_events.return_value = []
+
+    with _build_event_app(mock) as client:
+        resp = client.get("/api/dashboard/events")
+
+    assert resp.status_code == 200
+    assert resp.json() == []
+
+
+def test_dashboard_events_no_client_gives_503():
+    """When no EventClient is wired up, endpoint returns 503."""
+    mocks = _make_mocks()
+    app = create_app(**mocks, event_client=None)
+
+    with TestClient(app) as client:
+        resp = client.get("/api/dashboard/events")
+
+    assert resp.status_code == 503
+
+
+def test_dashboard_events_invalid_since_gives_400():
+    mock = MagicMock()
+    mock.get_dashboard_events.return_value = []
+
+    with _build_event_app(mock) as client:
+        resp = client.get("/api/dashboard/events?since=not-a-date")
+
+    assert resp.status_code == 400
+    mock.get_dashboard_events.assert_not_called()
+
+
+def test_dashboard_event_detail_not_found_gives_404():
+    mock = MagicMock()
+    mock.get_event_detail.return_value = None
+
+    with _build_event_app(mock) as client:
+        resp = client.get("/api/dashboard/events/999")
+
+    assert resp.status_code == 404
+
+
+def test_dashboard_event_detail_no_client_gives_503():
+    mocks = _make_mocks()
+    app = create_app(**mocks, event_client=None)
+
+    with TestClient(app) as client:
+        resp = client.get("/api/dashboard/events/1")
+
+    assert resp.status_code == 503

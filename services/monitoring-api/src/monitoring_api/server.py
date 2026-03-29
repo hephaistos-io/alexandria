@@ -352,6 +352,20 @@ def create_app(
     # Dashboard endpoints
     # ------------------------------------------------------------------
 
+    def _resolve_since(raw: str) -> str | None:
+        """Validate and resolve a `since` query parameter.
+
+        Returns the ISO 8601 string to use, or None if the input is invalid.
+        When `raw` is empty, defaults to 24 hours ago.
+        """
+        if not raw:
+            return (datetime.now(timezone.utc) - timedelta(hours=24)).isoformat()
+        try:
+            datetime.fromisoformat(raw)
+            return raw
+        except (ValueError, TypeError):
+            return None
+
     @app.get("/api/dashboard/articles", response_model=None)
     async def dashboard_articles(since: str = ""):
         """Return articles since the given ISO 8601 timestamp.
@@ -366,13 +380,25 @@ def create_app(
                 status_code=503,
                 media_type="application/json",
             )
-        resolved_since = since or (
-            datetime.now(timezone.utc) - timedelta(hours=24)
-        ).isoformat()
-        result = await loop.run_in_executor(
-            None,
-            lambda: articles_ref.get_dashboard_articles(resolved_since),
-        )
+        resolved_since = _resolve_since(since)
+        if resolved_since is None:
+            return Response(
+                content=json.dumps({"error": "invalid 'since' timestamp"}),
+                status_code=400,
+                media_type="application/json",
+            )
+        try:
+            result = await loop.run_in_executor(
+                None,
+                lambda: articles_ref.get_dashboard_articles(resolved_since),
+            )
+        except Exception:
+            logger.exception("Failed to fetch dashboard articles")
+            return Response(
+                content=json.dumps({"error": "internal"}),
+                status_code=500,
+                media_type="application/json",
+            )
         if result is None:
             return Response(
                 content=json.dumps({"error": "unavailable"}),
@@ -395,9 +421,13 @@ def create_app(
                 status_code=503,
                 media_type="application/json",
             )
-        resolved_since = since or (
-            datetime.now(timezone.utc) - timedelta(hours=24)
-        ).isoformat()
+        resolved_since = _resolve_since(since)
+        if resolved_since is None:
+            return Response(
+                content=json.dumps({"error": "invalid 'since' timestamp"}),
+                status_code=400,
+                media_type="application/json",
+            )
         try:
             result = await loop.run_in_executor(
                 None,
@@ -426,9 +456,13 @@ def create_app(
                 status_code=503,
                 media_type="application/json",
             )
-        resolved_since = since or (
-            datetime.now(timezone.utc) - timedelta(hours=24)
-        ).isoformat()
+        resolved_since = _resolve_since(since)
+        if resolved_since is None:
+            return Response(
+                content=json.dumps({"error": "invalid 'since' timestamp"}),
+                status_code=400,
+                media_type="application/json",
+            )
         try:
             result = await loop.run_in_executor(
                 None,

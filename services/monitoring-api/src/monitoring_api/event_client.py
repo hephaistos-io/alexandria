@@ -161,6 +161,7 @@ class EventClient:
                     JOIN event_articles ea ON ea.article_id = a.id
                     WHERE ea.event_id = %s
                     ORDER BY a.published_at DESC NULLS LAST
+                    LIMIT 500
                     """,
                     (event_id,),
                 )
@@ -175,6 +176,7 @@ class EventClient:
                     JOIN event_conflicts ec ON ec.conflict_event_id = ce.id
                     WHERE ec.event_id = %s
                     ORDER BY ce.event_date DESC NULLS LAST
+                    LIMIT 500
                     """,
                     (event_id,),
                 )

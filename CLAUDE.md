@@ -12,7 +12,7 @@ The developer is learning Python and ML through this project. This changes how y
 - **Flag footguns.** If a pattern is easy to misuse or has a common pitfall, say so.
 - **Prefer explicit over clever.** Write readable code over compact code. Avoid magic where possible.
 - **When asked to build something, keep the first version simple.** Get it working, then improve. Don't over-engineer on the first pass.
-- **Always** append your confidence score to any statements you make. If you would classify your confidence at below 90%, you should take a step back and research the topic thoroughly to improve your confidence in the output
+- **Always** append how you reached this assumption, and state any sources you've used for it.
 - **Proactively** research topics. You can assume that your knowledge is outdated; your training data cutoff is in the past, so you won't know everything for sure.
 
 ## Code Style

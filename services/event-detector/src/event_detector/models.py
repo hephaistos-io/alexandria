@@ -23,6 +23,7 @@ class ConflictRow:
     latitude: float
     longitude: float
     event_date: datetime | None
+    country: str | None
 
 
 @dataclass

@@ -66,6 +66,9 @@ class OsintGeoFetcher:
                 hash_input = f"{source_name}:{lat}:{lon}:{getattr(event, 'date', '')}:{getattr(event, 'title', '')}"
                 source_id = hashlib.sha256(hash_input.encode()).hexdigest()[:16]
 
+            place = getattr(event, "place_desc", "") or ""
+            country = place.rsplit(",", 1)[-1].strip() if place else ""
+
             results.append(
                 ConflictEvent(
                     source_id=source_id,
@@ -75,7 +78,8 @@ class OsintGeoFetcher:
                     latitude=float(lat),
                     longitude=float(lon),
                     event_date=getattr(event, "date", None),
-                    place_desc=getattr(event, "place_desc", "") or "",
+                    country=country,
+                    place_desc=place,
                     links=getattr(event, "links", []) or [],
                     fetched_at=fetched_at,
                 )

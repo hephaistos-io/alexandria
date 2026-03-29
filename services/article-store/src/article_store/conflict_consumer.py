@@ -78,8 +78,8 @@ class ConflictWriter:
             cur.execute(
                 "INSERT INTO conflict_events "
                 "    (source_id, source, title, description, latitude, longitude, "
-                "     event_date, place_desc, links, fetched_at) "
-                "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) "
+                "     event_date, country, place_desc, links, fetched_at) "
+                "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) "
                 "ON CONFLICT (source, source_id) DO NOTHING",
                 (
                     payload["source_id"],
@@ -89,6 +89,7 @@ class ConflictWriter:
                     payload["latitude"],
                     payload["longitude"],
                     payload.get("event_date"),
+                    payload.get("country"),
                     payload.get("place_desc"),
                     payload.get("links"),
                     payload["fetched_at"],

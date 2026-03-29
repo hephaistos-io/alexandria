@@ -43,9 +43,6 @@ HEAT_HISTORICAL = 0.5  # any → historical
 # Jaccard similarity threshold for matching a cluster to an existing event.
 JACCARD_THRESHOLD = 0.3
 
-# Max distance (km) between a conflict event and a cluster centroid
-# for the conflict to be associated with the cluster.
-MAX_CONFLICT_DISTANCE_KM = 100.0
 
 
 # --- IDF computation -------------------------------------------------------
@@ -179,20 +176,45 @@ def determine_status(heat: float, current_status: str | None = None) -> str:
 # --- Conflict matching ------------------------------------------------------
 
 
+def extract_countries(cluster: list[ArticleRow]) -> set[str]:
+    """Extract country names from GPE entities whose Wikidata description contains 'country'.
+
+    This relies on the entity-resolver enriching each entity with its Wikidata
+    description.  Country-level entities always have descriptions like
+    "country in Western Asia" or "country in South America", so checking for
+    the substring "country" in the description is a simple and reliable heuristic.
+    """
+    countries: set[str] = set()
+    for article in cluster:
+        for ent in article.entities:
+            if ent.get("label") != "GPE":
+                continue
+            desc = (ent.get("description") or "").lower()
+            if "country" not in desc:
+                continue
+            name = ent.get("canonical_name") or ent.get("text", "")
+            if name:
+                countries.add(name)
+    return countries
+
+
 def match_conflicts(
-    centroid_lat: float | None,
-    centroid_lng: float | None,
+    cluster_countries: set[str],
     conflicts: list[ConflictRow],
-    max_distance_km: float = MAX_CONFLICT_DISTANCE_KM,
 ) -> list[int]:
-    """Find conflict events within max_distance_km of the cluster centroid."""
-    if centroid_lat is None or centroid_lng is None:
+    """Find conflict events whose country overlaps with the cluster's countries.
+
+    Uses case-insensitive matching since country names from different sources
+    (Wikidata vs GDELT/UCDP) may differ in casing.
+    """
+    if not cluster_countries:
         return []
+
+    normalized = {c.lower().strip() for c in cluster_countries}
 
     matched: list[int] = []
     for conflict in conflicts:
-        dist = _haversine_km(centroid_lat, centroid_lng, conflict.latitude, conflict.longitude)
-        if dist <= max_distance_km:
+        if conflict.country and conflict.country.lower().strip() in normalized:
             matched.append(conflict.id)
     return matched
 
@@ -255,11 +277,12 @@ def build_event(
         # Fallback: take all QIDs sorted by count.
         core_qids = [qid for qid, _ in qid_counts.most_common()]
 
-    # Compute centroid from entity coordinates.
+    # Compute centroid from entity coordinates (used for map display).
     centroid_lat, centroid_lng = _compute_centroid(cluster)
 
-    # Match conflicts by proximity.
-    matched_conflict_ids = match_conflicts(centroid_lat, centroid_lng, conflicts)
+    # Match conflicts by country overlap.
+    cluster_countries = extract_countries(cluster)
+    matched_conflict_ids = match_conflicts(cluster_countries, conflicts)
 
     # Timing.
     now = datetime.now(timezone.utc)

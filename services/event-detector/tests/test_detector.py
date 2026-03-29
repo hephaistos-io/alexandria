@@ -9,6 +9,7 @@ from event_detector.detector import (
     compute_entity_idf,
     compute_heat,
     determine_status,
+    extract_countries,
     match_conflicts,
     match_existing_event,
 )
@@ -185,22 +186,99 @@ class TestDetermineStatus:
         assert determine_status(0.1, current_status="cooling") == "historical"
 
 
+class TestExtractCountries:
+    def test_extracts_country_gpe_entities(self) -> None:
+        article = ArticleRow(
+            id=1,
+            title="Test",
+            entities=[
+                {"wikidata_id": "Q794", "label": "GPE", "canonical_name": "Iran",
+                 "description": "country in Western Asia", "text": "Iran"},
+                {"wikidata_id": "Q801", "label": "GPE", "canonical_name": "Israel",
+                 "description": "country in Western Asia", "text": "Israel"},
+            ],
+            automatic_labels=None,
+            published_at=None,
+        )
+        countries = extract_countries([article])
+        assert countries == {"Iran", "Israel"}
+
+    def test_ignores_cities(self) -> None:
+        article = ArticleRow(
+            id=1,
+            title="Test",
+            entities=[
+                {"wikidata_id": "Q1530", "label": "GPE", "canonical_name": "Tehran",
+                 "description": "capital city of Iran", "text": "Tehran"},
+            ],
+            automatic_labels=None,
+            published_at=None,
+        )
+        assert extract_countries([article]) == set()
+
+    def test_ignores_non_gpe(self) -> None:
+        article = ArticleRow(
+            id=1,
+            title="Test",
+            entities=[
+                {"wikidata_id": "Q115", "label": "NORP", "canonical_name": "Ethiopia",
+                 "description": "country in the Horn of Africa", "text": "Ethiopian"},
+            ],
+            automatic_labels=None,
+            published_at=None,
+        )
+        assert extract_countries([article]) == set()
+
+    def test_handles_missing_description(self) -> None:
+        article = ArticleRow(
+            id=1,
+            title="Test",
+            entities=[
+                {"wikidata_id": "Q794", "label": "GPE", "canonical_name": "Iran",
+                 "description": None, "text": "Iran"},
+            ],
+            automatic_labels=None,
+            published_at=None,
+        )
+        assert extract_countries([article]) == set()
+
+    def test_falls_back_to_text(self) -> None:
+        article = ArticleRow(
+            id=1,
+            title="Test",
+            entities=[
+                {"wikidata_id": "Q794", "label": "GPE", "text": "Iran",
+                 "description": "country in Western Asia"},
+            ],
+            automatic_labels=None,
+            published_at=None,
+        )
+        assert extract_countries([article]) == {"Iran"}
+
+
 class TestMatchConflicts:
-    def test_nearby_conflict_matched(self) -> None:
-        conflicts = [ConflictRow(id=1, latitude=31.5, longitude=34.5, event_date=None)]
-        # Tel Aviv is roughly 31.77, 35.21 — within 100km.
-        matched = match_conflicts(31.77, 35.21, conflicts, max_distance_km=150.0)
+    def test_matching_country(self) -> None:
+        conflicts = [ConflictRow(id=1, latitude=31.5, longitude=34.5, event_date=None, country="Iran")]
+        matched = match_conflicts({"Iran"}, conflicts)
         assert matched == [1]
 
-    def test_distant_conflict_excluded(self) -> None:
-        conflicts = [ConflictRow(id=1, latitude=55.0, longitude=37.0, event_date=None)]
-        # Moscow (55, 37) is far from Tel Aviv (31.77, 35.21).
-        matched = match_conflicts(31.77, 35.21, conflicts, max_distance_km=100.0)
+    def test_non_matching_country(self) -> None:
+        conflicts = [ConflictRow(id=1, latitude=55.0, longitude=37.0, event_date=None, country="Russia")]
+        matched = match_conflicts({"Iran"}, conflicts)
         assert matched == []
 
-    def test_no_centroid_returns_empty(self) -> None:
-        conflicts = [ConflictRow(id=1, latitude=31.0, longitude=34.0, event_date=None)]
-        assert match_conflicts(None, None, conflicts) == []
+    def test_no_countries_returns_empty(self) -> None:
+        conflicts = [ConflictRow(id=1, latitude=31.0, longitude=34.0, event_date=None, country="Iran")]
+        assert match_conflicts(set(), conflicts) == []
+
+    def test_null_country_excluded(self) -> None:
+        conflicts = [ConflictRow(id=1, latitude=31.0, longitude=34.0, event_date=None, country=None)]
+        assert match_conflicts({"Iran"}, conflicts) == []
+
+    def test_case_insensitive(self) -> None:
+        conflicts = [ConflictRow(id=1, latitude=31.5, longitude=34.5, event_date=None, country="iran")]
+        matched = match_conflicts({"Iran"}, conflicts)
+        assert matched == [1]
 
 
 class TestMatchExistingEvent:

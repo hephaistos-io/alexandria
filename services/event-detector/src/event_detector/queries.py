@@ -56,7 +56,7 @@ def fetch_recent_conflicts(conn: psycopg.Connection, days: int = 14) -> list[Con
     with conn.cursor() as cur:
         cur.execute(
             """
-            SELECT id, latitude, longitude, event_date
+            SELECT id, latitude, longitude, event_date, country
             FROM conflict_events
             WHERE COALESCE(event_date, created_at) > now() - make_interval(days => %s)
             """,
@@ -70,6 +70,7 @@ def fetch_recent_conflicts(conn: psycopg.Connection, days: int = 14) -> list[Con
             latitude=float(row[1]),
             longitude=float(row[2]),
             event_date=row[3],
+            country=row[4],
         )
         for row in rows
     ]

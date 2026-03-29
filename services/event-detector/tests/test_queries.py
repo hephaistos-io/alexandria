@@ -62,10 +62,11 @@ class TestFetchRecentArticles:
 class TestFetchRecentConflicts:
     def test_maps_rows(self) -> None:
         now = datetime.now(timezone.utc)
-        conn = _mock_conn([(1, 31.5, 34.5, now)])
+        conn = _mock_conn([(1, 31.5, 34.5, now, "Israel")])
         results = fetch_recent_conflicts(conn)
         assert len(results) == 1
         assert results[0].latitude == 31.5
+        assert results[0].country == "Israel"
 
 
 class TestFetchExistingEvents:

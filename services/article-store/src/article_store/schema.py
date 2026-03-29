@@ -226,6 +226,7 @@ CREATE TABLE IF NOT EXISTS conflict_events (
     latitude        DOUBLE PRECISION NOT NULL,
     longitude       DOUBLE PRECISION NOT NULL,
     event_date      TIMESTAMPTZ,
+    country         TEXT,
     place_desc      TEXT,
     links           TEXT[],
     fetched_at      TIMESTAMPTZ NOT NULL,

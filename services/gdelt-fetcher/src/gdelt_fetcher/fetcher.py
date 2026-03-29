@@ -210,6 +210,11 @@ class GdeltFetcher:
             place = row[COL_ACTION_GEO_FULLNAME].strip()
             source_url = row[COL_SOURCE_URL].strip()
 
+            # Extract country from the full place name.  GDELT uses
+            # "City, State, Country" format — the last comma segment is
+            # the country.  Single-segment names are already country-level.
+            country = place.rsplit(",", 1)[-1].strip() if place else ""
+
             events.append(
                 ConflictEvent(
                     source_id=row[COL_GLOBAL_EVENT_ID].strip(),
@@ -221,6 +226,7 @@ class GdeltFetcher:
                     latitude=lat,
                     longitude=lon,
                     event_date=_parse_date(row[COL_SQLDATE].strip()),
+                    country=country,
                     place_desc=place,
                     links=[source_url] if source_url else [],
                     fetched_at=fetched_at,

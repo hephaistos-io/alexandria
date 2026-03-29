@@ -243,7 +243,8 @@ CREATE TABLE IF NOT EXISTS events (
     id           SERIAL PRIMARY KEY,
     slug         TEXT UNIQUE NOT NULL,
     title        TEXT NOT NULL,
-    status       TEXT NOT NULL DEFAULT 'emerging',
+    status       TEXT NOT NULL DEFAULT 'emerging'
+                 CHECK (status IN ('emerging', 'active', 'cooling', 'historical')),
     heat         DOUBLE PRECISION NOT NULL DEFAULT 0.0,
     entity_qids  TEXT[] NOT NULL,
     centroid_lat DOUBLE PRECISION,

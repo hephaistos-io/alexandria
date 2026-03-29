@@ -593,6 +593,33 @@ services:
       DATABASE_URL: "postgresql://alexandria:alexandria@postgres:5432/alexandria"
 
   # -------------------------------------------------------------------
+  # Event detector — clusters articles/conflicts into named events
+  # -------------------------------------------------------------------
+  event-detector:
+    build:
+      context: ../..
+      dockerfile: services/event-detector/Dockerfile
+    restart: on-failure
+    labels:
+      alexandria.pipeline.label: "event-detector"
+      alexandria.pipeline.reads: "postgres"
+      alexandria.pipeline.writes: "postgres"
+      alexandria.pipeline.stores: "redis"
+      alexandria.pipeline.icon: "hub"
+      alexandria.pipeline.sublabel: "event clustering"
+    depends_on:
+      base:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: "postgresql://alexandria:alexandria@postgres:5432/alexandria"
+      REDIS_URL: "redis://redis:6379/0"
+      DETECTION_INTERVAL: "300"
+
+  # -------------------------------------------------------------------
   # Role classifier — zero-shot entity role classification via transformers
   # -------------------------------------------------------------------
   role-classifier:

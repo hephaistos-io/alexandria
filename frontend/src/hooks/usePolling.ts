@@ -1,8 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 /**
  * Generic polling hook. Fetches `url` immediately on mount, then again every
  * `intervalMs` milliseconds.
+ *
+ * `url` can be a string or a function that returns a string. When a function
+ * is provided, it's called on every poll tick so the URL can include dynamic
+ * values like timestamps (e.g. `() => `/api/foo?since=${new Date().toISOString()}`).
  *
  * On error the previous `data` value is preserved so the UI stays stable.
  * Only `error` updates, giving callers the choice of whether to surface it.
@@ -11,7 +15,7 @@ import { useState, useEffect } from "react";
  * stale setState calls if the component unmounts while a request is in flight.
  */
 export function usePolling<T>(
-  url: string,
+  url: string | (() => string),
   intervalMs: number,
 ): {
   data: T | null;
@@ -22,12 +26,20 @@ export function usePolling<T>(
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Store the url in a ref so the interval callback always sees the latest
+  // value without needing to restart the interval on every url change.
+  const urlRef = useRef(url);
+  urlRef.current = url;
+
   useEffect(() => {
     let cancelled = false;
 
     async function poll() {
       try {
-        const res = await fetch(url);
+        const resolvedUrl = typeof urlRef.current === "function"
+          ? urlRef.current()
+          : urlRef.current;
+        const res = await fetch(resolvedUrl);
         if (!res.ok) throw new Error(`Server returned ${res.status}`);
         const json: T = await res.json();
         if (!cancelled) {
@@ -53,7 +65,7 @@ export function usePolling<T>(
       cancelled = true;
       clearInterval(intervalId);
     };
-  }, [url, intervalMs]);
+  }, [intervalMs]);
 
   return { data, loading, error };
 }

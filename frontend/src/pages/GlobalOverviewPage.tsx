@@ -10,9 +10,10 @@ import { useEventDetail } from "../hooks/useEventDetail";
 import { useInfraStatus } from "../hooks/useInfraStatus";
 import type { DashboardArticle } from "../types/dashboard";
 import type { ConflictEvent } from "../types/conflict";
-import type { DetectedEvent, EventArticle, EventConflict } from "../types/event";
+import type { DetectedEvent, EventConflict } from "../types/event";
 import type { LayerVisibility } from "../components/overview/LayerToggle";
 import type { GeoAnchor, SecondaryLocation } from "../types/pipeline";
+import { adaptEventArticle } from "../utils/adaptEventArticle";
 
 // Spatial entity labels from the NER pipeline that carry coordinates.
 // ORG and PERSON are excluded because they rarely resolve to a single point.
@@ -151,26 +152,8 @@ function deriveEventAnchors(events: DetectedEvent[]): GeoAnchor[] {
     }));
 }
 
-// Convert EventArticle[] to DashboardArticle-shaped objects so we can pass
-// them through the existing deriveAnchors function without duplicating the
-// location-picking logic. EventArticle.source maps to DashboardArticle.origin
-// (the display name of the outlet); source is left as an empty string since
-// the detail endpoint doesn't expose the feed type.
-function deriveEventArticleAnchors(articles: EventArticle[]): GeoAnchor[] {
-  const adapted: DashboardArticle[] = articles.map((a) => ({
-    id: a.id,
-    url: a.url,
-    source: "",
-    origin: a.source,
-    title: a.title,
-    summary: a.summary,
-    published_at: a.published_at,
-    created_at: a.published_at ?? "",
-    manual_labels: null,
-    automatic_labels: a.automatic_labels,
-    entities: a.entities,
-  }));
-  return deriveAnchors(adapted);
+function deriveEventArticleAnchors(articles: import("../types/event").EventArticle[]): GeoAnchor[] {
+  return deriveAnchors(articles.map(adaptEventArticle));
 }
 
 function deriveEventConflictAnchors(conflicts: EventConflict[]): GeoAnchor[] {
@@ -202,7 +185,7 @@ type TimeRangeKey = (typeof TIME_RANGES)[number]["key"];
 export function GlobalOverviewPage() {
   const [timeRange, setTimeRange] = useState<TimeRangeKey>("24h");
   const rangeMs = useMemo(
-    () => TIME_RANGES.find((r) => r.key === timeRange)!.ms,
+    () => (TIME_RANGES.find((r) => r.key === timeRange) ?? TIME_RANGES[2]).ms,
     [timeRange],
   );
   const { articles, loading } = useDashboardArticles(rangeMs);

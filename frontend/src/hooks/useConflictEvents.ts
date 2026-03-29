@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect } from "react";
 import type { ConflictEvent } from "../types/conflict";
 import { usePolling } from "./usePolling";
 
@@ -8,13 +8,16 @@ export function useConflictEvents(rangeMs: number): {
   events: ConflictEvent[];
   loading: boolean;
 } {
-  const since = useMemo(
-    () => new Date(Date.now() - rangeMs).toISOString(),
+  const buildUrl = useCallback(
+    () => {
+      const since = new Date(Date.now() - rangeMs).toISOString();
+      return `/api/dashboard/conflict-events?since=${encodeURIComponent(since)}`;
+    },
     [rangeMs],
   );
 
   const { data, loading, error } = usePolling<ConflictEvent[]>(
-    `/api/dashboard/conflict-events?since=${encodeURIComponent(since)}`,
+    buildUrl,
     POLL_INTERVAL_MS,
   );
 

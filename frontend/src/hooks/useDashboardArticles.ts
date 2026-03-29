@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect } from "react";
 import type { DashboardArticle } from "../types/dashboard";
 import { usePolling } from "./usePolling";
 
@@ -8,13 +8,18 @@ export function useDashboardArticles(rangeMs: number): {
   articles: DashboardArticle[];
   loading: boolean;
 } {
-  const since = useMemo(
-    () => new Date(Date.now() - rangeMs).toISOString(),
+  // URL factory: recomputed on every poll tick so the `since` timestamp
+  // stays fresh relative to Date.now() instead of drifting.
+  const buildUrl = useCallback(
+    () => {
+      const since = new Date(Date.now() - rangeMs).toISOString();
+      return `/api/dashboard/articles?since=${encodeURIComponent(since)}`;
+    },
     [rangeMs],
   );
 
   const { data, loading, error } = usePolling<DashboardArticle[]>(
-    `/api/dashboard/articles?since=${encodeURIComponent(since)}`,
+    buildUrl,
     POLL_INTERVAL_MS,
   );
 

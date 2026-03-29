@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useCallback } from "react";
 import { usePolling } from "./usePolling";
 import type { DetectedEvent } from "../types/event";
 
@@ -8,13 +8,16 @@ import type { DetectedEvent } from "../types/event";
  * Only returns non-historical events (the API already filters those out).
  */
 export function useDetectedEvents(rangeMs: number) {
-  const since = useMemo(
-    () => new Date(Date.now() - rangeMs).toISOString(),
+  const buildUrl = useCallback(
+    () => {
+      const since = new Date(Date.now() - rangeMs).toISOString();
+      return `/api/dashboard/events?since=${encodeURIComponent(since)}`;
+    },
     [rangeMs],
   );
 
   const { data, loading } = usePolling<DetectedEvent[]>(
-    `/api/dashboard/events?since=${encodeURIComponent(since)}`,
+    buildUrl,
     60_000,
   );
   return { events: data ?? [], loading };

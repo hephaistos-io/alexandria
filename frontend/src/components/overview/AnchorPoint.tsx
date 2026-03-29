@@ -1,5 +1,5 @@
 import { divIcon } from "leaflet";
-import { useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { Marker, Polyline } from "react-leaflet";
 import type { GeoAnchor } from "../../types/pipeline";
 
@@ -94,14 +94,14 @@ function buildIcon(category: string) {
 // useRef is React's escape hatch for values that persist across renders without
 // causing re-renders themselves.
 export function AnchorPoint({ anchor, selected = false, onSelect, roleColors }: AnchorPointProps) {
-  const iconRef = useRef(buildIcon(anchor.category));
+  const icon = useMemo(() => buildIcon(anchor.category), [anchor.category]);
   const [hovered, setHovered] = useState(false);
 
   return (
     <>
       <Marker
         position={anchor.coordinates}
-        icon={iconRef.current}
+        icon={icon}
         eventHandlers={{
           click: () => onSelect?.(anchor.id),
           mouseover: () => setHovered(true),

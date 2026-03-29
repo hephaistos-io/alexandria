@@ -78,9 +78,7 @@ def test_parse_log_line_valid_json():
 
 def test_parse_log_line_plain_text():
     """Wraps a plain text line (e.g. from a third-party library) in an envelope."""
-    result = _parse_log_line(
-        "Starting server on port 5672", "rabbitmq", "2026-03-21T10:00:00.000Z"
-    )
+    result = _parse_log_line("Starting server on port 5672", "rabbitmq", "2026-03-21T10:00:00.000Z")
     assert result["message"] == "Starting server on port 5672"
     assert result["service"] == "rabbitmq"
     assert result["level"] == "info"
@@ -104,6 +102,6 @@ def test_parse_log_line_empty_string():
 
 def test_parse_log_line_json_array():
     """A JSON array (not an object) is treated as raw text."""
-    line = '[1, 2, 3]'
+    line = "[1, 2, 3]"
     result = _parse_log_line(line, "svc", "2026-03-21T10:00:00.000Z")
     assert result["message"] == line

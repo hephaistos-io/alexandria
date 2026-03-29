@@ -72,9 +72,7 @@ class EntityRoleTypeClient:
             logger.warning("get_role_types failed: %s", exc)
             return None
 
-    def create_role_type(
-        self, name: str, description: str, color: str
-    ) -> EntityRoleType | None:
+    def create_role_type(self, name: str, description: str, color: str) -> EntityRoleType | None:
         """Insert a new entity role type.
 
         Returns the created role type, or None if the insert failed (e.g. duplicate name).

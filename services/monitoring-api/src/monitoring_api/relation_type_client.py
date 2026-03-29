@@ -178,9 +178,7 @@ class RelationTypeClient:
                 created_at=(row[6].isoformat() if hasattr(row[6], "isoformat") else str(row[6])),
             )
         except Exception as exc:
-            logger.warning(
-                "update_relation_type failed for id %s: %s", relation_type_id, exc
-            )
+            logger.warning("update_relation_type failed for id %s: %s", relation_type_id, exc)
             return None
 
     def delete_relation_type(self, relation_type_id: int) -> bool:
@@ -199,7 +197,5 @@ class RelationTypeClient:
                 conn.commit()
             return deleted
         except Exception as exc:
-            logger.warning(
-                "delete_relation_type failed for id %s: %s", relation_type_id, exc
-            )
+            logger.warning("delete_relation_type failed for id %s: %s", relation_type_id, exc)
             return False

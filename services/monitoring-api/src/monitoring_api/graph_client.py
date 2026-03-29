@@ -111,7 +111,7 @@ class GraphClient:
             count: int = record["article_count"] or 1
             # Corroboration boost: count^α. At α=0.5 (default), 4 articles = 2x,
             # 9 articles = 3x. Single-mention edges get no boost (1^α = 1).
-            display = base * (count ** corroboration) * math.exp(-lambda_decay * hours_elapsed)
+            display = base * (count**corroboration) * math.exp(-lambda_decay * hours_elapsed)
 
             if display < min_strength:
                 continue

@@ -385,9 +385,7 @@ def test_attribution_articles_default_params():
     assert body["articles"][0]["manual_entity_roles"] is None
     assert body["articles"][1]["manual_entity_roles"] == {"Q30": "SOURCE"}
 
-    art_mock.get_attribution_articles.assert_called_once_with(
-        1, 10, "all", "date_ingested", "desc"
-    )
+    art_mock.get_attribution_articles.assert_called_once_with(1, 10, "all", "date_ingested", "desc")
 
 
 def test_attribution_articles_filter_annotated():
@@ -494,9 +492,7 @@ def test_update_roles_success():
     assert body["ok"] is True
     assert body["article_id"] == 42
     assert body["roles"] == {"Q794": "AFFECTED", "Q30": "SOURCE"}
-    art_mock.update_entity_roles.assert_called_once_with(
-        42, {"Q794": "AFFECTED", "Q30": "SOURCE"}
-    )
+    art_mock.update_entity_roles.assert_called_once_with(42, {"Q794": "AFFECTED", "Q30": "SOURCE"})
 
 
 def test_update_roles_invalid_role_name_returns_422():

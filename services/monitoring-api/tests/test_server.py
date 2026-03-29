@@ -165,9 +165,7 @@ def test_status_returns_correct_shape():
 
 def test_status_db_null_latest_insert():
     """latest_insert should be None when no articles exist yet."""
-    db = _make_db_client(
-        stats=DbStats(article_count=0, latest_insert=None, labelled_count=0)
-    )
+    db = _make_db_client(stats=DbStats(article_count=0, latest_insert=None, labelled_count=0))
     app = create_app(
         docker_client=_make_docker_client(),
         rabbitmq_client=_make_rabbitmq_client(),
@@ -261,6 +259,7 @@ def test_no_clients_injected():
 # ---------------------------------------------------------------------------
 # /ws/logs — WebSocket log streaming
 # ---------------------------------------------------------------------------
+
 
 # An async generator helper for mocking LogStreamer.stream().
 # We define it as a module-level helper so we can reuse it in multiple tests.

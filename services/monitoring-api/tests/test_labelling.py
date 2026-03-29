@@ -166,9 +166,7 @@ def test_articles_default_pagination():
 def test_articles_with_filter_parameter():
     """Filter parameter is passed through to the client."""
     mock = MagicMock()
-    mock.get_articles.return_value = ArticlePage(
-        articles=[], total=0, page=1, page_size=50
-    )
+    mock.get_articles.return_value = ArticlePage(articles=[], total=0, page=1, page_size=50)
 
     with _build_app(mock) as client:
         resp = client.get("/api/labelling/articles?filter=unlabelled")
@@ -180,9 +178,7 @@ def test_articles_with_filter_parameter():
 def test_articles_with_sort_parameter():
     """Sort parameters are passed through to the client."""
     mock = MagicMock()
-    mock.get_articles.return_value = ArticlePage(
-        articles=[], total=0, page=1, page_size=50
-    )
+    mock.get_articles.return_value = ArticlePage(articles=[], total=0, page=1, page_size=50)
 
     with _build_app(mock) as client:
         resp = client.get("/api/labelling/articles?sort_by=source_origin&sort_dir=asc")

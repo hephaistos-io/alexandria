@@ -173,14 +173,19 @@ CREATE TABLE IF NOT EXISTS relation_types (
 
 SEED_RELATION_TYPES = """
 INSERT INTO relation_types (name, description, directed, color) VALUES
-    ('SANCTIONS',       'imposes economic or political sanctions against',                    true,  '#ffb4ab'),
-    ('ALLIED_WITH',     'maintains a formal or informal alliance with',                      false, '#a9c7ff'),
-    ('TRADES_WITH',     'engages in significant trade or economic exchange with',             false, '#bac8dc'),
-    ('PROVIDES_AID_TO', 'provides humanitarian, military, or financial aid to',               true,  '#5adace'),
-    ('CONFLICTS_WITH',  'is in armed conflict or serious dispute with',                      false, '#ff6b6b'),
-    ('NEGOTIATES_WITH', 'is engaged in negotiations or diplomatic talks with',               false, '#fbbf24'),
-    ('HOSTS',           'hosts or provides a base of operations for',                        true,  '#a3e635'),
-    ('FUNDS',           'provides financial backing or funding to',                          true,  '#c084fc')
+    ('SANCTIONS',                   'imposes sanctions against',                             true,  '#ffb4ab'),
+    ('ALLIED_WITH',                 'has a formal military or political alliance with',      false, '#a9c7ff'),
+    ('TRADES_WITH',                 'conducts trade with',                                   false, '#bac8dc'),
+    ('PROVIDES_MILITARY_AID_TO',    'provides military aid or weapons to',                   true,  '#5adace'),
+    ('PROVIDES_HUMANITARIAN_AID_TO','provides humanitarian aid or disaster relief to',       true,  '#34d399'),
+    ('AT_WAR_WITH',                 'is at war or in armed conflict with',                   false, '#ff6b6b'),
+    ('NEGOTIATES_WITH',             'is in peace or ceasefire negotiations with',            false, '#fbbf24'),
+    ('HOSTS',                       'hosts a military base or permanent presence of',        true,  '#a3e635'),
+    ('FUNDS',                       'provides financial funding to',                         true,  '#c084fc'),
+    ('ACCUSES',                     'accuses or blames',                                     true,  '#f97316'),
+    ('CONDEMNS',                    'publicly condemns the actions of',                      true,  '#ef4444'),
+    ('DEPLOYS_FORCES_TO',           'deploys military forces to',                            true,  '#6366f1'),
+    ('SUPPORTS',                    'publicly expresses political support for',              true,  '#8b5cf6')
 ON CONFLICT (name) DO NOTHING;
 """
 
@@ -230,6 +235,42 @@ CREATE TABLE IF NOT EXISTS conflict_events (
 """
 
 
+# Detected events — clusters of articles and conflict events that share
+# entities, geography, and timeframe.  The event-detector service writes
+# these; the monitoring-api reads them for the frontend map.
+SCHEMA_EVENTS = """
+CREATE TABLE IF NOT EXISTS events (
+    id           SERIAL PRIMARY KEY,
+    slug         TEXT UNIQUE NOT NULL,
+    title        TEXT NOT NULL,
+    status       TEXT NOT NULL DEFAULT 'emerging',
+    heat         DOUBLE PRECISION NOT NULL DEFAULT 0.0,
+    entity_qids  TEXT[] NOT NULL,
+    centroid_lat DOUBLE PRECISION,
+    centroid_lng DOUBLE PRECISION,
+    first_seen   TIMESTAMPTZ NOT NULL DEFAULT now(),
+    last_seen    TIMESTAMPTZ NOT NULL DEFAULT now(),
+    created_at   TIMESTAMPTZ DEFAULT now()
+);
+"""
+
+SCHEMA_EVENT_ARTICLES = """
+CREATE TABLE IF NOT EXISTS event_articles (
+    event_id   INT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+    article_id INT NOT NULL REFERENCES articles(id) ON DELETE CASCADE,
+    PRIMARY KEY (event_id, article_id)
+);
+"""
+
+SCHEMA_EVENT_CONFLICTS = """
+CREATE TABLE IF NOT EXISTS event_conflicts (
+    event_id          INT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+    conflict_event_id INT NOT NULL REFERENCES conflict_events(id) ON DELETE CASCADE,
+    PRIMARY KEY (event_id, conflict_event_id)
+);
+"""
+
+
 def apply_schema(conn: psycopg.Connection) -> None:
     """Create tables and run all pending migrations.
 
@@ -247,6 +288,9 @@ def apply_schema(conn: psycopg.Connection) -> None:
     11. Create relation_types table (IF NOT EXISTS)
     12. Seed default relation types (ON CONFLICT DO NOTHING)
     13. Create conflict_events table (IF NOT EXISTS)
+    14. Create events table (IF NOT EXISTS)
+    15. Create event_articles junction table (IF NOT EXISTS)
+    16. Create event_conflicts junction table (IF NOT EXISTS)
     """
     with conn.cursor() as cur:
         cur.execute(SCHEMA)
@@ -262,4 +306,7 @@ def apply_schema(conn: psycopg.Connection) -> None:
         cur.execute(SCHEMA_RELATION_TYPES)
         cur.execute(SEED_RELATION_TYPES)
         cur.execute(SCHEMA_CONFLICT_EVENTS)
+        cur.execute(SCHEMA_EVENTS)
+        cur.execute(SCHEMA_EVENT_ARTICLES)
+        cur.execute(SCHEMA_EVENT_CONFLICTS)
     conn.commit()

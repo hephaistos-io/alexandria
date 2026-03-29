@@ -35,6 +35,8 @@ def _labels(**kwargs) -> PipelineLabels:
         inputs=None,
         outputs=None,
         stores=None,
+        reads=None,
+        writes=None,
         role=None,
         icon=None,
         label=None,
@@ -83,9 +85,13 @@ class TestBuildTopologyStages:
 
     def test_single_fetcher_creates_service_and_queue(self):
         """A fetcher with only outputs creates one service stage and one queue stage."""
-        labels = {"article-fetcher-bbc": _labels(
-            outputs="queue:articles.rss", icon="rss_feed", label="BBC",
-        )}
+        labels = {
+            "article-fetcher-bbc": _labels(
+                outputs="queue:articles.rss",
+                icon="rss_feed",
+                label="BBC",
+            )
+        }
         topo = build_topology(labels, [])
 
         assert "article-fetcher-bbc" in _stage_ids(topo)
@@ -119,10 +125,12 @@ class TestBuildTopologyStages:
         assert queue.scalable is False
 
     def test_exchange_stage_created_for_exchange_output(self):
-        labels = {"article-scraper": _labels(
-            inputs="queue:articles.rss",
-            outputs="exchange:articles.scraped",
-        )}
+        labels = {
+            "article-scraper": _labels(
+                inputs="queue:articles.rss",
+                outputs="exchange:articles.scraped",
+            )
+        }
         topo = build_topology(labels, [])
 
         assert "exchange-articles.scraped" in _stage_ids(topo)
@@ -133,12 +141,14 @@ class TestBuildTopologyStages:
         assert exchange.match.exchange == "articles.scraped"
 
     def test_service_with_icon_and_sublabel(self):
-        labels = {"article-scraper": _labels(
-            inputs="queue:articles.rss",
-            outputs="exchange:articles.scraped",
-            icon="language",
-            sublabel="HTML → content",
-        )}
+        labels = {
+            "article-scraper": _labels(
+                inputs="queue:articles.rss",
+                outputs="exchange:articles.scraped",
+                icon="language",
+                sublabel="HTML → content",
+            )
+        }
         topo = build_topology(labels, [])
 
         service = next(s for s in topo.stages if s.id == "article-scraper")
@@ -250,10 +260,12 @@ class TestBuildTopologyConnections:
         assert ("queue-articles.rss", "article-scraper", False) in conns
 
     def test_service_to_exchange_connection(self):
-        labels = {"article-scraper": _labels(
-            inputs="queue:articles.rss",
-            outputs="exchange:articles.scraped",
-        )}
+        labels = {
+            "article-scraper": _labels(
+                inputs="queue:articles.rss",
+                outputs="exchange:articles.scraped",
+            )
+        }
         topo = build_topology(labels, [])
 
         conns = _connections(topo)
@@ -297,9 +309,13 @@ class TestBuildTopologyConnections:
                 outputs="queue:articles.tagged",
             ),
         }
-        bindings = [BindingInfo(
-            source="articles.scraped", destination="articles.raw", routing_key="",
-        )]
+        bindings = [
+            BindingInfo(
+                source="articles.scraped",
+                destination="articles.raw",
+                routing_key="",
+            )
+        ]
         topo = build_topology(labels, bindings)
 
         conns = _connections(topo)
@@ -308,9 +324,13 @@ class TestBuildTopologyConnections:
     def test_binding_ignored_if_exchange_not_in_stages(self):
         """Bindings referencing unknown exchanges are silently ignored."""
         labels = {"ner-tagger": _labels(inputs="queue:articles.raw")}
-        bindings = [BindingInfo(
-            source="unknown.exchange", destination="articles.raw", routing_key="",
-        )]
+        bindings = [
+            BindingInfo(
+                source="unknown.exchange",
+                destination="articles.raw",
+                routing_key="",
+            )
+        ]
         topo = build_topology(labels, bindings)
         # Should not crash; the orphan binding is just dropped.
         conns = _connections(topo)
@@ -382,18 +402,34 @@ class TestBuildTopologyColumns:
         assert by_id["article-fetcher-aljazeera"].column == 0
         assert by_id["queue-articles.rss"].column == 1
 
-    def test_store_connections_do_not_affect_columns(self):
-        """Dashed store connections should not push stores rightward in the layout."""
+    def test_store_connections_do_not_push_stores_via_bfs(self):
+        """Dashed store/writes connections (non-layout) don't push stores rightward via BFS."""
         labels = {
             "article-store": _labels(inputs="queue:articles.training", stores="postgres"),
+            "event-detector": _labels(reads="postgres"),
             "postgres": _labels(role="store", icon="database"),
         }
         topo = build_topology(labels, [])
 
         by_id = {s.id: s for s in topo.stages}
-        # Postgres has no non-dashed predecessors, so it should be at column 0,
-        # not pushed to column 3 by the dashed edge from article-store.
+        # Postgres has both incoming (stores from article-store) and outgoing
+        # (reads to event-detector) so the sink rule doesn't apply. Its BFS
+        # column stays at 0 because 'stores' edges are non-layout.
         assert by_id["postgres"].column == 0
+
+    def test_input_only_store_placed_at_last_column(self):
+        """A store with only incoming connections is pushed to the last column."""
+        labels = {
+            "fetcher": _labels(outputs="queue:articles.rss", stores="redis"),
+            "redis": _labels(role="store", icon="cached"),
+        }
+        topo = build_topology(labels, [])
+
+        by_id = {s.id: s for s in topo.stages}
+        max_col = max(s.column for s in topo.stages)
+        # Redis only has incoming store connections → sink → last column.
+        assert by_id["redis"].column == max_col
+        assert by_id["redis"].column > 0
 
     def test_full_pipeline_columns(self):
         """End-to-end column assignment for the full Alexandria pipeline."""
@@ -564,3 +600,117 @@ class TestTopologyEndpoint:
 
         assert resp.status_code == 200
         assert resp.json()["stages"] == []
+
+
+# ---------------------------------------------------------------------------
+# Unit tests: db: transport specs
+# ---------------------------------------------------------------------------
+
+
+class TestCommaSeparatedSpecs:
+    """Comma-separated inputs/outputs specs are split and processed individually."""
+
+    def test_comma_separated_outputs_parsed(self):
+        """Multiple comma-separated outputs each become their own stage."""
+        labels = {
+            "splitter": _labels(outputs="queue:articles.a,queue:articles.b")
+        }
+        topo = build_topology(labels, [])
+
+        ids = _stage_ids(topo)
+        assert "queue-articles.a" in ids
+        assert "queue-articles.b" in ids
+
+    def test_comma_separated_outputs_create_two_connections(self):
+        labels = {"splitter": _labels(outputs="queue:articles.a,queue:articles.b")}
+        topo = build_topology(labels, [])
+
+        conns = _connections(topo)
+        assert ("splitter", "queue-articles.a", False) in conns
+        assert ("splitter", "queue-articles.b", False) in conns
+
+    def test_malformed_spec_in_comma_list_skipped(self):
+        """A bad spec in a comma list is skipped; valid siblings still work."""
+        labels = {
+            "svc": _labels(inputs="queue:articles.rss,BADSPEC,queue:articles.tagged")
+        }
+        topo = build_topology(labels, [])
+
+        ids = _stage_ids(topo)
+        assert "queue-articles.rss" in ids
+        assert "queue-articles.tagged" in ids
+        assert not any("BADSPEC" in sid for sid in ids)
+
+    def test_whitespace_around_comma_is_stripped(self):
+        """Spaces around the comma separator are tolerated."""
+        labels = {
+            "svc": _labels(inputs="queue:articles.rss , queue:articles.tagged")
+        }
+        topo = build_topology(labels, [])
+
+        ids = _stage_ids(topo)
+        assert "queue-articles.rss" in ids
+        assert "queue-articles.tagged" in ids
+
+
+# ---------------------------------------------------------------------------
+# Unit tests: reads/writes directional store connections
+# ---------------------------------------------------------------------------
+
+
+class TestReadsWritesLabels:
+    """The reads and writes labels create directional dashed store connections."""
+
+    def test_reads_creates_store_to_service_connection(self):
+        labels = {
+            "postgres": _labels(role="store", icon="database"),
+            "event-detector": _labels(reads="postgres"),
+        }
+        topo = build_topology(labels, [])
+
+        conns = _connections(topo)
+        assert ("postgres", "event-detector", True) in conns
+
+    def test_writes_creates_service_to_store_connection(self):
+        labels = {
+            "postgres": _labels(role="store", icon="database"),
+            "event-detector": _labels(writes="postgres"),
+        }
+        topo = build_topology(labels, [])
+
+        conns = _connections(topo)
+        assert ("event-detector", "postgres", True) in conns
+
+    def test_reads_and_writes_same_store(self):
+        """A service that both reads and writes postgres gets two connections."""
+        labels = {
+            "postgres": _labels(role="store", icon="database"),
+            "event-detector": _labels(reads="postgres", writes="postgres"),
+        }
+        topo = build_topology(labels, [])
+
+        conns = _connections(topo)
+        assert ("postgres", "event-detector", True) in conns
+        assert ("event-detector", "postgres", True) in conns
+
+    def test_reads_skips_unknown_store(self):
+        """reads referencing a non-existent store creates no connection."""
+        labels = {"event-detector": _labels(reads="postgres")}
+        topo = build_topology(labels, [])
+
+        conns = _connections(topo)
+        assert len(conns) == 0
+
+    def test_reads_is_layout_affecting_writes_is_not(self):
+        """reads connections affect layout (service comes after store);
+        writes connections do not (avoids cycles)."""
+        labels = {
+            "postgres": _labels(role="store", icon="database"),
+            "event-detector": _labels(reads="postgres", writes="postgres"),
+        }
+        topo = build_topology(labels, [])
+
+        reads_conn = next(c for c in topo.connections if c.from_id == "postgres")
+        writes_conn = next(c for c in topo.connections if c.from_id == "event-detector")
+        assert reads_conn.affects_layout is True
+        assert writes_conn.affects_layout is False

@@ -329,16 +329,15 @@ export function buildPipelineGraph(
   queues: QueueStatus[],
   exchanges: ExchangeStatus[],
 ): { nodes: Node[]; edges: Edge[] } {
-  // 1a. Identify infrastructure stages — service nodes where every connection
-  //     is dashed (stores, monitoring, frontend). These get placed in a
-  //     separate row below the main pipeline instead of cluttering column 0.
+  // 1a. Identify infrastructure stages — stores, monitoring, and frontend nodes.
+  //     These get placed in a separate row below the main pipeline.
+  //     We use the explicit `role` field from Docker labels rather than guessing
+  //     from connection types, because pipeline services like event-detector
+  //     can have only dashed (store) connections without being infrastructure.
+  const INFRA_ROLES = new Set(["store", "monitoring", "frontend"]);
   const infraStageIds = new Set<string>();
   for (const stage of topology.stages) {
-    if (stage.match.queue != null || stage.match.exchange != null) continue;
-    const conns = topology.connections.filter(
-      (c) => c.from === stage.id || c.to === stage.id,
-    );
-    if (conns.length > 0 && conns.every((c) => c.dashed === true)) {
+    if (stage.role != null && INFRA_ROLES.has(stage.role)) {
       infraStageIds.add(stage.id);
     }
   }

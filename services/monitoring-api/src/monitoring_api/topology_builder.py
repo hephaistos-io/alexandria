@@ -67,12 +67,13 @@ class PipelineStage:
     match: StageMatch
     visual: StageVisual
     scalable: bool
+    role: str | None = None
 
 
 @dataclass
 class StageConnection:
     from_id: str  # source stage id  (named 'from' in TS, but that's a Python keyword)
-    to_id: str    # target stage id
+    to_id: str  # target stage id
     dashed: bool = False
     # False for side-channel edges (stores) excluded from column assignment.
     affects_layout: bool = True
@@ -127,45 +128,91 @@ def build_topology(
                 accent=labels.accent,
             ),
             scalable=labels.role != "store",
+            role=labels.role,
         )
 
         # --- Step 2: Build transport stages and connections for this service ---
 
-        # Parse "queue:name" or "exchange:name" from inputs/outputs labels.
+        # Parse comma-separated transport specs from inputs/outputs labels.
+        # Each spec has the form "kind:name" (e.g. "queue:articles.rss",
+        # "exchange:articles.scraped", "db:events"). A single label value may
+        # contain multiple specs: "db:articles,db:conflict_events".
         if labels.inputs is not None:
-            if _is_valid_transport_spec(labels.inputs):
-                _ensure_transport_stage(labels.inputs, stages)
-                transport_id = _transport_id(labels.inputs)
-                connections.append(StageConnection(from_id=transport_id, to_id=stage_id))
-            else:
-                logger.warning(
-                    "Skipping malformed inputs spec %r on service %s",
-                    labels.inputs, service_name,
-                )
+            for spec in labels.inputs.split(","):
+                spec = spec.strip()
+                if _is_valid_transport_spec(spec):
+                    _ensure_transport_stage(spec, stages)
+                    transport_id = _transport_id(spec)
+                    connections.append(StageConnection(from_id=transport_id, to_id=stage_id))
+                else:
+                    logger.warning(
+                        "Skipping malformed inputs spec %r on service %s",
+                        spec,
+                        service_name,
+                    )
 
         if labels.outputs is not None:
-            if _is_valid_transport_spec(labels.outputs):
-                _ensure_transport_stage(labels.outputs, stages)
-                transport_id = _transport_id(labels.outputs)
-                connections.append(StageConnection(from_id=stage_id, to_id=transport_id))
-            else:
-                logger.warning(
-                    "Skipping malformed outputs spec %r on service %s",
-                    labels.outputs, service_name,
-                )
+            for spec in labels.outputs.split(","):
+                spec = spec.strip()
+                if _is_valid_transport_spec(spec):
+                    _ensure_transport_stage(spec, stages)
+                    transport_id = _transport_id(spec)
+                    connections.append(StageConnection(from_id=stage_id, to_id=transport_id))
+                else:
+                    logger.warning(
+                        "Skipping malformed outputs spec %r on service %s",
+                        spec,
+                        service_name,
+                    )
 
         # Store connections are dashed (side-channel, not in the main flow).
         # Supports comma-separated values so a service can connect to multiple
         # stores (e.g. "postgres,neo4j" for monitoring-api).
+        #
+        # Three labels control direction:
+        #   stores: service → store  (legacy, same direction as writes)
+        #   reads:  store → service  (input from a store)
+        #   writes: service → store  (output to a store)
         if labels.stores is not None:
             for store_name in labels.stores.split(","):
                 store_name = store_name.strip()
-                # The store/target service node must exist in pipeline_labels.
                 if store_name in pipeline_labels:
                     connections.append(
                         StageConnection(
-                            from_id=stage_id, to_id=store_name,
-                            dashed=True, affects_layout=False,
+                            from_id=stage_id,
+                            to_id=store_name,
+                            dashed=True,
+                            affects_layout=False,
+                        )
+                    )
+
+        if labels.reads is not None:
+            for store_name in labels.reads.split(","):
+                store_name = store_name.strip()
+                if store_name in pipeline_labels:
+                    # reads edges ARE layout-affecting: the service logically
+                    # comes after the store it reads from. writes/stores stay
+                    # non-layout to avoid cycles (A reads postgres, B writes
+                    # postgres → no cycle in the layout graph).
+                    connections.append(
+                        StageConnection(
+                            from_id=store_name,
+                            to_id=stage_id,
+                            dashed=True,
+                            affects_layout=True,
+                        )
+                    )
+
+        if labels.writes is not None:
+            for store_name in labels.writes.split(","):
+                store_name = store_name.strip()
+                if store_name in pipeline_labels:
+                    connections.append(
+                        StageConnection(
+                            from_id=stage_id,
+                            to_id=store_name,
+                            dashed=True,
+                            affects_layout=False,
                         )
                     )
 
@@ -182,9 +229,7 @@ def build_topology(
         # Only add the connection if both ends are in the graph and not already added.
         if exchange_id in stages and queue_id in stages and edge_key not in seen_edges:
             seen_edges.add(edge_key)
-            connections.append(
-                StageConnection(from_id=exchange_id, to_id=queue_id, dashed=True)
-            )
+            connections.append(StageConnection(from_id=exchange_id, to_id=queue_id, dashed=True))
 
     # --- Step 4: Assign columns via BFS topological sort ---
     _assign_columns(stages, connections)
@@ -295,9 +340,7 @@ def _assign_columns(
     column: dict[str, int] = {sid: 0 for sid in stages}
 
     # BFS queue seeded with all nodes that have no predecessors.
-    queue: deque[str] = deque(
-        sid for sid, deg in in_degree.items() if deg == 0
-    )
+    queue: deque[str] = deque(sid for sid, deg in in_degree.items() if deg == 0)
 
     while queue:
         current = queue.popleft()
@@ -315,6 +358,35 @@ def _assign_columns(
     stuck = [sid for sid, deg in in_degree.items() if deg > 0]
     if stuck:
         logger.warning("Cycle detected in topology involving: %s", stuck)
+
+    # Post-process: enforce source/sink placement using ALL connections
+    # (including non-layout ones like writes/stores). A node that only has
+    # outgoing connections is a source (column 0). A node that only has
+    # incoming connections is a sink (last column).
+    max_col = max(column.values(), default=0)
+
+    all_outgoing: dict[str, bool] = {sid: False for sid in stages}
+    all_incoming: dict[str, bool] = {sid: False for sid in stages}
+    for conn in connections:
+        if conn.from_id in stages:
+            all_outgoing[conn.from_id] = True
+        if conn.to_id in stages:
+            all_incoming[conn.to_id] = True
+
+    for sid, stage in stages.items():
+        # Skip transport nodes (queues, exchanges) — they're positioned
+        # by their connected services, not by this source/sink rule.
+        if stage.visual.nodeType == "transport":
+            continue
+
+        has_out = all_outgoing[sid]
+        has_in = all_incoming[sid]
+        if has_out and not has_in:
+            # Source node — keep at column 0 (BFS default).
+            pass
+        elif has_in and not has_out:
+            # Sink node — push to last column.
+            column[sid] = max(column[sid], max_col)
 
     # Write computed columns back into the stage objects.
     for sid, col in column.items():

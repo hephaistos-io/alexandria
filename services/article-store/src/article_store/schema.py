@@ -273,6 +273,27 @@ CREATE TABLE IF NOT EXISTS event_conflicts (
 """
 
 
+# Performance indexes — created on every startup (IF NOT EXISTS is implicit
+# for CREATE INDEX IF NOT EXISTS).  The dashboard query filters on
+# automatic_labels IS NOT NULL and sorts by COALESCE(published_at, created_at),
+# so without these Postgres must full-scan the articles table on every poll.
+SCHEMA_INDEXES = """
+CREATE INDEX IF NOT EXISTS idx_articles_dashboard
+    ON articles (COALESCE(published_at, created_at) DESC)
+    WHERE automatic_labels IS NOT NULL;
+
+CREATE INDEX IF NOT EXISTS idx_articles_entities_not_null
+    ON articles (COALESCE(published_at, created_at) DESC)
+    WHERE entities IS NOT NULL;
+
+CREATE INDEX IF NOT EXISTS idx_conflict_events_date
+    ON conflict_events (COALESCE(event_date, created_at) DESC);
+
+CREATE INDEX IF NOT EXISTS idx_events_status
+    ON events (status) WHERE status != 'historical';
+"""
+
+
 def apply_schema(conn: psycopg.Connection) -> None:
     """Create tables and run all pending migrations.
 
@@ -311,4 +332,5 @@ def apply_schema(conn: psycopg.Connection) -> None:
         cur.execute(SCHEMA_EVENTS)
         cur.execute(SCHEMA_EVENT_ARTICLES)
         cur.execute(SCHEMA_EVENT_CONFLICTS)
+        cur.execute(SCHEMA_INDEXES)
     conn.commit()

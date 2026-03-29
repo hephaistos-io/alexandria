@@ -15,6 +15,7 @@ from article_store.schema import (
     SCHEMA_EVENT_ARTICLES,
     SCHEMA_EVENT_CONFLICTS,
     SCHEMA_EVENTS,
+    SCHEMA_INDEXES,
     SCHEMA_RELATION_TYPES,
     SEED_CLASSIFICATION_LABELS,
     SEED_ENTITY_ROLE_TYPES,
@@ -49,10 +50,10 @@ class TestArticleStore:
 
         ArticleStore("postgresql://localhost/test")
 
-        # apply_schema runs 16 statements: schema, 4 migrations, 2 table
+        # apply_schema runs 17 statements: schema, 4 migrations, 2 table
         # creates, 3 seeds, relation_types table + seed, conflict_events
-        # table, events table + 2 junction tables.
-        assert mock_cursor.execute.call_count == 16
+        # table, events table + 2 junction tables, indexes.
+        assert mock_cursor.execute.call_count == 17
         mock_cursor.execute.assert_any_call(SCHEMA)
         mock_cursor.execute.assert_any_call(MIGRATE_TOPIC_LABEL_TO_ARRAY)
         mock_cursor.execute.assert_any_call(MIGRATE_RENAME_TO_MANUAL)
@@ -69,6 +70,7 @@ class TestArticleStore:
         mock_cursor.execute.assert_any_call(SCHEMA_EVENTS)
         mock_cursor.execute.assert_any_call(SCHEMA_EVENT_ARTICLES)
         mock_cursor.execute.assert_any_call(SCHEMA_EVENT_CONFLICTS)
+        mock_cursor.execute.assert_any_call(SCHEMA_INDEXES)
         mock_conn.commit.assert_called()
 
     def test_save_inserts_with_correct_params(self, mock_connect: MagicMock) -> None:

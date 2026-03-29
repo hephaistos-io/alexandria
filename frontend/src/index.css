@@ -266,6 +266,30 @@
   z-index: 1;
 }
 
+.geo-event-dot {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  background: #c084fc;
+  box-shadow: 0 0 16px 4px rgba(192, 132, 252, 0.5);
+  transform: translate(-50%, -50%);
+  animation: pulse-dot 2s ease-in-out infinite;
+  z-index: 2;
+}
+
+.geo-event-ring {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  background: #c084fc;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.33);
+  animation: pulse-ring 1.25s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+  z-index: 1;
+}
+
 .geo-anchor-label {
   position: absolute;
   top: 10px;

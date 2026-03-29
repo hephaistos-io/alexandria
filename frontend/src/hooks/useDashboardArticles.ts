@@ -1,15 +1,20 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import type { DashboardArticle } from "../types/dashboard";
 import { usePolling } from "./usePolling";
 
 const POLL_INTERVAL_MS = 60_000;
 
-export function useDashboardArticles(limit: number = 20): {
+export function useDashboardArticles(rangeMs: number): {
   articles: DashboardArticle[];
   loading: boolean;
 } {
+  const since = useMemo(
+    () => new Date(Date.now() - rangeMs).toISOString(),
+    [rangeMs],
+  );
+
   const { data, loading, error } = usePolling<DashboardArticle[]>(
-    `/api/dashboard/articles?limit=${limit}`,
+    `/api/dashboard/articles?since=${encodeURIComponent(since)}`,
     POLL_INTERVAL_MS,
   );
 

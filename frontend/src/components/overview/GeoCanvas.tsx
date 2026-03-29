@@ -76,6 +76,7 @@ export function GeoCanvas({ anchors, focusedAnchorId = null, selectedAnchorId = 
   // or a conflict event — we check the category to decide which toggle applies.
   const visibleAnchors = anchors.filter((a) => {
     if (a.category === "CONFLICT_EVENT") return layers.conflicts;
+    if (a.category === "DETECTED_EVENT") return layers.events;
     return layers.articles;
   });
   return (

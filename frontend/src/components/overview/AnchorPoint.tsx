@@ -60,7 +60,21 @@ function curvedArc(
 // Leaflet's DivIcon lets us inject arbitrary HTML into the map canvas layer,
 // which is how we get the pulsing ring + dot without fighting Leaflet's default
 // icon system (which expects PNG images).
-function buildIcon(isConflict: boolean) {
+function buildIcon(category: string) {
+  if (category === "DETECTED_EVENT") {
+    // Events get a larger, purple marker to distinguish them from individual
+    // articles and conflict dots.
+    return divIcon({
+      className: "geo-anchor-marker",
+      iconSize: [0, 0],
+      iconAnchor: [0, 0],
+      html: `
+        <div class="geo-event-ring"></div>
+        <div class="geo-event-dot"></div>
+      `,
+    });
+  }
+  const isConflict = category === "CONFLICT_EVENT";
   const ringClass = isConflict ? "geo-conflict-ring" : "geo-anchor-ring";
   const dotClass = isConflict ? "geo-conflict-dot" : "geo-anchor-dot";
   return divIcon({
@@ -80,8 +94,7 @@ function buildIcon(isConflict: boolean) {
 // useRef is React's escape hatch for values that persist across renders without
 // causing re-renders themselves.
 export function AnchorPoint({ anchor, selected = false, onSelect, roleColors }: AnchorPointProps) {
-  const isConflict = anchor.category === "CONFLICT_EVENT";
-  const iconRef = useRef(buildIcon(isConflict));
+  const iconRef = useRef(buildIcon(anchor.category));
   const [hovered, setHovered] = useState(false);
 
   return (

@@ -2,6 +2,7 @@ export interface LayerVisibility {
   articles: boolean;
   conflicts: boolean;
   heatmap: boolean;
+  events: boolean;
 }
 
 interface LayerToggleProps {
@@ -72,6 +73,12 @@ export function LayerToggle({ layers, onChange }: LayerToggleProps) {
         active={layers.heatmap}
         color="#ff9040"
         onClick={() => toggle("heatmap")}
+      />
+      <ToggleButton
+        label="EVENTS"
+        active={layers.events}
+        color="#c084fc"
+        onClick={() => toggle("events")}
       />
     </div>
   );

@@ -4,6 +4,7 @@ Follows the same patterns as test_labelling.py: inject a mock ArticleClient
 via create_app(article_client=mock) and test with FastAPI's TestClient.
 """
 
+from datetime import datetime, timedelta, timezone
 from unittest.mock import AsyncMock, MagicMock
 
 from fastapi.testclient import TestClient
@@ -135,38 +136,47 @@ def test_dashboard_articles_null_entities_and_labels():
     assert second["manual_labels"] == ["POLITICS"]
 
 
-def test_dashboard_articles_default_limit():
-    """Default limit of 20 is passed to the client."""
+def test_dashboard_articles_default_since_is_24h_ago():
+    """When no `since` is provided, the client is called with a timestamp ~24 h ago."""
     mock = MagicMock()
     mock.get_dashboard_articles.return_value = []
 
+    before = datetime.now(timezone.utc)
     with _build_app(mock) as client:
         client.get("/api/dashboard/articles")
+    after = datetime.now(timezone.utc)
 
-    # min(20, 50) = 20
-    mock.get_dashboard_articles.assert_called_once_with(20)
+    called_since = mock.get_dashboard_articles.call_args[0][0]
+    # The value must be a valid ISO timestamp string.
+    assert isinstance(called_since, str)
+    # Parse it back and verify it falls in the expected 24-hour window.
+    parsed = datetime.fromisoformat(called_since)
+    assert before - timedelta(hours=24, seconds=1) <= parsed <= after - timedelta(hours=23, minutes=59)
 
 
-def test_dashboard_articles_custom_limit():
-    """A custom limit query param is forwarded, capped at 50."""
+def test_dashboard_articles_custom_since_is_forwarded():
+    """An explicit `since` query param is forwarded directly to the client."""
     mock = MagicMock()
     mock.get_dashboard_articles.return_value = []
 
     with _build_app(mock) as client:
-        client.get("/api/dashboard/articles?limit=10")
+        client.get("/api/dashboard/articles?since=2024-01-15T00:00:00Z")
 
-    mock.get_dashboard_articles.assert_called_once_with(10)
+    mock.get_dashboard_articles.assert_called_once_with("2024-01-15T00:00:00Z")
 
 
-def test_dashboard_articles_limit_capped_at_50():
-    """A limit above 50 is capped to 50."""
+def test_dashboard_articles_since_filters_by_timestamp():
+    """When `since` is provided, only articles after that timestamp are returned."""
     mock = MagicMock()
-    mock.get_dashboard_articles.return_value = []
+    # Return only the first article (published after the since timestamp).
+    mock.get_dashboard_articles.return_value = _sample_articles()[:1]
 
     with _build_app(mock) as client:
-        client.get("/api/dashboard/articles?limit=200")
+        resp = client.get("/api/dashboard/articles?since=2026-03-21T00:00:00Z")
 
-    mock.get_dashboard_articles.assert_called_once_with(50)
+    assert resp.status_code == 200
+    assert len(resp.json()) == 1
+    mock.get_dashboard_articles.assert_called_once_with("2026-03-21T00:00:00Z")
 
 
 def test_dashboard_articles_empty_list():

@@ -329,12 +329,15 @@ class ArticleClient:
             logger.warning("Update labels failed for article %s: %s", article_id, exc)
             return False
 
-    def get_dashboard_articles(self, limit: int = 20) -> list[DashboardArticle] | None:
-        """Fetch recent *classified* articles for the dashboard map and feed.
+    def get_dashboard_articles(self, since: str) -> list[DashboardArticle] | None:
+        """Fetch classified articles published/created since the given timestamp.
 
         Only returns articles that have at least one automatic label (i.e.
         they've been through the topic-tagger). Unclassified articles show
         as #PENDING in the UI, which is noise for the live feed.
+
+        `since` must be an ISO 8601 string, e.g. "2024-01-15T00:00:00Z".
+        A safety cap of 2000 rows prevents runaway memory usage.
 
         Returns None if the database is unreachable.
         """
@@ -347,36 +350,52 @@ class ArticleClient:
                                created_at, manual_labels, automatic_labels, entities
                         FROM articles
                         WHERE automatic_labels IS NOT NULL
+                          AND COALESCE(published_at, created_at) >= %s
                         ORDER BY COALESCE(published_at, created_at) DESC
-                        LIMIT %s
+                        LIMIT 2000
                         """,
-                        (limit,),
+                        (since,),
                     )
                     rows = cur.fetchall()
 
             results = []
             for row in rows:
-                (id_, url, source, origin, title, summary, published_at,
-                 created_at, manual_labels, automatic_labels, entities) = row
-                results.append(DashboardArticle(
-                    id=int(id_),
-                    url=str(url),
-                    source=str(source),
-                    origin=str(origin),
-                    title=str(title),
-                    summary=summary,
-                    published_at=(
-                        published_at.isoformat()
-                        if hasattr(published_at, "isoformat") else published_at
-                    ),
-                    created_at=(
-                        created_at.isoformat()
-                        if hasattr(created_at, "isoformat") else str(created_at)
-                    ),
-                    manual_labels=manual_labels,
-                    automatic_labels=automatic_labels,
-                    entities=entities,
-                ))
+                (
+                    id_,
+                    url,
+                    source,
+                    origin,
+                    title,
+                    summary,
+                    published_at,
+                    created_at,
+                    manual_labels,
+                    automatic_labels,
+                    entities,
+                ) = row
+                results.append(
+                    DashboardArticle(
+                        id=int(id_),
+                        url=str(url),
+                        source=str(source),
+                        origin=str(origin),
+                        title=str(title),
+                        summary=summary,
+                        published_at=(
+                            published_at.isoformat()
+                            if hasattr(published_at, "isoformat")
+                            else published_at
+                        ),
+                        created_at=(
+                            created_at.isoformat()
+                            if hasattr(created_at, "isoformat")
+                            else str(created_at)
+                        ),
+                        manual_labels=manual_labels,
+                        automatic_labels=automatic_labels,
+                        entities=entities,
+                    )
+                )
             return results
         except Exception as exc:
             logger.warning("Dashboard articles query failed: %s", exc)
@@ -437,8 +456,16 @@ class ArticleClient:
 
             articles = []
             for row in rows:
-                (art_id, origin, title, summary, published_at,
-                 created_at, manual_labels, automatic_labels) = row
+                (
+                    art_id,
+                    origin,
+                    title,
+                    summary,
+                    published_at,
+                    created_at,
+                    manual_labels,
+                    automatic_labels,
+                ) = row
                 articles.append(
                     ArchiveArticle(
                         id=int(art_id),
@@ -494,9 +521,22 @@ class ArticleClient:
             if row is None:
                 return None
 
-            (id_, url, source, origin, title, summary, content, published_at,
-             created_at, fetched_at, scraped_at, manual_labels, automatic_labels,
-             entities) = row
+            (
+                id_,
+                url,
+                source,
+                origin,
+                title,
+                summary,
+                content,
+                published_at,
+                created_at,
+                fetched_at,
+                scraped_at,
+                manual_labels,
+                automatic_labels,
+                entities,
+            ) = row
 
             def _fmt(dt) -> str | None:
                 if dt is None:
@@ -638,8 +678,15 @@ class ArticleClient:
             articles = []
             for row in rows:
                 (
-                    article_id, origin, title, summary, content, created_at,
-                    entities, manual_entity_roles, entity_roles_labelled_at,
+                    article_id,
+                    origin,
+                    title,
+                    summary,
+                    content,
+                    created_at,
+                    entities,
+                    manual_entity_roles,
+                    entity_roles_labelled_at,
                 ) = row
                 created_str = (
                     created_at.isoformat() if hasattr(created_at, "isoformat") else str(created_at)
@@ -742,19 +789,21 @@ class ArticleClient:
             results: list[dict] = []
             for row in rows:
                 source, origin, title, url, summary, published_at = row
-                results.append({
-                    "source": source,
-                    "origin": origin,
-                    "title": title,
-                    "url": url,
-                    "summary": summary,
-                    "published": (
-                        published_at.isoformat()
-                        if hasattr(published_at, "isoformat")
-                        else published_at
-                    ),
-                    "fetched_at": datetime.now(timezone.utc).isoformat(),
-                })
+                results.append(
+                    {
+                        "source": source,
+                        "origin": origin,
+                        "title": title,
+                        "url": url,
+                        "summary": summary,
+                        "published": (
+                            published_at.isoformat()
+                            if hasattr(published_at, "isoformat")
+                            else published_at
+                        ),
+                        "fetched_at": datetime.now(timezone.utc).isoformat(),
+                    }
+                )
             return results
         except Exception as exc:
             logger.warning("Reparse payloads query failed: %s", exc)

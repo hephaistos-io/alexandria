@@ -156,21 +156,24 @@ def upsert_event(conn: psycopg.Connection, event: DetectedEvent) -> int:
         row = cur.fetchone()
         event_id = int(row[0])
 
-    conn.commit()
+    # Caller is responsible for conn.commit() — this allows wrapping
+    # upsert + link_articles + link_conflicts in a single transaction.
     return event_id
 
 
 def link_articles(conn: psycopg.Connection, event_id: int, article_ids: list[int]) -> None:
-    """Replace the event's article links with the given set."""
+    """Replace the event's article links with the given set.
+
+    Caller is responsible for conn.commit().
+    """
     with conn.cursor() as cur:
         cur.execute("DELETE FROM event_articles WHERE event_id = %s", (event_id,))
-        for aid in article_ids:
-            cur.execute(
+        if article_ids:
+            cur.executemany(
                 "INSERT INTO event_articles (event_id, article_id) VALUES (%s, %s) "
                 "ON CONFLICT DO NOTHING",
-                (event_id, aid),
+                [(event_id, aid) for aid in article_ids],
             )
-    conn.commit()
 
 
 def link_conflicts(
@@ -178,29 +181,54 @@ def link_conflicts(
     event_id: int,
     conflict_ids: list[int],
 ) -> None:
-    """Replace the event's conflict event links with the given set."""
+    """Replace the event's conflict event links with the given set.
+
+    Caller is responsible for conn.commit().
+    """
     with conn.cursor() as cur:
         cur.execute("DELETE FROM event_conflicts WHERE event_id = %s", (event_id,))
-        for cid in conflict_ids:
-            cur.execute(
+        if conflict_ids:
+            cur.executemany(
                 "INSERT INTO event_conflicts (event_id, conflict_event_id) VALUES (%s, %s) "
                 "ON CONFLICT DO NOTHING",
-                (event_id, cid),
+                [(event_id, cid) for cid in conflict_ids],
             )
-    conn.commit()
 
 
-def decay_historical_events(conn: psycopg.Connection, heat_threshold: float = 0.5) -> int:
-    """Mark stale events as historical.  Returns the number of events updated."""
+def decay_historical_events(
+    conn: psycopg.Connection,
+    heat_threshold: float = 0.5,
+    exclude_ids: set[int] | None = None,
+) -> int:
+    """Mark stale events as historical, excluding recently matched ones.
+
+    Args:
+        heat_threshold: Events below this heat score are candidates for decay.
+        exclude_ids:    Event IDs matched this cycle — these are never decayed
+                        even if their heat is below the threshold.
+
+    Returns the number of events updated.
+    """
+    excluded = tuple(exclude_ids) if exclude_ids else ()
     with conn.cursor() as cur:
-        cur.execute(
-            """
-            UPDATE events SET status = 'historical'
-            WHERE status != 'historical' AND heat < %s
-            RETURNING id
-            """,
-            (heat_threshold,),
-        )
+        if excluded:
+            cur.execute(
+                """
+                UPDATE events SET status = 'historical'
+                WHERE status != 'historical' AND heat < %s AND id != ALL(%s)
+                RETURNING id
+                """,
+                (heat_threshold, list(excluded)),
+            )
+        else:
+            cur.execute(
+                """
+                UPDATE events SET status = 'historical'
+                WHERE status != 'historical' AND heat < %s
+                RETURNING id
+                """,
+                (heat_threshold,),
+            )
         count = cur.rowcount
     conn.commit()
     return count

@@ -78,10 +78,13 @@ def run_cycle(database_url: str, lookback_days: int) -> None:
 
         event = build_event(cluster, conflicts, idf, existing)
 
+        # Single connection + transaction for all three writes so they
+        # either all succeed or all roll back (no partial state).
         with psycopg.connect(database_url) as conn:
             event_id = upsert_event(conn, event)
             link_articles(conn, event_id, event.article_ids)
             link_conflicts(conn, event_id, event.conflict_ids)
+            conn.commit()
 
         action = "Updated" if existing else "Created"
         logger.info(
@@ -97,7 +100,7 @@ def run_cycle(database_url: str, lookback_days: int) -> None:
 
     # Decay events that weren't matched by any cluster this cycle.
     with psycopg.connect(database_url) as conn:
-        decayed = decay_historical_events(conn)
+        decayed = decay_historical_events(conn, exclude_ids=matched_event_ids)
 
     if decayed:
         logger.info("Marked %d event(s) as historical", decayed)

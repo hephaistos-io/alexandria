@@ -33,7 +33,7 @@ import json
 import logging
 import os
 from contextlib import asynccontextmanager
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import pika
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
@@ -48,6 +48,7 @@ from monitoring_api.article_client import (
 from monitoring_api.conflict_client import ConflictClient
 from monitoring_api.db_client import DbClient, DbStats
 from monitoring_api.docker_client import ContainerStatus, DockerClient
+from monitoring_api.event_client import EventClient
 from monitoring_api.graph_client import GraphClient
 from monitoring_api.label_client import ClassificationLabel, ClassificationLabelClient
 from monitoring_api.log_streamer import LogStreamer
@@ -133,7 +134,7 @@ class EntityRoleUpdate(BaseModel):
     """Request body for PATCH /api/attribution/articles/{article_id}/roles.
 
     roles maps Wikidata entity IDs to role names, e.g.:
-        {"Q794": "AFFECTED", "Q30": "SOURCE"}
+        {"Q794": "TARGET", "Q30": "ACTOR"}
 
     An empty dict clears the annotation (sets manual_entity_roles to NULL).
     """
@@ -166,6 +167,7 @@ def create_app(
     relation_type_client: RelationTypeClient | None = None,
     graph_client: GraphClient | None = None,
     conflict_client: ConflictClient | None = None,
+    event_client: EventClient | None = None,
 ) -> FastAPI:
     """Factory function that builds and returns the FastAPI application.
 
@@ -190,6 +192,7 @@ def create_app(
         "relation_types": relation_type_client,
         "graph": graph_client,
         "conflicts": conflict_client,
+        "events": event_client,
         "env": config,
     }
 
@@ -220,6 +223,8 @@ def create_app(
             state["graph"] = GraphClient(uri=config["neo4j_url"], auth=(user, password))
         if state["conflicts"] is None and config["database_url"]:
             state["conflicts"] = ConflictClient(database_url=config["database_url"])
+        if state["events"] is None and config["database_url"]:
+            state["events"] = EventClient(database_url=config["database_url"])
 
         logger.info("Monitoring API started")
         yield
@@ -347,9 +352,26 @@ def create_app(
     # Dashboard endpoints
     # ------------------------------------------------------------------
 
+    def _resolve_since(raw: str) -> str | None:
+        """Validate and resolve a `since` query parameter.
+
+        Returns the ISO 8601 string to use, or None if the input is invalid.
+        When `raw` is empty, defaults to 24 hours ago.
+        """
+        if not raw:
+            return (datetime.now(timezone.utc) - timedelta(hours=24)).isoformat()
+        try:
+            datetime.fromisoformat(raw)
+            return raw
+        except (ValueError, TypeError):
+            return None
+
     @app.get("/api/dashboard/articles", response_model=None)
-    async def dashboard_articles(limit: int = 20):
-        """Return recent articles with entities for the dashboard map and feed."""
+    async def dashboard_articles(since: str = ""):
+        """Return articles since the given ISO 8601 timestamp.
+
+        If `since` is omitted, defaults to the last 24 hours.
+        """
         loop = asyncio.get_event_loop()
         articles_ref: ArticleClient | None = state["articles"]
         if articles_ref is None:
@@ -358,10 +380,25 @@ def create_app(
                 status_code=503,
                 media_type="application/json",
             )
-        result = await loop.run_in_executor(
-            None,
-            lambda: articles_ref.get_dashboard_articles(min(limit, 50)),
-        )
+        resolved_since = _resolve_since(since)
+        if resolved_since is None:
+            return Response(
+                content=json.dumps({"error": "invalid 'since' timestamp"}),
+                status_code=400,
+                media_type="application/json",
+            )
+        try:
+            result = await loop.run_in_executor(
+                None,
+                lambda: articles_ref.get_dashboard_articles(resolved_since),
+            )
+        except Exception:
+            logger.exception("Failed to fetch dashboard articles")
+            return Response(
+                content=json.dumps({"error": "internal"}),
+                status_code=500,
+                media_type="application/json",
+            )
         if result is None:
             return Response(
                 content=json.dumps({"error": "unavailable"}),
@@ -371,8 +408,11 @@ def create_app(
         return [dataclasses.asdict(a) for a in result]
 
     @app.get("/api/dashboard/conflict-events", response_model=None)
-    async def dashboard_conflict_events(limit: int = 200):
-        """Return recent conflict events for the dashboard map."""
+    async def dashboard_conflict_events(since: str = ""):
+        """Return conflict events since the given ISO 8601 timestamp.
+
+        If `since` is omitted, defaults to the last 24 hours.
+        """
         loop = asyncio.get_event_loop()
         conflict_ref: ConflictClient | None = state["conflicts"]
         if conflict_ref is None:
@@ -381,14 +421,87 @@ def create_app(
                 status_code=503,
                 media_type="application/json",
             )
+        resolved_since = _resolve_since(since)
+        if resolved_since is None:
+            return Response(
+                content=json.dumps({"error": "invalid 'since' timestamp"}),
+                status_code=400,
+                media_type="application/json",
+            )
         try:
             result = await loop.run_in_executor(
                 None,
-                lambda: conflict_ref.get_dashboard_events(min(limit, 500)),
+                lambda: conflict_ref.get_dashboard_events(resolved_since),
             )
             return [dataclasses.asdict(e) for e in result]
         except Exception:
             logger.exception("Failed to fetch conflict events")
+            return Response(
+                content=json.dumps({"error": "internal"}),
+                status_code=500,
+                media_type="application/json",
+            )
+
+    @app.get("/api/dashboard/events", response_model=None)
+    async def dashboard_events(since: str = ""):
+        """Return active detected events first seen since the given ISO 8601 timestamp.
+
+        If `since` is omitted, defaults to the last 24 hours.
+        """
+        loop = asyncio.get_event_loop()
+        event_ref: EventClient | None = state["events"]
+        if event_ref is None:
+            return Response(
+                content=json.dumps({"error": "unavailable"}),
+                status_code=503,
+                media_type="application/json",
+            )
+        resolved_since = _resolve_since(since)
+        if resolved_since is None:
+            return Response(
+                content=json.dumps({"error": "invalid 'since' timestamp"}),
+                status_code=400,
+                media_type="application/json",
+            )
+        try:
+            result = await loop.run_in_executor(
+                None,
+                lambda: event_ref.get_dashboard_events(resolved_since),
+            )
+            return [dataclasses.asdict(e) for e in result]
+        except Exception:
+            logger.exception("Failed to fetch detected events")
+            return Response(
+                content=json.dumps({"error": "internal"}),
+                status_code=500,
+                media_type="application/json",
+            )
+
+    @app.get("/api/dashboard/events/{event_id}", response_model=None)
+    async def dashboard_event_detail(event_id: int):
+        """Return full detail for a detected event, including linked articles and conflicts."""
+        loop = asyncio.get_event_loop()
+        event_ref: EventClient | None = state["events"]
+        if event_ref is None:
+            return Response(
+                content=json.dumps({"error": "unavailable"}),
+                status_code=503,
+                media_type="application/json",
+            )
+        try:
+            result = await loop.run_in_executor(
+                None,
+                lambda: event_ref.get_event_detail(event_id),
+            )
+            if result is None:
+                return Response(
+                    content=json.dumps({"error": "Event not found"}),
+                    status_code=404,
+                    media_type="application/json",
+                )
+            return dataclasses.asdict(result)
+        except Exception:
+            logger.exception("Failed to fetch event detail")
             return Response(
                 content=json.dumps({"error": "internal"}),
                 status_code=500,
@@ -512,8 +625,7 @@ def create_app(
 
             rabbitmq_host = os.environ.get("RABBITMQ_HOST", "rabbitmq")
             amqp_url = (
-                f"amqp://{env['rabbitmq_user']}:{env['rabbitmq_password']}"
-                f"@{rabbitmq_host}:5672/"
+                f"amqp://{env['rabbitmq_user']}:{env['rabbitmq_password']}@{rabbitmq_host}:5672/"
             )
 
             connection = pika.BlockingConnection(pika.URLParameters(amqp_url))
@@ -592,8 +704,7 @@ def create_app(
 
             rabbitmq_host = os.environ.get("RABBITMQ_HOST", "rabbitmq")
             amqp_url = (
-                f"amqp://{env['rabbitmq_user']}:{env['rabbitmq_password']}"
-                f"@{rabbitmq_host}:5672/"
+                f"amqp://{env['rabbitmq_user']}:{env['rabbitmq_password']}@{rabbitmq_host}:5672/"
             )
 
             # Publish all messages BEFORE deleting from the database.
@@ -696,9 +807,7 @@ def create_app(
 
         result = await loop.run_in_executor(
             None,
-            lambda: articles_ref.get_articles(
-                page, min(page_size, 50), filter, sort_by, sort_dir
-            ),
+            lambda: articles_ref.get_articles(page, min(page_size, 50), filter, sort_by, sort_dir),
         )
         if result is None:
             return Response(
@@ -789,9 +898,7 @@ def create_app(
         # Docker is sync — run in executor.
         docker_ref: DockerClient | None = state["docker"]
         if docker_ref is not None:
-            pipeline_labels = await loop.run_in_executor(
-                None, docker_ref.get_pipeline_labels
-            )
+            pipeline_labels = await loop.run_in_executor(None, docker_ref.get_pipeline_labels)
         else:
             pipeline_labels = {}
 
@@ -807,24 +914,25 @@ def create_app(
         # Serialise stages: convert StageMatch and StageVisual sub-dataclasses.
         stages_out = []
         for stage in topo.stages:
-            stages_out.append({
-                "id": stage.id,
-                "column": stage.column,
-                "match": {
-                    k: v
-                    for k, v in dataclasses.asdict(stage.match).items()
-                    if v is not None
-                },
-                "visual": {
-                    # Rename 'accent' → 'accentColor' to match the frontend
-                    # StageVisual interface (Python can't easily use camelCase
-                    # field names, so we rename during serialisation).
-                    ("accentColor" if k == "accent" else k): v
-                    for k, v in dataclasses.asdict(stage.visual).items()
-                    if v is not None
-                },
-                "scalable": stage.scalable,
-            })
+            stages_out.append(
+                {
+                    "id": stage.id,
+                    "column": stage.column,
+                    "match": {
+                        k: v for k, v in dataclasses.asdict(stage.match).items() if v is not None
+                    },
+                    "visual": {
+                        # Rename 'accent' → 'accentColor' to match the frontend
+                        # StageVisual interface (Python can't easily use camelCase
+                        # field names, so we rename during serialisation).
+                        ("accentColor" if k == "accent" else k): v
+                        for k, v in dataclasses.asdict(stage.visual).items()
+                        if v is not None
+                    },
+                    "scalable": stage.scalable,
+                    "role": stage.role,
+                }
+            )
 
         # Serialise connections: rename 'from_id' → 'from' for the frontend.
         connections_out = [
@@ -961,9 +1069,7 @@ def create_app(
             )
 
         loop = asyncio.get_event_loop()
-        deleted: bool = await loop.run_in_executor(
-            None, lambda: labels_ref.delete_label(label_id)
-        )
+        deleted: bool = await loop.run_in_executor(None, lambda: labels_ref.delete_label(label_id))
 
         if not deleted:
             return Response(

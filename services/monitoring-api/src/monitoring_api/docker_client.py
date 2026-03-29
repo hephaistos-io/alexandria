@@ -40,7 +40,9 @@ class PipelineLabels:
 
     inputs: str | None  # e.g. "queue:articles.rss" or "queue:articles.raw"
     outputs: str | None  # e.g. "queue:articles.tagged" or "exchange:articles.scraped"
-    stores: str | None  # e.g. "postgres" or "redis"
+    stores: str | None  # e.g. "postgres" or "redis" (service → store direction)
+    reads: str | None  # e.g. "postgres" — store → service (input from store)
+    writes: str | None  # e.g. "postgres" — service → store (output to store)
     role: str | None  # e.g. "store" — marks infrastructure nodes
     icon: str | None  # Material icon name for the frontend
     label: str | None  # Short display label (used by fetchers to show origin)
@@ -210,9 +212,7 @@ class DockerClient:
             # Collect only keys that start with our prefix.
             prefix = "alexandria.pipeline."
             pipeline_labels = {
-                k[len(prefix):]: v
-                for k, v in labels.items()
-                if k.startswith(prefix)
+                k[len(prefix) :]: v for k, v in labels.items() if k.startswith(prefix)
             }
 
             # Skip services with no pipeline labels at all.
@@ -223,6 +223,8 @@ class DockerClient:
                 inputs=pipeline_labels.get("inputs"),
                 outputs=pipeline_labels.get("outputs"),
                 stores=pipeline_labels.get("stores"),
+                reads=pipeline_labels.get("reads"),
+                writes=pipeline_labels.get("writes"),
                 role=pipeline_labels.get("role"),
                 icon=pipeline_labels.get("icon"),
                 label=pipeline_labels.get("label"),

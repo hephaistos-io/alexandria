@@ -4,12 +4,16 @@ import { ScrapedFeedsPanel } from "../components/overview/ScrapedFeedsPanel";
 import { SystemStatusFloat } from "../components/overview/SystemStatusFloat";
 import { useConflictEvents } from "../hooks/useConflictEvents";
 import { useDashboardArticles } from "../hooks/useDashboardArticles";
+import { useDetectedEvents } from "../hooks/useDetectedEvents";
 import { useEntityRoleTypes } from "../hooks/useEntityRoleTypes";
+import { useEventDetail } from "../hooks/useEventDetail";
 import { useInfraStatus } from "../hooks/useInfraStatus";
 import type { DashboardArticle } from "../types/dashboard";
 import type { ConflictEvent } from "../types/conflict";
+import type { DetectedEvent, EventConflict } from "../types/event";
 import type { LayerVisibility } from "../components/overview/LayerToggle";
 import type { GeoAnchor, SecondaryLocation } from "../types/pipeline";
+import { adaptEventArticle } from "../utils/adaptEventArticle";
 
 // Spatial entity labels from the NER pipeline that carry coordinates.
 // ORG and PERSON are excluded because they rarely resolve to a single point.
@@ -130,24 +134,82 @@ function deriveConflictAnchors(events: ConflictEvent[]): GeoAnchor[] {
   }));
 }
 
-const FEED_LIMITS = [10, 20, 30] as const;
+function deriveEventAnchors(events: DetectedEvent[]): GeoAnchor[] {
+  return events
+    .filter((e) => e.centroid_lat != null && e.centroid_lng != null)
+    .map((e) => ({
+      id: `event-${e.id}`,
+      city: e.title,
+      label: e.title,
+      category: "DETECTED_EVENT",
+      summary: `${e.article_count} articles, ${e.conflict_count} conflicts — ${e.status}`,
+      source: "event-detector",
+      date: e.last_seen.split("T")[0] ?? "",
+      coordinates: [e.centroid_lat!, e.centroid_lng!] as [number, number],
+      actionLabel: "VIEW_EVENT",
+      labels: ["DETECTED_EVENT"],
+      secondaryLocations: [],
+    }));
+}
+
+function deriveEventArticleAnchors(articles: import("../types/event").EventArticle[]): GeoAnchor[] {
+  return deriveAnchors(articles.map(adaptEventArticle));
+}
+
+function deriveEventConflictAnchors(conflicts: EventConflict[]): GeoAnchor[] {
+  return conflicts.map((c) => ({
+    id: `conflict-${c.id}`,
+    city: c.place_desc || "Unknown",
+    label: c.title,
+    category: "CONFLICT_EVENT",
+    summary: "",
+    source: c.source,
+    date: c.event_date?.split("T")[0] ?? "",
+    coordinates: [c.latitude, c.longitude] as [number, number],
+    actionLabel: "VIEW_EVENT",
+    labels: ["CONFLICT_EVENT"],
+    secondaryLocations: [],
+  }));
+}
+
+const TIME_RANGES = [
+  { key: "1h",  label: "1 HOUR",   ms: 60 * 60 * 1000 },
+  { key: "6h",  label: "6 HOURS",  ms: 6 * 60 * 60 * 1000 },
+  { key: "24h", label: "24 HOURS", ms: 24 * 60 * 60 * 1000 },
+  { key: "7d",  label: "7 DAYS",   ms: 7 * 24 * 60 * 60 * 1000 },
+  { key: "30d", label: "30 DAYS",  ms: 30 * 24 * 60 * 60 * 1000 },
+] as const;
+
+type TimeRangeKey = (typeof TIME_RANGES)[number]["key"];
 
 export function GlobalOverviewPage() {
-  const [feedLimit, setFeedLimit] = useState<number>(10);
-  const { articles, loading } = useDashboardArticles(feedLimit);
-  const { events: conflictEvents } = useConflictEvents();
+  const [timeRange, setTimeRange] = useState<TimeRangeKey>("24h");
+  const rangeMs = useMemo(
+    () => (TIME_RANGES.find((r) => r.key === timeRange) ?? TIME_RANGES[2]).ms,
+    [timeRange],
+  );
+  const { articles, loading } = useDashboardArticles(rangeMs);
+  const { events: conflictEvents } = useConflictEvents(rangeMs);
+  const { events: detectedEvents } = useDetectedEvents(rangeMs);
   const { roleTypes } = useEntityRoleTypes();
   const { data: infraStatus } = useInfraStatus();
   const anchors = useMemo(() => deriveAnchors(articles), [articles]);
   const conflictAnchors = useMemo(() => deriveConflictAnchors(conflictEvents), [conflictEvents]);
-  const allAnchors = useMemo(() => [...anchors, ...conflictAnchors], [anchors, conflictAnchors]);
+  const eventAnchors = useMemo(() => deriveEventAnchors(detectedEvents), [detectedEvents]);
+  const allAnchors = useMemo(
+    () => [...anchors, ...conflictAnchors, ...eventAnchors],
+    [anchors, conflictAnchors, eventAnchors],
+  );
   const [selectedAnchorId, setSelectedAnchorId] = useState<string | null>(null);
+  const [focusedEventId, setFocusedEventId] = useState<number | null>(null);
+  const { detail: eventDetail, loading: eventDetailLoading } = useEventDetail(focusedEventId);
 
   // Layer toggle state — all layers visible by default.
   const [layers, setLayers] = useState<LayerVisibility>({
     articles: true,
     conflicts: true,
     heatmap: true,
+    events: true,
   });
 
   // Extract [lat, lng] pairs for the heatmap. Memoized because the conflict
@@ -168,6 +230,34 @@ export function GlobalOverviewPage() {
 
   const selectedAnchor = allAnchors.find((a) => a.id === selectedAnchorId) ?? null;
 
+  // When focused on an event, narrow the map down to just that event's marker
+  // plus the anchors derived from its related articles and conflicts.
+  // When not focused, show the full combined anchor set.
+  const displayAnchors = useMemo(() => {
+    if (eventDetail) {
+      const focusedEventAnchor = eventAnchors.find(
+        (a) => a.id === `event-${focusedEventId}`,
+      );
+      const eventArticleAnchors = deriveEventArticleAnchors(eventDetail.articles);
+      const eventConflictAnchors = deriveEventConflictAnchors(eventDetail.conflicts);
+      return [
+        ...(focusedEventAnchor ? [focusedEventAnchor] : []),
+        ...eventArticleAnchors,
+        ...eventConflictAnchors,
+      ];
+    }
+    return allAnchors;
+  }, [eventDetail, focusedEventId, eventAnchors, allAnchors]);
+
+  // Same narrowing for the heatmap — only show conflict heat for the focused
+  // event, so the heatmap reflects the same geographic scope as the markers.
+  const displayHeatmap = useMemo<[number, number][]>(() => {
+    if (eventDetail) {
+      return eventDetail.conflicts.map((c) => [c.latitude, c.longitude]);
+    }
+    return heatmapPoints;
+  }, [eventDetail, heatmapPoints]);
+
   // Clicking an article in the feed list selects its map marker (flyTo + arcs).
   // Clicking a map marker selects the article in the feed panel.
   function handleArticleClick(articleId: number) {
@@ -181,23 +271,42 @@ export function GlobalOverviewPage() {
   }
 
   function handleAnchorSelect(anchorId: string) {
-    if (selectedAnchorId === anchorId) {
-      setSelectedAnchorId(null);
+    if (anchorId.startsWith("event-")) {
+      const numericId = parseInt(anchorId.slice("event-".length), 10);
+      // Toggle: clicking the same event marker clears focus.
+      if (focusedEventId === numericId) {
+        setFocusedEventId(null);
+        setSelectedAnchorId(null);
+      } else {
+        setFocusedEventId(numericId);
+        setSelectedAnchorId(anchorId);
+      }
     } else {
-      setSelectedAnchorId(anchorId);
+      // Clicking any non-event anchor clears event focus.
+      setFocusedEventId(null);
+      if (selectedAnchorId === anchorId) {
+        setSelectedAnchorId(null);
+      } else {
+        setSelectedAnchorId(anchorId);
+      }
     }
+  }
+
+  function handleClearFocus() {
+    setFocusedEventId(null);
+    setSelectedAnchorId(null);
   }
 
   return (
     <>
       <div className="flex h-full">
         <GeoCanvas
-          anchors={allAnchors}
+          anchors={displayAnchors}
           focusedAnchorId={selectedAnchorId}
           selectedAnchorId={selectedAnchorId}
           onAnchorSelect={handleAnchorSelect}
           roleColors={roleColors}
-          heatmapPoints={heatmapPoints}
+          heatmapPoints={displayHeatmap}
           layers={layers}
           onLayersChange={setLayers}
         />
@@ -207,9 +316,13 @@ export function GlobalOverviewPage() {
           selectedAnchor={selectedAnchor}
           onArticleClick={handleArticleClick}
           onDismissSelection={() => setSelectedAnchorId(null)}
-          feedLimit={feedLimit}
-          feedLimits={FEED_LIMITS}
-          onFeedLimitChange={setFeedLimit}
+          timeRange={timeRange}
+          timeRanges={TIME_RANGES}
+          onTimeRangeChange={setTimeRange}
+          focusedEventId={focusedEventId}
+          eventDetail={eventDetail}
+          eventDetailLoading={eventDetailLoading}
+          onClearFocus={handleClearFocus}
         />
       </div>
       <SystemStatusFloat status={infraStatus} />

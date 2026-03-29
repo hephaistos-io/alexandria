@@ -16,7 +16,7 @@ def _base_payload() -> dict:
                 "label": "GPE",
                 "start": 0,
                 "end": 4,
-                "auto_role": "SOURCE",
+                "auto_role": "ACTOR",
                 "auto_role_confidence": 0.85,
             },
         ],

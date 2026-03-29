@@ -97,6 +97,7 @@ class UcdpFetcher:
             latitude=float(lat),
             longitude=float(lon),
             event_date=event_date,
+            country=country,
             place_desc=item.get("where_description", "") or "",
             links=[],
             fetched_at=fetched_at,

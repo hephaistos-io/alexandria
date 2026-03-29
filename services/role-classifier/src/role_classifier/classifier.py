@@ -143,7 +143,7 @@ class RoleClassifier:
 
             # Use the sentence containing the entity mention for local context.
             # Without this, the model only sees the title, which is often too
-            # vague to distinguish SOURCE from AFFECTED.
+            # vague to distinguish ACTOR from TARGET.
             start = entity.get("start", 0)
             end = entity.get("end", 0)
             sentence = _extract_sentence(content, start, end)

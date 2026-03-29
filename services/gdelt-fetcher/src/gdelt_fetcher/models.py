@@ -13,6 +13,7 @@ class ConflictEvent:
     latitude: float
     longitude: float
     event_date: datetime | None
+    country: str
     place_desc: str
     links: list[str]  # SOURCEURL from GDELT
     fetched_at: datetime

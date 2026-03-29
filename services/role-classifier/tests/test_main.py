@@ -33,7 +33,7 @@ def test_valid_payload_classifies_and_publishes():
             "label": "GPE",
             "start": 0,
             "end": 4,
-            "auto_role": "SOURCE",
+            "auto_role": "ACTOR",
             "auto_role_confidence": 0.85,
         }
     ]
@@ -45,7 +45,7 @@ def test_valid_payload_classifies_and_publishes():
     publisher.publish.assert_called_once()
     published = publisher.publish.call_args[0][0]
     assert "role_classified_at" in published
-    assert published["entities"][0]["auto_role"] == "SOURCE"
+    assert published["entities"][0]["auto_role"] == "ACTOR"
 
 
 def test_missing_url_skips():

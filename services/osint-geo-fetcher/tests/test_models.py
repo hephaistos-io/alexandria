@@ -12,6 +12,7 @@ def test_conflict_event_creation():
         latitude=48.85,
         longitude=2.35,
         event_date=datetime(2026, 3, 20, tzinfo=timezone.utc),
+        country="France",
         place_desc="Paris, France",
         links=["https://example.com"],
         fetched_at=datetime.now(timezone.utc),

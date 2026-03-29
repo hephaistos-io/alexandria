@@ -162,9 +162,7 @@ def _parse_log_line(text: str, service_name: str, docker_ts: str) -> dict:
 
 def _wrap_raw(text: str, service_name: str, docker_ts: str) -> dict:
     """Wrap a non-JSON log line in our standard envelope."""
-    ts = _parse_docker_ts(docker_ts) or datetime.now(timezone.utc).strftime(
-        "%Y-%m-%dT%H:%M:%SZ"
-    )
+    ts = _parse_docker_ts(docker_ts) or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     return {
         "ts": ts,
         "level": "info",

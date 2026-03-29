@@ -45,6 +45,8 @@ export interface PipelineStage {
   visual: StageVisual;
   /** When true, multiple containers matching this stage each get their own node. */
   scalable: boolean;
+  /** Pipeline role from Docker labels (e.g. "store", "monitoring", "frontend"). Null for pipeline services. */
+  role?: string | null;
 }
 
 /** A directed connection between two stages. */

@@ -31,7 +31,7 @@ def load_role_types(database_url: str) -> list[LabelDefinition]:
 
     We need both fields: the description is what gets fed to the zero-shot
     model as the NLI hypothesis (e.g. "a source of the conflict described"),
-    and the name is what we store on the entity (e.g. "SOURCE").
+    and the name is what we store on the entity (e.g. "ACTOR").
     """
     try:
         with psycopg.connect(database_url) as conn:

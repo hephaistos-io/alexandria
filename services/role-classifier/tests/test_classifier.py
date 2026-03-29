@@ -119,13 +119,13 @@ class TestClassifyEntityRolesNoOp:
         assert "auto_role" not in result[0]
 
     def test_returns_empty_list_when_no_entities(self) -> None:
-        role_types = [LabelDefinition(name="SOURCE", description="a source of the conflict")]
+        role_types = [LabelDefinition(name="ACTOR", description="the entity performing the primary action")]
         classifier = _make_classifier(role_types=role_types)
         result = classifier.classify_entity_roles([], "Title", "Content")
         assert result == []
 
     def test_skips_non_geo_entities(self) -> None:
-        role_types = [LabelDefinition(name="SOURCE", description="a source of the conflict")]
+        role_types = [LabelDefinition(name="ACTOR", description="the entity performing the primary action")]
         classifier = _make_classifier(role_types=role_types)
         entities = [
             {"text": "John Smith", "label": "PERSON", "start": 0, "end": 10},
@@ -143,17 +143,17 @@ class TestClassifyEntityRolesNoOp:
 class TestClassifyEntityRolesAnnotation:
     def test_annotates_gpe_entity(self) -> None:
         role_types = [
-            LabelDefinition(name="SOURCE", description="a source of the conflict described"),
-            LabelDefinition(name="AFFECTED", description="affected by the events described"),
+            LabelDefinition(name="ACTOR", description="the entity performing or initiating the primary action described"),
+            LabelDefinition(name="TARGET", description="the entity being acted upon, impacted, or targeted"),
         ]
-        pipe_result = _mock_pipe_result("a source of the conflict described", 0.82)
+        pipe_result = _mock_pipe_result("the entity performing or initiating the primary action described", 0.82)
         classifier, _ = _make_classifier_with_mock_pipe(pipe_result, role_types)
 
         entities = [{"text": "Iran", "label": "GPE", "start": 0, "end": 4}]
         result = classifier.classify_entity_roles(
             entities, "Iran imposes sanctions", "Iran moved its forces."
         )
-        assert result[0]["auto_role"] == "SOURCE"
+        assert result[0]["auto_role"] == "ACTOR"
         assert result[0]["auto_role_confidence"] == pytest.approx(0.82, abs=0.001)
 
     def test_annotates_loc_entity(self) -> None:
@@ -184,9 +184,9 @@ class TestClassifyEntityRolesAnnotation:
 
     def test_uses_canonical_name_in_hypothesis(self) -> None:
         role_types = [
-            LabelDefinition(name="SOURCE", description="a source of the conflict described")
+            LabelDefinition(name="ACTOR", description="the entity performing or initiating the primary action described")
         ]
-        pipe_result = _mock_pipe_result("a source of the conflict described", 0.75)
+        pipe_result = _mock_pipe_result("the entity performing or initiating the primary action described", 0.75)
         classifier, mock_pipe = _make_classifier_with_mock_pipe(pipe_result, role_types)
 
         entities = [{
@@ -205,9 +205,9 @@ class TestClassifyEntityRolesAnnotation:
 
     def test_falls_back_to_text_when_no_canonical_name(self) -> None:
         role_types = [
-            LabelDefinition(name="AFFECTED", description="affected by the events described")
+            LabelDefinition(name="TARGET", description="the entity being acted upon, impacted, or targeted")
         ]
-        pipe_result = _mock_pipe_result("affected by the events described", 0.68)
+        pipe_result = _mock_pipe_result("the entity being acted upon, impacted, or targeted", 0.68)
         classifier, mock_pipe = _make_classifier_with_mock_pipe(pipe_result, role_types)
 
         entities = [{"text": "Gaza", "label": "GPE", "start": 0, "end": 4}]
@@ -220,10 +220,10 @@ class TestClassifyEntityRolesAnnotation:
     def test_uses_multi_label_false(self) -> None:
         """Entity role is a single-label task — the model should not score labels independently."""
         role_types = [
-            LabelDefinition(name="SOURCE", description="a source"),
-            LabelDefinition(name="AFFECTED", description="affected"),
+            LabelDefinition(name="ACTOR", description="performing the primary action"),
+            LabelDefinition(name="TARGET", description="being acted upon or targeted"),
         ]
-        pipe_result = _mock_pipe_result("a source", 0.9)
+        pipe_result = _mock_pipe_result("performing the primary action", 0.9)
         classifier, mock_pipe = _make_classifier_with_mock_pipe(pipe_result, role_types)
 
         entities = [{"text": "Iran", "label": "GPE", "start": 0, "end": 4}]
@@ -233,8 +233,8 @@ class TestClassifyEntityRolesAnnotation:
         assert call_kwargs[1]["multi_label"] is False
 
     def test_score_is_rounded_to_four_decimal_places(self) -> None:
-        role_types = [LabelDefinition(name="SOURCE", description="a source")]
-        pipe_result = _mock_pipe_result("a source", 0.8123456789)
+        role_types = [LabelDefinition(name="ACTOR", description="performing the primary action")]
+        pipe_result = _mock_pipe_result("performing the primary action", 0.8123456789)
         classifier, _ = _make_classifier_with_mock_pipe(pipe_result, role_types)
 
         entities = [{"text": "Iran", "label": "GPE", "start": 0, "end": 4}]
@@ -242,8 +242,8 @@ class TestClassifyEntityRolesAnnotation:
         assert result[0]["auto_role_confidence"] == 0.8123
 
     def test_only_geo_entities_annotated_mixed_list(self) -> None:
-        role_types = [LabelDefinition(name="SOURCE", description="a source")]
-        pipe_result = _mock_pipe_result("a source", 0.9)
+        role_types = [LabelDefinition(name="ACTOR", description="performing the primary action")]
+        pipe_result = _mock_pipe_result("performing the primary action", 0.9)
         classifier, mock_pipe = _make_classifier_with_mock_pipe(pipe_result, role_types)
 
         entities = [
@@ -254,14 +254,14 @@ class TestClassifyEntityRolesAnnotation:
         result = classifier.classify_entity_roles(entities, "Title", "Content")
 
         assert "auto_role" not in result[0]  # PERSON skipped
-        assert result[1]["auto_role"] == "SOURCE"  # GPE annotated
+        assert result[1]["auto_role"] == "ACTOR"  # GPE annotated
         assert "auto_role" not in result[2]  # ORG skipped
         assert mock_pipe.call_count == 1
 
     def test_entity_with_no_name_is_skipped(self) -> None:
         """An entity dict missing both text and canonical_name must not crash."""
-        role_types = [LabelDefinition(name="SOURCE", description="a source")]
-        pipe_result = _mock_pipe_result("a source", 0.9)
+        role_types = [LabelDefinition(name="ACTOR", description="performing the primary action")]
+        pipe_result = _mock_pipe_result("performing the primary action", 0.9)
         classifier, mock_pipe = _make_classifier_with_mock_pipe(pipe_result, role_types)
 
         entities = [{"label": "GPE", "start": 0, "end": 4}]
@@ -272,8 +272,8 @@ class TestClassifyEntityRolesAnnotation:
 
     def test_title_used_alone_when_content_empty(self) -> None:
         """When content is empty the input falls back to just the title."""
-        role_types = [LabelDefinition(name="SOURCE", description="a source")]
-        pipe_result = _mock_pipe_result("a source", 0.75)
+        role_types = [LabelDefinition(name="ACTOR", description="performing the primary action")]
+        pipe_result = _mock_pipe_result("performing the primary action", 0.75)
         classifier, mock_pipe = _make_classifier_with_mock_pipe(pipe_result, role_types)
 
         entities = [{"text": "Iran", "label": "GPE", "start": 0, "end": 4}]

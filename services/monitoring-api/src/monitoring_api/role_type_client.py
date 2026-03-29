@@ -6,7 +6,7 @@ failure.
 
 Entity role types are stored in the entity_role_types table and define the
 candidate roles used to annotate which role each detected entity plays in an
-article (e.g. AFFECTED, SOURCE, ACTOR).
+article (e.g. ACTOR, TARGET, MEDIATOR).
 """
 
 import logging

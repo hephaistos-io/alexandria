@@ -726,7 +726,7 @@ class ArticleClient:
         """Update the manual_entity_roles for a single article.
 
         `roles` is a dict mapping Wikidata entity IDs to role names, e.g.:
-            {"Q794": "AFFECTED", "Q30": "SOURCE"}
+            {"Q794": "TARGET", "Q30": "ACTOR"}
 
         If roles is an empty dict, both manual_entity_roles and
         entity_roles_labelled_at are set to NULL (clearing the annotation).

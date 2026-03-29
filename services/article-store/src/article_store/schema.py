@@ -134,7 +134,7 @@ END $$;
 
 
 # Table for user-managed entity role type definitions.
-# Mirrors classification_labels but for geographic entity roles (SOURCE, AFFECTED, etc.).
+# Mirrors classification_labels but for geographic entity roles (ACTOR, TARGET, etc.).
 SCHEMA_ENTITY_ROLE_TYPES = """
 CREATE TABLE IF NOT EXISTS entity_role_types (
     id          SERIAL PRIMARY KEY,
@@ -148,8 +148,11 @@ CREATE TABLE IF NOT EXISTS entity_role_types (
 
 SEED_ENTITY_ROLE_TYPES = """
 INSERT INTO entity_role_types (name, description, color) VALUES
-    ('SOURCE',   'the entity that initiated, caused, or is responsible for the action described', '#a9c7ff'),
-    ('AFFECTED', 'the entity that is impacted, targeted, or affected by the action described',    '#ffb4ab')
+    ('ACTOR',     'the entity performing or initiating the primary action described',          '#a9c7ff'),
+    ('TARGET',    'the entity being acted upon, impacted, or targeted',                        '#ffb4ab'),
+    ('MEDIATOR',  'facilitating negotiation, mediation, or conflict resolution',               '#fbbf24'),
+    ('SUPPORTER', 'providing support, funding, or aid to one of the parties involved',         '#c084fc'),
+    ('LOCATION',  'the geographic location where the events take place',                       '#a3e635')
 ON CONFLICT (name) DO NOTHING;
 """
 

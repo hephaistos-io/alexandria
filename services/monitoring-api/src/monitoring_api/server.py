@@ -134,7 +134,7 @@ class EntityRoleUpdate(BaseModel):
     """Request body for PATCH /api/attribution/articles/{article_id}/roles.
 
     roles maps Wikidata entity IDs to role names, e.g.:
-        {"Q794": "AFFECTED", "Q30": "SOURCE"}
+        {"Q794": "TARGET", "Q30": "ACTOR"}
 
     An empty dict clears the annotation (sets manual_entity_roles to NULL).
     """

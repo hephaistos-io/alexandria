@@ -66,7 +66,7 @@ def _build_app(
     return TestClient(app)
 
 
-def _sample_role_type(role_type_id: int = 1, name: str = "AFFECTED") -> EntityRoleType:
+def _sample_role_type(role_type_id: int = 1, name: str = "TARGET") -> EntityRoleType:
     return EntityRoleType(
         id=role_type_id,
         name=name,
@@ -99,7 +99,7 @@ def _sample_attribution_page() -> AttributionArticlePage:
                 content="Full article content about US policy shift.",
                 created_at="2026-03-22T09:00:00",
                 entities=[{"id": "Q30", "label": "United States"}],
-                manual_entity_roles={"Q30": "SOURCE"},
+                manual_entity_roles={"Q30": "ACTOR"},
                 entity_roles_labelled_at="2026-03-22T10:00:00",
             ),
         ],
@@ -118,8 +118,8 @@ def test_list_role_types_returns_all():
     """Happy path: GET returns a list of role type dicts."""
     rt_mock = MagicMock()
     rt_mock.get_role_types.return_value = [
-        _sample_role_type(1, "AFFECTED"),
-        _sample_role_type(2, "SOURCE"),
+        _sample_role_type(1, "TARGET"),
+        _sample_role_type(2, "ACTOR"),
     ]
 
     with _build_app(role_type_mock=rt_mock) as client:
@@ -128,8 +128,8 @@ def test_list_role_types_returns_all():
     assert resp.status_code == 200
     body = resp.json()
     assert len(body) == 2
-    assert body[0]["name"] == "AFFECTED"
-    assert body[1]["name"] == "SOURCE"
+    assert body[0]["name"] == "TARGET"
+    assert body[1]["name"] == "ACTOR"
     assert body[0]["enabled"] is True
     assert body[0]["color"] == "#76A9FA"
 
@@ -210,11 +210,11 @@ def test_create_role_type_duplicate_returns_409():
     with _build_app(role_type_mock=rt_mock) as client:
         resp = client.post(
             "/api/attribution/role-types",
-            json={"name": "AFFECTED", "description": "Duplicate", "color": "#000"},
+            json={"name": "TARGET", "description": "Duplicate", "color": "#000"},
         )
 
     assert resp.status_code == 409
-    assert "AFFECTED" in resp.json()["error"]
+    assert "TARGET" in resp.json()["error"]
 
 
 def test_create_role_type_missing_required_fields_returns_422():
@@ -236,7 +236,7 @@ def test_update_role_type_success():
     """Happy path: update description and color, returns updated role type."""
     updated = EntityRoleType(
         id=1,
-        name="AFFECTED",
+        name="TARGET",
         description="Updated description",
         color="#ff0000",
         enabled=True,
@@ -265,7 +265,7 @@ def test_update_role_type_toggle_enabled():
     rt_mock = MagicMock()
     rt_mock.update_role_type.return_value = EntityRoleType(
         id=2,
-        name="SOURCE",
+        name="ACTOR",
         description="Info source",
         color="#a9c7ff",
         enabled=False,
@@ -383,7 +383,7 @@ def test_attribution_articles_default_params():
     assert len(body["articles"]) == 2
     assert body["articles"][0]["title"] == "Iran floods kill dozens"
     assert body["articles"][0]["manual_entity_roles"] is None
-    assert body["articles"][1]["manual_entity_roles"] == {"Q30": "SOURCE"}
+    assert body["articles"][1]["manual_entity_roles"] == {"Q30": "ACTOR"}
 
     art_mock.get_attribution_articles.assert_called_once_with(1, 10, "all", "date_ingested", "desc")
 
@@ -477,22 +477,22 @@ def test_update_roles_success():
 
     rt_mock = MagicMock()
     rt_mock.get_role_types.return_value = [
-        _sample_role_type(1, "AFFECTED"),
-        _sample_role_type(2, "SOURCE"),
+        _sample_role_type(1, "TARGET"),
+        _sample_role_type(2, "ACTOR"),
     ]
 
     with _build_app(article_mock=art_mock, role_type_mock=rt_mock) as client:
         resp = client.patch(
             "/api/attribution/articles/42/roles",
-            json={"roles": {"Q794": "AFFECTED", "Q30": "SOURCE"}},
+            json={"roles": {"Q794": "TARGET", "Q30": "ACTOR"}},
         )
 
     assert resp.status_code == 200
     body = resp.json()
     assert body["ok"] is True
     assert body["article_id"] == 42
-    assert body["roles"] == {"Q794": "AFFECTED", "Q30": "SOURCE"}
-    art_mock.update_entity_roles.assert_called_once_with(42, {"Q794": "AFFECTED", "Q30": "SOURCE"})
+    assert body["roles"] == {"Q794": "TARGET", "Q30": "ACTOR"}
+    art_mock.update_entity_roles.assert_called_once_with(42, {"Q794": "TARGET", "Q30": "ACTOR"})
 
 
 def test_update_roles_invalid_role_name_returns_422():
@@ -501,14 +501,14 @@ def test_update_roles_invalid_role_name_returns_422():
 
     rt_mock = MagicMock()
     rt_mock.get_role_types.return_value = [
-        _sample_role_type(1, "AFFECTED"),
-        _sample_role_type(2, "SOURCE"),
+        _sample_role_type(1, "TARGET"),
+        _sample_role_type(2, "ACTOR"),
     ]
 
     with _build_app(article_mock=art_mock, role_type_mock=rt_mock) as client:
         resp = client.patch(
             "/api/attribution/articles/1/roles",
-            json={"roles": {"Q794": "AFFECTED", "Q30": "MADE_UP_ROLE"}},
+            json={"roles": {"Q794": "TARGET", "Q30": "MADE_UP_ROLE"}},
         )
 
     assert resp.status_code == 422
@@ -523,7 +523,7 @@ def test_update_roles_clears_when_empty_dict():
     art_mock.update_entity_roles.return_value = True
 
     rt_mock = MagicMock()
-    rt_mock.get_role_types.return_value = [_sample_role_type(1, "AFFECTED")]
+    rt_mock.get_role_types.return_value = [_sample_role_type(1, "TARGET")]
 
     with _build_app(article_mock=art_mock, role_type_mock=rt_mock) as client:
         resp = client.patch(
@@ -545,12 +545,12 @@ def test_update_roles_not_found_returns_404():
     art_mock.update_entity_roles.return_value = False
 
     rt_mock = MagicMock()
-    rt_mock.get_role_types.return_value = [_sample_role_type(1, "AFFECTED")]
+    rt_mock.get_role_types.return_value = [_sample_role_type(1, "TARGET")]
 
     with _build_app(article_mock=art_mock, role_type_mock=rt_mock) as client:
         resp = client.patch(
             "/api/attribution/articles/999/roles",
-            json={"roles": {"Q794": "AFFECTED"}},
+            json={"roles": {"Q794": "TARGET"}},
         )
 
     assert resp.status_code == 404

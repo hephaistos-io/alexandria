@@ -13,8 +13,8 @@ class TestLoadRoleTypes:
         """Happy path: rows are converted to LabelDefinition objects."""
         mock_cur = MagicMock()
         mock_cur.fetchall.return_value = [
-            ("SOURCE", "a source of the conflict described"),
-            ("AFFECTED", "affected by the events described"),
+            ("ACTOR", "the entity performing or initiating the primary action described"),
+            ("TARGET", "the entity being acted upon, impacted, or targeted"),
         ]
         mock_conn = MagicMock()
         mock_conn.__enter__ = MagicMock(return_value=mock_conn)
@@ -31,9 +31,9 @@ class TestLoadRoleTypes:
 
         assert len(result) == 2
         assert isinstance(result[0], LabelDefinition)
-        assert result[0].name == "SOURCE"
-        assert result[0].description == "a source of the conflict described"
-        assert result[1].name == "AFFECTED"
+        assert result[0].name == "ACTOR"
+        assert result[0].description == "the entity performing or initiating the primary action described"
+        assert result[1].name == "TARGET"
 
     def test_returns_empty_on_db_error(
         self, mock_connect: MagicMock

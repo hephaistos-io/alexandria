@@ -78,7 +78,7 @@ export function HeatmapLayer({ points, visible = true }: HeatmapLayerProps) {
     const layer = layerRef.current;
     if (!layer) return;
     // Guard: don't call setLatLngs if the layer has already been detached.
-    if (!(layer as any)._map && !visible) return;
+    if (!(layer as any)._map) return;
     layer.setLatLngs(points);
   }, [points, visible]);
 

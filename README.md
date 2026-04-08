@@ -18,7 +18,8 @@ Active development — pipeline is functional end-to-end.
 
 - **Data Ingestion**: Generic RSS scraper can be used for various sources that provide one
 - **Conflict Data Ingestion**: Two independent fetcher services pull geolocated armed conflict events from OSINT sources (Bellingcat, Texty, etc.) and the UCDP Candidate Events API
-- **World Map Influence**: See which news affect which countries, overlaid with a conflict event heatmap and toggleable map layers
+- **Natural Disaster Ingestion**: A dedicated fetcher pulls geolocated natural events (wildfires, severe storms, volcanoes, sea ice, floods) from NASA EONET every 30 minutes, preserving the full geometry timeline so hurricane and iceberg tracks can be replayed on the map
+- **World Map Influence**: See which news affect which countries, overlaid with a conflict event heatmap, a natural disasters layer with magnitude-driven marker sizing and movement trails, and toggleable map layers
 <img width="1518" height="961" alt="image" src="https://github.com/user-attachments/assets/b888b1da-a736-460f-a7aa-179cb2d66475" />
 
 - **Processing Pipeline**: Fetching of articles, finding entities and categorizing them based on different goals
@@ -35,7 +36,7 @@ The frontend is a React SPA at `http://localhost:5173`. The sidebar has seven ma
 
 | Menu Item | What it shows |
 |---|---|
-| **INTERCEPT_FEED** | World map with article markers and conflict event markers, clustered by location. A heatmap layer visualizes conflict density (amber → red gradient). Layer toggles (Articles / Conflicts / Heatmap) let you show or hide each data source. Clicking a marker selects the article or event in the right-hand feed panel. A floating status widget shows live pipeline health. |
+| **INTERCEPT_FEED** | World map with article, conflict event, and natural disaster markers, clustered by location. A heatmap layer visualizes conflict density (amber → red gradient). Natural disasters render as green markers whose size scales with magnitude (wildfire area, hurricane wind speed, sea-ice extent); hovering or selecting a moving disaster draws a fading directional trail from its earliest observation to its current position. Layer toggles (Articles / Conflicts / Heatmap / Events / Disasters) let you show or hide each data source. Clicking a marker opens the corresponding detail card in the right-hand feed panel — disasters get a dedicated card with magnitude tier, active/closed status, and source links. A floating status widget shows live pipeline health. |
 | **INFRASTRUCTURE** | Interactive pipeline topology (React Flow diagram auto-generated from Docker Compose labels), container health, queue metrics, uptime stats, and a live terminal log. |
 | **LABELLING** | Two tabs: **LABEL_ASSIGNMENT** — table of articles with filters and manual label editing. **LABEL_SCHEMA** — create, edit, and delete the classification labels that the topic-tagger uses. |
 | **ATTRIBUTION** | Two tabs: **ROLE_ASSIGNMENT** — article list with entity role assignments and inline editing. **ROLE_SCHEMA** — manage the entity role types (name, description, color) used by the role-classifier. |
@@ -65,10 +66,13 @@ flowchart LR
     UCDP["ucdp-fetcher"] -- conflict_events.raw --> CSTORE
     GDELT["gdelt-fetcher"] -- conflict_events.raw --> CSTORE
 
+    EONET["nasa-eonet-fetcher"] -- natural_disasters.raw --> DSTORE["disaster-store"]
+
     FETCH -.- RED[("Redis")]
     OSINT -.- RED
     UCDP -.- RED
     GDELT -.- RED
+    EONET -.- RED
     RESOLVE -.- RED
     STORE -.- PG[("PostgreSQL")]
     LABEL -.- PG
@@ -76,6 +80,7 @@ flowchart LR
     TOPIC -.- PG
     RELEXT -.- PG
     CSTORE -.- PG
+    DSTORE -.- PG
     RELEXT -.- NEO[("Neo4j")]
 
     PG -.- API["monitoring-api"]
@@ -91,6 +96,11 @@ The **conflict data pipeline** runs in parallel to the article pipeline. Three i
 - `gdelt-fetcher` — [GDELT 2.0](https://www.gdeltproject.org/) material conflict events filtered by CAMEO codes 18/19/20 (every 15 min)
 
 The `conflict-store` consumer writes events to PostgreSQL with dedup on `(source, source_id)`. The frontend renders these as red markers and an aggregated heatmap layer on the world map.
+
+The **natural disasters pipeline** is the third parallel ingest track. A single fetcher service polls NASA's Earth Observatory Natural Event Tracker (EONET) and publishes to its own queue:
+- `nasa-eonet-fetcher` — [NASA EONET v3](https://eonet.gsfc.nasa.gov/) events endpoint covering wildfires, severe storms, volcanoes, sea and lake ice, and floods (every 30 min)
+
+The `disaster-store` consumer writes events to the `natural_disasters` table with the full EONET geometry timeline preserved as a JSONB column, so moving events (hurricanes, drifting icebergs) can be rendered with directional track overlays on the map. See [`doc/natural-disasters.md`](doc/natural-disasters.md) for the full design rationale.
 
 ### Running Locally
 

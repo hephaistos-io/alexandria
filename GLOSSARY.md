@@ -66,6 +66,7 @@
 - **HTTP/2** — A newer version of the HTTP protocol with multiplexing (multiple requests over one connection) and other performance improvements.
 - **RSS/Atom** — XML-based feed formats for publishing frequently updated content (news, blogs). Alexandria's article-fetcher polls RSS feeds on a configurable interval, deduplicating URLs via Redis.
 - **Middleware** — Code that sits between the request and your application logic, handling cross-cutting concerns like auth, logging, or throttling.
+- **GeoJSON** — An open standard (RFC 7946) for encoding geographic data as JSON. Uses `[longitude, latitude]` coordinate ordering — the opposite of the `[lat, lng]` convention the rest of Alexandria uses. The EONET fetcher's `_extract_point()` and the frontend's `deriveDisasterTrack()` both flip the order explicitly, with comments marking the footgun.
 
 ## Infrastructure Terms
 
@@ -104,6 +105,11 @@
 - **Wire Service** — A news agency that supplies stories to multiple outlets (AP, Reuters, AFP). They produce original reporting distributed widely.
 - **BigQuery** — Google's serverless data warehouse. Lets you run SQL queries over massive datasets. GDELT's full archive is available there.
 - **Rate Limiting** — A server restricting how many requests you can make in a given time period to prevent abuse.
+- **EONET** — NASA's Earth Observatory Natural Event Tracker (`eonet.gsfc.nasa.gov/api/v3`). A free, unauthenticated HTTP API that publishes geolocated natural events — wildfires, severe storms, volcanoes, sea and lake ice, floods — aggregated from agencies like GDACS, InciWeb/IRWIN, and the Smithsonian Global Volcanism Program. Alexandria's `nasa-eonet-fetcher` polls the events endpoint every 30 minutes and writes to the `natural_disasters` table. Magnitudes live on individual geometry observations, not the event root — an easy-to-miss API shape that earlier broke magnitude ingest.
+- **GDACS** — Global Disaster Alert and Coordination System. A UN/EU joint framework that publishes rapid impact assessments for natural disasters worldwide. Reaches Alexandria as one of EONET's upstream wildfire sources: rows with titles like `"Wildfire in {country} {id}"`, `null` descriptions, and magnitudes in hectare.
+- **IRWIN** — Integrated Reporting of Wildland-fire Information. A US Department of the Interior system (`irwin.doi.gov`) that aggregates wildfire incident reports across US federal and state agencies. Reaches Alexandria via EONET as named fire incidents (e.g. "Morrill Wildfire, Garden, Nebraska") with magnitudes in acres and human-readable location descriptions.
+- **FIRMS** — NASA Fire Information for Resource Management System. Publishes near-real-time active-fire hotspot detections from the MODIS and VIIRS satellites as point clouds of currently-burning pixels. Not currently wired into Alexandria; `doc/natural-disasters.md` names it as the required upstream for any future feature that wants to render fire behavior (perimeters, spread, hotspot clusters) rather than just event metadata.
+- **Saffir-Simpson Scale** — The standard classification of tropical cyclones by sustained wind speed: Tropical Depression (<34 kt), Tropical Storm (34–63 kt), Category 1 (64–82 kt), Cat 2 (83–95), Cat 3 (96–112), Cat 4 (113–136), Cat 5 (137+). Used by `DisasterDetailCard` to turn a raw `magnitudeValue` in knots into a tier badge, and by `AnchorPoint.disasterDotSize()` to scale hurricane markers linearly across the scale.
 
 ## Data Storage Terms
 

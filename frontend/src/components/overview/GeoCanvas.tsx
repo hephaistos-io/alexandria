@@ -77,6 +77,7 @@ export function GeoCanvas({ anchors, focusedAnchorId = null, selectedAnchorId = 
   const visibleAnchors = anchors.filter((a) => {
     if (a.category === "CONFLICT_EVENT") return layers.conflicts;
     if (a.category === "DETECTED_EVENT") return layers.events;
+    if (a.category === "NATURAL_DISASTER") return layers.disasters;
     return layers.articles;
   });
   return (

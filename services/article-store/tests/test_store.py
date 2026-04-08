@@ -50,10 +50,11 @@ class TestArticleStore:
 
         ArticleStore("postgresql://localhost/test")
 
-        # apply_schema runs 17 statements: schema, 4 migrations, 2 table
+        # apply_schema runs 18 statements: schema, 4 migrations, 2 table
         # creates, 3 seeds, relation_types table + seed, conflict_events
-        # table, events table + 2 junction tables, indexes.
-        assert mock_cursor.execute.call_count == 17
+        # table, events table + 2 junction tables, natural_disasters table,
+        # indexes.
+        assert mock_cursor.execute.call_count == 18
         mock_cursor.execute.assert_any_call(SCHEMA)
         mock_cursor.execute.assert_any_call(MIGRATE_TOPIC_LABEL_TO_ARRAY)
         mock_cursor.execute.assert_any_call(MIGRATE_RENAME_TO_MANUAL)

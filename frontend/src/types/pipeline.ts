@@ -47,6 +47,20 @@ export interface GeoAnchor {
   actionLabel: string;
   labels: string[];       // all topic labels for display in popup
   secondaryLocations: SecondaryLocation[];  // other geo entities in the article
+  // Optional disaster-specific extras. Only populated when this anchor was
+  // derived from a NaturalDisaster (category === "NATURAL_DISASTER"). Stored
+  // here rather than in a parallel lookup so the selection flow can render
+  // the disaster detail card without an extra prop drill.
+  magnitudeValue?: number | null;
+  magnitudeUnit?: string | null;
+  disasterCategory?: string;   // EONET category id (e.g. "wildfires")
+  links?: string[];
+  closedAt?: string | null;
+  // Ordered sequence of observed positions (oldest → newest), already flipped
+  // to [lat, lng] for Leaflet. Only set when the disaster has >=2 Point
+  // observations — a single-point event has no track to draw. Used by
+  // AnchorPoint to render a fading trail showing how the event has moved.
+  track?: [number, number][];
 }
 
 export interface EventLogEntry {

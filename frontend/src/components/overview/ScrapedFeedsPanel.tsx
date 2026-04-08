@@ -1,6 +1,7 @@
 import { ArticleCard } from "./ArticleCard";
 import { ArticleDetailCard } from "./ArticleDetailCard";
 import type { ArticleDetailData } from "./ArticleDetailCard";
+import { DisasterDetailCard } from "./DisasterDetailCard";
 import type { DashboardArticle } from "../../types/dashboard";
 import type { DetectedEventDetail, EventArticle } from "../../types/event";
 import type { GeoAnchor } from "../../types/pipeline";
@@ -247,8 +248,14 @@ export function ScrapedFeedsPanel({
       {/* ── Normal feed body ─────────────────────────────────────────────── */}
       {!isEventFocused && (
         <>
-          {/* Selected anchor detail card — shown when a map marker is clicked */}
-          {selectedAnchor && (
+          {/* Selected anchor detail card — shown when a map marker is clicked.
+              Disasters get their own card with magnitude, EONET category, and
+              source links; everything else falls through to the generic
+              article card. */}
+          {selectedAnchor && selectedAnchor.category === "NATURAL_DISASTER" && (
+            <DisasterDetailCard anchor={selectedAnchor} onDismiss={onDismissSelection} />
+          )}
+          {selectedAnchor && selectedAnchor.category !== "NATURAL_DISASTER" && (
             <ArticleDetailCard article={anchorToDetail(selectedAnchor)} onDismiss={onDismissSelection} />
           )}
 

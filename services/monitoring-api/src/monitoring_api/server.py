@@ -46,6 +46,7 @@ from monitoring_api.article_client import (
     ArticleClient,
 )
 from monitoring_api.conflict_client import ConflictClient
+from monitoring_api.disaster_client import DisasterClient
 from monitoring_api.db_client import DbClient, DbStats
 from monitoring_api.docker_client import ContainerStatus, DockerClient
 from monitoring_api.event_client import EventClient
@@ -168,6 +169,7 @@ def create_app(
     graph_client: GraphClient | None = None,
     conflict_client: ConflictClient | None = None,
     event_client: EventClient | None = None,
+    disaster_client: DisasterClient | None = None,
 ) -> FastAPI:
     """Factory function that builds and returns the FastAPI application.
 
@@ -193,6 +195,7 @@ def create_app(
         "graph": graph_client,
         "conflicts": conflict_client,
         "events": event_client,
+        "disasters": disaster_client,
         "env": config,
     }
 
@@ -225,6 +228,8 @@ def create_app(
             state["conflicts"] = ConflictClient(database_url=config["database_url"])
         if state["events"] is None and config["database_url"]:
             state["events"] = EventClient(database_url=config["database_url"])
+        if state["disasters"] is None and config["database_url"]:
+            state["disasters"] = DisasterClient(database_url=config["database_url"])
 
         logger.info("Monitoring API started")
         yield
@@ -436,6 +441,41 @@ def create_app(
             return [dataclasses.asdict(e) for e in result]
         except Exception:
             logger.exception("Failed to fetch conflict events")
+            return Response(
+                content=json.dumps({"error": "internal"}),
+                status_code=500,
+                media_type="application/json",
+            )
+
+    @app.get("/api/dashboard/natural-disasters", response_model=None)
+    async def dashboard_natural_disasters(since: str = ""):
+        """Return natural disasters since the given ISO 8601 timestamp.
+
+        If `since` is omitted, defaults to the last 24 hours.
+        """
+        loop = asyncio.get_event_loop()
+        disaster_ref: DisasterClient | None = state["disasters"]
+        if disaster_ref is None:
+            return Response(
+                content=json.dumps({"error": "unavailable"}),
+                status_code=503,
+                media_type="application/json",
+            )
+        resolved_since = _resolve_since(since)
+        if resolved_since is None:
+            return Response(
+                content=json.dumps({"error": "invalid 'since' timestamp"}),
+                status_code=400,
+                media_type="application/json",
+            )
+        try:
+            result = await loop.run_in_executor(
+                None,
+                lambda: disaster_ref.get_dashboard_events(resolved_since),
+            )
+            return [dataclasses.asdict(d) for d in result]
+        except Exception:
+            logger.exception("Failed to fetch natural disasters")
             return Response(
                 content=json.dumps({"error": "internal"}),
                 status_code=500,

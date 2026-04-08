@@ -8,8 +8,10 @@ import { useDetectedEvents } from "../hooks/useDetectedEvents";
 import { useEntityRoleTypes } from "../hooks/useEntityRoleTypes";
 import { useEventDetail } from "../hooks/useEventDetail";
 import { useInfraStatus } from "../hooks/useInfraStatus";
+import { useNaturalDisasters } from "../hooks/useNaturalDisasters";
 import type { DashboardArticle } from "../types/dashboard";
 import type { ConflictEvent } from "../types/conflict";
+import type { NaturalDisaster } from "../types/disaster";
 import type { DetectedEvent, EventConflict } from "../types/event";
 import type { LayerVisibility } from "../components/overview/LayerToggle";
 import type { GeoAnchor, SecondaryLocation } from "../types/pipeline";
@@ -134,6 +136,79 @@ function deriveConflictAnchors(events: ConflictEvent[]): GeoAnchor[] {
   }));
 }
 
+// Pull an ordered [lat, lng] track from the JSONB geometry timeline.
+// EONET returns coordinates as GeoJSON [lng, lat] pairs — we flip them here so
+// the rest of the frontend (and Leaflet) can treat them as [lat, lng]. Only
+// Point geometries are walked; Polygons don't appear in practice and would
+// need a centroid pass to collapse them onto the track.
+function deriveDisasterTrack(disaster: NaturalDisaster): [number, number][] | undefined {
+  if (!disaster.geometries || disaster.geometries.length < 2) return undefined;
+
+  // Sort a copy by parsed date ascending so the trail goes old → new regardless
+  // of the order the upstream sent. `Date.parse` is robust to the kinds of ISO
+  // 8601 variants a lexicographic sort silently miscompares (`Z` vs `+00:00`,
+  // different fractional-second precision). EONET is consistent today but the
+  // cost of being defensive is one function call per comparison.
+  const sorted = [...disaster.geometries].sort(
+    (a, b) => Date.parse(a.date) - Date.parse(b.date),
+  );
+
+  const track: [number, number][] = [];
+  for (const g of sorted) {
+    if (g.type !== "Point") continue;
+    const coords = g.coordinates as number[];
+    if (!Array.isArray(coords) || coords.length < 2) continue;
+    const [lng, lat] = coords;
+    if (typeof lat !== "number" || typeof lng !== "number") continue;
+    track.push([lat, lng]);
+  }
+
+  // Drop the track if we ended up with fewer than 2 usable points.
+  return track.length >= 2 ? track : undefined;
+}
+
+function deriveDisasterAnchors(disasters: NaturalDisaster[]): GeoAnchor[] {
+  return disasters.map((d) => {
+    const track = deriveDisasterTrack(d);
+    // If the last track vertex doesn't exactly match the anchor's marker
+    // position, append the marker position so the brightest track segment is
+    // guaranteed to terminate at the dot. This is a defensive fix for the
+    // Polygon-latest case: the backend collapses a Polygon observation to a
+    // centroid for `latitude/longitude`, but `deriveDisasterTrack` skips
+    // non-Point geometries entirely. EONET doesn't emit Polygons in practice
+    // so this is almost always a no-op; when it isn't, it prevents a visible
+    // gap right next to the marker. The equality check avoids adding a
+    // zero-length segment in the common case.
+    if (track) {
+      const [lastLat, lastLng] = track[track.length - 1];
+      if (lastLat !== d.latitude || lastLng !== d.longitude) {
+        track.push([d.latitude, d.longitude]);
+      }
+    }
+
+    return {
+      id: `disaster-${d.id}`,
+      city: d.title,
+      label: d.title,
+      category: "NATURAL_DISASTER",
+      summary: d.description ?? "",
+      source: d.source,
+      date: (d.event_date ?? d.created_at).split("T")[0] ?? "",
+      coordinates: [d.latitude, d.longitude] as [number, number],
+      actionLabel: "VIEW_DISASTER",
+      labels: ["NATURAL_DISASTER", d.category],
+      secondaryLocations: [],
+      // Disaster-specific extras for sizing + detail card.
+      magnitudeValue: d.magnitude_value,
+      magnitudeUnit: d.magnitude_unit,
+      disasterCategory: d.category,
+      links: d.links,
+      closedAt: d.closed_at,
+      track,
+    };
+  });
+}
+
 function deriveEventAnchors(events: DetectedEvent[]): GeoAnchor[] {
   return events
     .filter((e) => e.centroid_lat != null && e.centroid_lng != null)
@@ -191,14 +266,16 @@ export function GlobalOverviewPage() {
   const { articles, loading } = useDashboardArticles(rangeMs);
   const { events: conflictEvents } = useConflictEvents(rangeMs);
   const { events: detectedEvents } = useDetectedEvents(rangeMs);
+  const { events: disasters } = useNaturalDisasters(rangeMs);
   const { roleTypes } = useEntityRoleTypes();
   const { data: infraStatus } = useInfraStatus();
   const anchors = useMemo(() => deriveAnchors(articles), [articles]);
   const conflictAnchors = useMemo(() => deriveConflictAnchors(conflictEvents), [conflictEvents]);
   const eventAnchors = useMemo(() => deriveEventAnchors(detectedEvents), [detectedEvents]);
+  const disasterAnchors = useMemo(() => deriveDisasterAnchors(disasters), [disasters]);
   const allAnchors = useMemo(
-    () => [...anchors, ...conflictAnchors, ...eventAnchors],
-    [anchors, conflictAnchors, eventAnchors],
+    () => [...anchors, ...conflictAnchors, ...eventAnchors, ...disasterAnchors],
+    [anchors, conflictAnchors, eventAnchors, disasterAnchors],
   );
   const [selectedAnchorId, setSelectedAnchorId] = useState<string | null>(null);
   const [focusedEventId, setFocusedEventId] = useState<number | null>(null);
@@ -210,6 +287,7 @@ export function GlobalOverviewPage() {
     conflicts: true,
     heatmap: true,
     events: true,
+    disasters: true,
   });
 
   // Extract [lat, lng] pairs for the heatmap. Memoized because the conflict

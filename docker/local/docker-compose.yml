@@ -566,6 +566,60 @@ services:
       FETCH_INTERVAL: "900"
 
   # -------------------------------------------------------------------
+  # NASA EONET fetcher — pulls natural disaster events (wildfires,
+  # storms, volcanoes, etc.) from the NASA Earth Observatory Natural
+  # Event Tracker.  No auth required.  Polls every 30 minutes.
+  # -------------------------------------------------------------------
+  nasa-eonet-fetcher:
+    build:
+      context: ../..
+      dockerfile: services/nasa-eonet-fetcher/Dockerfile
+    restart: on-failure
+    labels:
+      alexandria.pipeline.label: "NASA_EONET"
+      alexandria.pipeline.outputs: "queue:natural_disasters.raw"
+      alexandria.pipeline.stores: "redis"
+      alexandria.pipeline.icon: "local_fire_department"
+    depends_on:
+      base:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672"
+      REDIS_URL: "redis://redis:6379/0"
+      FETCH_INTERVAL: "1800"
+
+  # -------------------------------------------------------------------
+  # Disaster store — persists natural disaster events to PostgreSQL.
+  # Same image as article-store, different entry point.
+  # -------------------------------------------------------------------
+  disaster-store:
+    build:
+      context: ../..
+      dockerfile: services/article-store/Dockerfile
+    command: ["uv", "run", "--no-sync", "python", "-m", "article_store.disaster_consumer"]
+    restart: on-failure
+    labels:
+      alexandria.pipeline.label: "DISASTER_STORE"
+      alexandria.pipeline.inputs: "queue:natural_disasters.raw"
+      alexandria.pipeline.stores: "postgres"
+      alexandria.pipeline.icon: "local_fire_department"
+      alexandria.pipeline.sublabel: "disasters → DB"
+    depends_on:
+      base:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    environment:
+      RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672"
+      DATABASE_URL: "postgresql://alexandria:alexandria@postgres:5432/alexandria"
+
+  # -------------------------------------------------------------------
   # Conflict store — persists conflict events to PostgreSQL.
   # Same image as article-store, different entry point.
   # -------------------------------------------------------------------

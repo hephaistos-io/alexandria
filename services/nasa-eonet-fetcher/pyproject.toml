@@ -1,0 +1,23 @@
+[project]
+name = "nasa-eonet-fetcher"
+version = "0.1.0"
+description = "NASA EONET fetcher service for Alexandria — fetches geolocated natural disaster events from the Earth Observatory Natural Event Tracker"
+requires-python = ">=3.13"
+dependencies = ["pika>=1.3", "redis>=5.0", "httpx>=0.27"]
+
+[dependency-groups]
+dev = ["pytest>=8.0", "ruff>=0.11"]
+
+[build-system]
+requires = ["uv_build>=0.10.11,<0.11.0"]
+build-backend = "uv_build"
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

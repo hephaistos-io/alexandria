@@ -276,6 +276,54 @@ CREATE TABLE IF NOT EXISTS event_conflicts (
 """
 
 
+# Stores natural disaster events fetched from NASA EONET (wildfires, severe
+# storms, volcanoes, sea/lake ice, etc.).  Schema mirrors conflict_events but
+# with EONET-specific fields:
+#
+# - `category`         comma-joined EONET category ids (e.g. "wildfires" or
+#                      "wildfires,severeStorms"). Stored as TEXT not TEXT[]
+#                      because most events have a single category and TEXT
+#                      is cheaper to filter on.
+# - `geometry_type`    "Point" or "Polygon". Polygons are reduced to a
+#                      coordinate centroid in the fetcher; this column lets
+#                      the UI know the lat/lng is approximate.
+# - `closed_at`        non-null when EONET marks the event as ended.
+# - `magnitude_value`  optional, category-dependent (fire size in acres,
+#                      storm wind speed, etc.).
+#
+# source + source_id form the natural key (UNIQUE constraint), so the
+# consumer's ON CONFLICT DO NOTHING makes re-publishing the same EONET
+# event a safe no-op.
+SCHEMA_NATURAL_DISASTERS = """
+CREATE TABLE IF NOT EXISTS natural_disasters (
+    id              SERIAL PRIMARY KEY,
+    source_id       TEXT NOT NULL,
+    source          TEXT NOT NULL,
+    title           TEXT NOT NULL,
+    description     TEXT,
+    category        TEXT NOT NULL,
+    latitude        DOUBLE PRECISION NOT NULL,
+    longitude       DOUBLE PRECISION NOT NULL,
+    geometry_type   TEXT NOT NULL,
+    event_date      TIMESTAMPTZ,
+    closed_at       TIMESTAMPTZ,
+    magnitude_value DOUBLE PRECISION,
+    magnitude_unit  TEXT,
+    links           TEXT[],
+    -- `geometries` stores the full EONET geometry array verbatim.
+    -- Each entry is `{date, type, coordinates, magnitudeValue?, magnitudeUnit?}`.
+    -- This lets the frontend animate tracks (e.g. hurricane paths, wildfire
+    -- growth) without a child table or a schema migration. The scalar
+    -- lat/lng/event_date/magnitude columns above are derived from the
+    -- *latest* geometry — they're what the dashboard query filters on.
+    geometries      JSONB NOT NULL DEFAULT '[]'::jsonb,
+    fetched_at      TIMESTAMPTZ NOT NULL,
+    created_at      TIMESTAMPTZ DEFAULT now(),
+    UNIQUE (source, source_id)
+);
+"""
+
+
 # Performance indexes — created on every startup (IF NOT EXISTS is implicit
 # for CREATE INDEX IF NOT EXISTS).  The dashboard query filters on
 # automatic_labels IS NOT NULL and sorts by COALESCE(published_at, created_at),
@@ -294,6 +342,9 @@ CREATE INDEX IF NOT EXISTS idx_conflict_events_date
 
 CREATE INDEX IF NOT EXISTS idx_events_status
     ON events (status) WHERE status != 'historical';
+
+CREATE INDEX IF NOT EXISTS idx_natural_disasters_date
+    ON natural_disasters (COALESCE(event_date, created_at) DESC);
 """
 
 
@@ -335,5 +386,6 @@ def apply_schema(conn: psycopg.Connection) -> None:
         cur.execute(SCHEMA_EVENTS)
         cur.execute(SCHEMA_EVENT_ARTICLES)
         cur.execute(SCHEMA_EVENT_CONFLICTS)
+        cur.execute(SCHEMA_NATURAL_DISASTERS)
         cur.execute(SCHEMA_INDEXES)
     conn.commit()

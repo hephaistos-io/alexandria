@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 
 /**
  * Generic polling hook. Fetches `url` immediately on mount, then again every
@@ -26,19 +26,12 @@ export function usePolling<T>(
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Store the url in a ref so the interval callback always sees the latest
-  // value without needing to restart the interval on every url change.
-  const urlRef = useRef(url);
-  urlRef.current = url;
-
   useEffect(() => {
     let cancelled = false;
 
     async function poll() {
       try {
-        const resolvedUrl = typeof urlRef.current === "function"
-          ? urlRef.current()
-          : urlRef.current;
+        const resolvedUrl = typeof url === "function" ? url() : url;
         const res = await fetch(resolvedUrl);
         if (!res.ok) throw new Error(`Server returned ${res.status}`);
         const json: T = await res.json();
@@ -65,7 +58,10 @@ export function usePolling<T>(
       cancelled = true;
       clearInterval(intervalId);
     };
-  }, [intervalMs]);
+    // When `url` is a function, callers MUST memoize it (e.g. with useCallback)
+    // so its identity only changes when the underlying parameters change.
+    // Otherwise the effect will tear down and restart on every render.
+  }, [url, intervalMs]);
 
   return { data, loading, error };
 }

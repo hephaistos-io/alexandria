@@ -15,6 +15,14 @@ Actively developed as a learning project for python, data pipelines, NLP. Built 
 
 Active development — pipeline is functional end-to-end.
 
+### Newest updates (08/04/2026):
+
+- added NASA EONET for climate based events (wildfires and the like)
+- Showcase path of cyclones and icebergs on the map based on available data
+<img width="1027" height="473" alt="{CE3B43F0-868C-4EF7-9CAD-DB102351DB19}" src="https://github.com/user-attachments/assets/455e81fa-1149-4fca-b5ac-d80fba1c5da1" />
+<img width="951" height="655" alt="{E17E6E43-07F3-4E90-9DAB-E8C5D2B9A02F}" src="https://github.com/user-attachments/assets/e2560cc3-c69f-4289-8aa0-97d140d57f95" />
+- improved active conflict data location mapping through filtering and nearest-country verification
+
 
 - **Data Ingestion**: Generic RSS scraper can be used for various sources that provide one
 - **Conflict Data Ingestion**: Two independent fetcher services pull geolocated armed conflict events from OSINT sources (Bellingcat, Texty, etc.) and the UCDP Candidate Events API

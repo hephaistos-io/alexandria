@@ -18,6 +18,9 @@ dist-ssr/
 # Environment secrets
 .env
 
+# Kubernetes secrets (real values, not checked in)
+k8s/config/secrets.yaml
+
 # Exported labelling data (generated from DB, not source code)
 training/labelling/
 

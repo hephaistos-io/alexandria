@@ -151,9 +151,14 @@ psql postgresql://alexandria:alexandria@localhost:5432/alexandria
 |---|---|
 | [uv](https://docs.astral.sh/uv/) | Package management & dependency locking |
 | [FastAPI](https://fastapi.tiangolo.com/) | REST API (monitoring-api) |
-| [pika](https://pika.readthedocs.io/) | RabbitMQ client (all services) |
+| [uvicorn](https://www.uvicorn.org/) | ASGI server (monitoring-api) |
+| [pika](https://pika.readthedocs.io/) | RabbitMQ client (most services) |
 | [psycopg 3](https://www.psycopg.org/psycopg3/) | PostgreSQL driver |
+| [redis-py](https://redis-py.readthedocs.io/) | Redis client (dedup, scheduling, caching) |
+| [neo4j](https://neo4j.com/docs/python-manual/current/) | Neo4j driver (relation-extractor, monitoring-api) |
 | [httpx](https://www.python-httpx.org/) | Async HTTP client |
+| [websockets](https://websockets.readthedocs.io/) | Real-time log streaming (monitoring-api) |
+| [docker](https://docker-py.readthedocs.io/) | Docker SDK for container health queries (monitoring-api) |
 | [Ruff](https://docs.astral.sh/ruff/) | Linting & formatting |
 | [pytest](https://docs.pytest.org/) | Testing |
 | [osint-geo-extractor](https://github.com/conflict-investigations/osint-geo-extractor) | OSINT conflict event data (Bellingcat, Texty, GeoConfirmed, DefMon, CenInfoRes) |
@@ -174,10 +179,13 @@ psql postgresql://alexandria:alexandria@localhost:5432/alexandria
 |---|---|
 | [Vite](https://vite.dev/) | Build tool & dev server |
 | [React](https://react.dev/) | UI framework |
+| [React Router](https://reactrouter.com/) | Client-side routing |
 | [Tailwind CSS](https://tailwindcss.com/) | Styling |
 | [Leaflet](https://leafletjs.com/) / react-leaflet | World map |
+| [react-leaflet-cluster](https://github.com/akurber/react-leaflet-cluster) | Map marker clustering |
 | [leaflet.heat](https://github.com/Leaflet/Leaflet.heat) | Conflict event heatmap layer |
-| [React Flow](https://reactflow.dev/) | Pipeline topology diagrams |
+| [@xyflow/react](https://reactflow.dev/) | Pipeline topology diagrams |
+| [@dagrejs/dagre](https://github.com/dagrejs/dagre) | Graph layout algorithms (pipeline topology) |
 | [react-force-graph-2d](https://github.com/vasturiano/react-force-graph) | Entity relation graphs |
 | [ESLint](https://eslint.org/) | Linting |
 
@@ -185,10 +193,10 @@ psql postgresql://alexandria:alexandria@localhost:5432/alexandria
 
 | Tool | Role |
 |---|---|
-| [RabbitMQ](https://www.rabbitmq.com/) | Message broker (inter-service queues & fanout exchanges) |
+| [RabbitMQ 4](https://www.rabbitmq.com/) | Message broker (inter-service queues & fanout exchanges) |
 | [PostgreSQL 17](https://www.postgresql.org/) | Primary datastore (articles, conflict events, labels, roles, relations) |
-| [Neo4j](https://neo4j.com/) | Graph database (entity relations) |
-| [Redis](https://redis.io/) | Cache & scheduling (entity-resolver lookups, feed dedup, fetcher scheduling) |
+| [Neo4j 5](https://neo4j.com/) | Graph database (entity relations) |
+| [Redis 7](https://redis.io/) | Cache & scheduling (entity-resolver lookups, feed dedup, fetcher scheduling) |
 
 ## Design/UX
 
